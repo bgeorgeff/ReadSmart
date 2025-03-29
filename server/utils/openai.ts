@@ -1,13 +1,16 @@
 import OpenAI from "openai";
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Using OpenRouter as a proxy to access OpenAI models
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
+  baseURL: "https://openrouter.ai/api/v1"
+});
 
 // Function to generate summaries for different grade levels
 export async function generateGradeLevelSummaries(text: string): Promise<Record<number, string>> {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "openai/gpt-4o",
       messages: [
         {
           role: "system",
@@ -29,7 +32,12 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       response_format: { type: "json_object" }
     });
 
-    const result = JSON.parse(response.choices[0].message.content);
+    const content = response.choices[0].message.content || '';
+    // If content is empty, throw an error
+    if (content === '') {
+      throw new Error("No content returned from OpenRouter");
+    }
+    const result = JSON.parse(content);
     return result;
   } catch (error) {
     console.error("Error generating summaries:", error);
