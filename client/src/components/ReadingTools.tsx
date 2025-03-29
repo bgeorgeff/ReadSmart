@@ -1,0 +1,279 @@
+import { useState } from 'react';
+import { useAudioRecorder } from '@/hooks/use-audio-recorder';
+import { useTextToSpeech } from '@/hooks/use-text-to-speech';
+import { RecordingState } from '@/types';
+import { useToast } from '@/hooks/use-toast';
+
+interface ReadingToolsProps {
+  isVisible: boolean;
+  summaryId: number | null;
+  selectedSummary: string;
+  onWordClick: (word: string) => void;
+  onBackToSummary: () => void;
+}
+
+export default function ReadingTools({ 
+  isVisible, 
+  summaryId, 
+  selectedSummary, 
+  onWordClick, 
+  onBackToSummary 
+}: ReadingToolsProps) {
+  const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
+  const { toast } = useToast();
+  const { 
+    isRecording, 
+    recordingTime, 
+    audioUrl, 
+    startRecording, 
+    stopRecording, 
+    resetRecording,
+    playRecording,
+    isPlaying,
+    playbackProgress,
+    playbackDuration
+  } = useAudioRecorder();
+  const { speak, isSpeaking, stopSpeaking } = useTextToSpeech();
+  
+  if (!isVisible) return null;
+  
+  // Format time for display (mm:ss)
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
+  
+  // Handle record button click
+  const handleRecordToggle = () => {
+    if (recordingState === RecordingState.INACTIVE || recordingState === RecordingState.PLAYBACK) {
+      startRecording();
+      setRecordingState(RecordingState.RECORDING);
+    }
+  };
+  
+  // Handle stop recording
+  const handleStopRecording = () => {
+    stopRecording();
+    setRecordingState(RecordingState.PLAYBACK);
+  };
+  
+  // Handle playback controls
+  const handlePlayPauseToggle = () => {
+    playRecording();
+  };
+  
+  // Handle restart playback
+  const handleRestartPlayback = () => {
+    resetRecording();
+    setTimeout(() => {
+      playRecording();
+    }, 100);
+  };
+  
+  // Handle delete recording
+  const handleDeleteRecording = () => {
+    resetRecording();
+    setRecordingState(RecordingState.INACTIVE);
+  };
+  
+  // Handle listen (text-to-speech)
+  const handleListen = () => {
+    if (isSpeaking) {
+      stopSpeaking();
+    } else {
+      speak(selectedSummary);
+    }
+  };
+  
+  return (
+    <div className="col-span-1 lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+      <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">3. Reading Practice</h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <div className="bg-gray-100 p-4 rounded-lg mb-4 max-h-72 overflow-y-auto">
+            <p className="font-['Merriweather'] text-gray-800 leading-relaxed">
+              {selectedSummary.split(/\s+/).map((word, index) => {
+                // Clean the word from punctuation for displaying
+                const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+                const punctuation = word.replace(cleanWord, "");
+                
+                return (
+                  <span key={index}>
+                    <span 
+                      className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                      onClick={() => onWordClick(cleanWord)}
+                    >
+                      {cleanWord}
+                    </span>
+                    {punctuation}
+                    {' '}
+                  </span>
+                );
+              })}
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap gap-3 mb-4">
+            <button 
+              className={`flex-1 ${isSpeaking ? 'bg-[#EA4335] text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'} py-2 px-4 rounded-lg font-['Google_Sans'] flex items-center justify-center`}
+              onClick={handleListen}
+            >
+              <span className="material-icons mr-1">{isSpeaking ? 'stop' : 'volume_up'}</span>
+              {isSpeaking ? 'Stop' : 'Listen'}
+            </button>
+            <button 
+              className={`flex-1 ${isRecording ? 'bg-[#EA4335]' : 'bg-[#FBBC05]'} hover:bg-opacity-80 text-white py-2 px-4 rounded-lg font-['Google_Sans'] flex items-center justify-center`}
+              onClick={handleRecordToggle}
+              disabled={isRecording}
+            >
+              <span className="material-icons mr-1">mic</span>
+              Record Me
+            </button>
+          </div>
+        </div>
+        
+        <div>
+          <div className="border border-gray-200 rounded-lg p-4 h-full">
+            {/* Default State */}
+            {recordingState === RecordingState.INACTIVE && (
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="bg-gray-200 rounded-full p-4 mb-4">
+                  <span className="material-icons text-4xl text-gray-500">mic</span>
+                </div>
+                <p className="text-center text-gray-500 font-['Roboto']">
+                  Click "Record Me" to start recording yourself reading the passage
+                </p>
+              </div>
+            )}
+            
+            {/* Recording State */}
+            {recordingState === RecordingState.RECORDING && (
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="recording-wave mb-4">
+                  {/* 10 bars that will animate via CSS */}
+                  <span></span><span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <style jsx>{`
+                  .recording-wave {
+                    display: flex;
+                    align-items: center;
+                    height: 40px;
+                  }
+                  
+                  .recording-wave span {
+                    width: 3px;
+                    margin-right: 3px;
+                    background-color: #4285F4;
+                    height: 100%;
+                    animation: wave 0.5s infinite ease-in-out alternate;
+                  }
+                  
+                  @keyframes wave {
+                    0% { height: 10%; }
+                    100% { height: 100%; }
+                  }
+                  
+                  .recording-wave span:nth-child(2n) {
+                    animation-delay: 0.2s;
+                  }
+                  
+                  .recording-wave span:nth-child(3n) {
+                    animation-delay: 0.4s;
+                  }
+                `}</style>
+                <p className="text-center text-gray-800 font-['Google_Sans'] mb-2">Recording...</p>
+                <p className="text-center text-gray-400 text-sm font-['Roboto'] mb-4">
+                  {formatTime(recordingTime)}
+                </p>
+                <button 
+                  className="bg-[#EA4335] text-white py-2 px-6 rounded-full font-['Google_Sans'] flex items-center"
+                  onClick={handleStopRecording}
+                >
+                  <span className="material-icons mr-1">stop</span>
+                  Stop Recording
+                </button>
+              </div>
+            )}
+            
+            {/* Playback State */}
+            {recordingState === RecordingState.PLAYBACK && audioUrl && (
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="w-full mb-4">
+                  <div className="relative pt-1">
+                    <div className="flex mb-2 items-center justify-between">
+                      <div>
+                        <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-[#4285F4] bg-[#4285F4]/10">
+                          Your Recording
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs text-gray-500">
+                          {formatTime(playbackProgress)} / {formatTime(playbackDuration)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2">
+                      <div 
+                        className="bg-[#4285F4] h-2 rounded-full transition-all" 
+                        style={{ width: `${(playbackProgress / playbackDuration) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-3 mb-2">
+                  <button 
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-full"
+                    onClick={handleRestartPlayback}
+                  >
+                    <span className="material-icons">replay</span>
+                  </button>
+                  <button 
+                    className="bg-[#4285F4] text-white p-3 rounded-full"
+                    onClick={handlePlayPauseToggle}
+                  >
+                    <span className="material-icons">{isPlaying ? 'pause' : 'play_arrow'}</span>
+                  </button>
+                  <button 
+                    className="bg-gray-100 hover:bg-gray-200 text-[#EA4335] p-3 rounded-full"
+                    onClick={handleDeleteRecording}
+                  >
+                    <span className="material-icons">delete</span>
+                  </button>
+                </div>
+                <p className="text-center text-gray-500 text-sm font-['Roboto']">
+                  Record again to replace this recording
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      <div className="mt-6 border-t border-gray-200 pt-4 flex justify-between">
+        <button 
+          className="text-[#4285F4] hover:bg-[#4285F4]/10 py-2 px-4 rounded-lg font-['Google_Sans'] flex items-center"
+          onClick={onBackToSummary}
+        >
+          <span className="material-icons mr-1">arrow_back</span>
+          Back to Text
+        </button>
+        <button 
+          className="bg-[#34A853] text-white py-2 px-6 rounded-full font-['Google_Sans'] flex items-center"
+          onClick={() => {
+            toast({
+              title: "Practice completed",
+              description: "Great job! You've completed your reading practice."
+            });
+          }}
+        >
+          <span className="material-icons mr-1">check_circle</span>
+          Finish Practice
+        </button>
+      </div>
+    </div>
+  );
+}
