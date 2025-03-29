@@ -47,6 +47,10 @@ export default function ReadingTools({
   // Handle record button click
   const handleRecordToggle = () => {
     if (recordingState === RecordingState.INACTIVE || recordingState === RecordingState.PLAYBACK) {
+      toast({
+        title: "Recording started",
+        description: "Please allow microphone access if prompted",
+      });
       startRecording();
       setRecordingState(RecordingState.RECORDING);
     }
@@ -55,7 +59,27 @@ export default function ReadingTools({
   // Handle stop recording
   const handleStopRecording = () => {
     stopRecording();
-    setRecordingState(RecordingState.PLAYBACK);
+    toast({
+      title: "Recording complete",
+      description: "Your recording is ready for playback",
+    });
+    
+    // We'll set a small delay before changing to playback state to give
+    // time for the MediaRecorder to finish processing the audio
+    setTimeout(() => {
+      setRecordingState(RecordingState.PLAYBACK);
+      
+      // Check if we actually got audio
+      if (!audioUrl) {
+        toast({
+          title: "Recording issue",
+          description: "No audio was recorded. Please try again.",
+          variant: "destructive"
+        });
+        // Reset back to inactive state
+        setRecordingState(RecordingState.INACTIVE);
+      }
+    }, 500);
   };
   
   // Handle playback controls
