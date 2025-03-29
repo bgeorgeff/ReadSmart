@@ -1,4 +1,4 @@
-import * as syllable from "syllable";
+import { syllable } from "syllable";
 
 export function breakWordIntoSyllables(word: string): string[] {
   // This is a simplified approach to syllable breakdown
@@ -8,7 +8,7 @@ export function breakWordIntoSyllables(word: string): string[] {
   const cleanWord = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
   
   // Get the number of syllables
-  const syllableCount = syllable.syllable(cleanWord);
+  const syllableCount = syllable(cleanWord);
   
   if (syllableCount <= 1) {
     return [cleanWord];
