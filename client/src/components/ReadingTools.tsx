@@ -60,15 +60,29 @@ export default function ReadingTools({
   
   // Handle playback controls
   const handlePlayPauseToggle = () => {
-    playRecording();
+    if (audioUrl) {
+      playRecording();
+    } else {
+      toast({
+        title: "No recording available",
+        description: "Please record yourself first before playback",
+        variant: "destructive"
+      });
+    }
   };
   
   // Handle restart playback
   const handleRestartPlayback = () => {
-    resetRecording();
-    setTimeout(() => {
-      playRecording();
-    }, 100);
+    if (audioUrl) {
+      // For restart, we need to set the audio to the beginning and play again
+      resetRecording();
+      setRecordingState(RecordingState.INACTIVE);
+      // Give a notification that restart isn't implemented yet
+      toast({
+        title: "Recording restarted",
+        description: "Please click Record Me again to create a new recording",
+      });
+    }
   };
   
   // Handle delete recording
@@ -156,34 +170,6 @@ export default function ReadingTools({
                   <span></span><span></span><span></span><span></span><span></span>
                   <span></span><span></span><span></span><span></span><span></span>
                 </div>
-                <style jsx>{`
-                  .recording-wave {
-                    display: flex;
-                    align-items: center;
-                    height: 40px;
-                  }
-                  
-                  .recording-wave span {
-                    width: 3px;
-                    margin-right: 3px;
-                    background-color: #4285F4;
-                    height: 100%;
-                    animation: wave 0.5s infinite ease-in-out alternate;
-                  }
-                  
-                  @keyframes wave {
-                    0% { height: 10%; }
-                    100% { height: 100%; }
-                  }
-                  
-                  .recording-wave span:nth-child(2n) {
-                    animation-delay: 0.2s;
-                  }
-                  
-                  .recording-wave span:nth-child(3n) {
-                    animation-delay: 0.4s;
-                  }
-                `}</style>
                 <p className="text-center text-gray-800 font-['Google_Sans'] mb-2">Recording...</p>
                 <p className="text-center text-gray-400 text-sm font-['Roboto'] mb-4">
                   {formatTime(recordingTime)}

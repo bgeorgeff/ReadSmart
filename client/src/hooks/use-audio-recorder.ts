@@ -149,7 +149,14 @@ export function useAudioRecorder(): AudioRecorderHook {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
-        audioRef.current.play();
+        // Ensure the source is set
+        if (audioRef.current.src === '') {
+          audioRef.current.src = audioUrl;
+        }
+        // Play the audio
+        audioRef.current.play().catch(error => {
+          console.error("Error playing audio:", error);
+        });
       }
     }
   };
