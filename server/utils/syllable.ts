@@ -1,4 +1,4 @@
-import { syllable } from "syllable";
+import syllable from "syllable";
 
 export function breakWordIntoSyllables(word: string): string[] {
   // This is a simplified approach to syllable breakdown
