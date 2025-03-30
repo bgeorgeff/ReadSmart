@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 
 export function useAudioRecorder() {
@@ -44,22 +43,22 @@ export function useAudioRecorder() {
         }
       });
       console.log('Got media stream:', stream);
-      
+
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
         ? 'audio/webm;codecs=opus'
         : 'audio/webm';
-        
+
       const options = { 
         mimeType,
         audioBitsPerSecond: 128000
       };
-      
+
       mediaRecorder.current = new MediaRecorder(stream, options);
       console.log('Created MediaRecorder with options:', options);
-      
+
       audioChunks.current = [];
       setRecordingTime(0);
-      
+
       mediaRecorder.current.ondataavailable = (event) => {
         console.log('Data available event:', event.data.type, event.data.size, 'bytes');
         if (event.data && event.data.size > 0) {
@@ -92,27 +91,37 @@ export function useAudioRecorder() {
           console.error('No audio chunks recorded');
           return;
         }
-        
+
         try {
-          const audioBlob = new Blob(audioChunks.current, { type: mediaRecorder.current?.mimeType || 'audio/webm' });
+          // Ensure we have the correct MIME type
+          const mimeType = 'audio/webm;codecs=opus';
+          const audioBlob = new Blob(audioChunks.current, { type: mimeType });
           console.log('Created blob:', audioBlob.type, audioBlob.size, 'bytes');
+
           if (audioBlob.size === 0) {
             console.error('Created blob is empty');
             return;
           }
+
+          // Create and verify URL
           const url = URL.createObjectURL(audioBlob);
           console.log('Created URL:', url);
+
+          // Set URL and verify audio element
           setAudioUrl(url);
-          
-          if (audioElement.current) {
+          if (!audioElement.current) {
+            audioElement.current = new Audio(url);
+          }
           audioElement.current.src = url;
           audioElement.current.preload = 'metadata';
-          
+
           audioElement.current.onloadedmetadata = () => {
             setPlaybackDuration(audioElement.current?.duration || 0);
           };
-          
+
           audioElement.current.load();
+        } catch (error) {
+          console.error("Error creating or setting audio URL:", error);
         }
 
         mediaRecorder.current?.stream.getTracks().forEach(track => track.stop());
