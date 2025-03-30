@@ -103,8 +103,8 @@ export function useAudioRecorder() {
           const url = URL.createObjectURL(audioBlob);
           console.log('Created URL:', url);
           setAudioUrl(url);
-        
-        if (audioElement.current) {
+          
+          if (audioElement.current) {
           audioElement.current.src = url;
           audioElement.current.preload = 'metadata';
           
