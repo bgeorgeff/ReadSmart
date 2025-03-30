@@ -17,7 +17,9 @@ export function useAudioRecorder() {
 
   // Effect for audio element setup
   useEffect(() => {
-    audioElement.current = new Audio();
+    if (!audioElement.current) {
+      audioElement.current = new Audio();
+    }
     audioElement.current.onended = () => {
       setIsPlaying(false);
       setPlaybackProgress(0);
@@ -128,7 +130,11 @@ export function useAudioRecorder() {
         resolve();
       };
 
+      // Stop recording and wait for chunks to finish
       mediaRecorder.current!.stop();
+      setIsRecording(false);
+    }).catch(error => {
+      console.error('Error stopping recording:', error);
       setIsRecording(false);
     });
   };
