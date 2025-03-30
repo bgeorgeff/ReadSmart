@@ -124,29 +124,58 @@ export function useAudioRecorder(): AudioRecorderHook {
           return;
         }
         
-        // Get appropriate MIME type
-        const mimeType = mediaRecorder.mimeType || 'audio/webm';
-        console.log(`Creating blob with type: ${mimeType}`);
-        
-        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-        console.log(`Blob created: ${audioBlob.size} bytes`);
-        
-        const url = URL.createObjectURL(audioBlob);
-        console.log(`URL created: ${url}`);
-        setAudioUrl(url);
-        
-        if (audioRef.current) {
-          console.log("Setting audio source");
-          audioRef.current.src = url;
-          // Preload the audio
-          audioRef.current.load();
+        try {
+          // Get appropriate MIME type
+          const mimeType = mediaRecorder.mimeType || 'audio/webm';
+          console.log(`Creating blob with type: ${mimeType}`);
+          
+          const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+          console.log(`Blob created: ${audioBlob.size} bytes`);
+          
+          if (audioBlob.size === 0) {
+            console.error("Audio blob is empty");
+            return;
+          }
+          
+          // Using a timestamp to ensure the URL is unique each time
+          const timestamp = new Date().getTime();
+          const url = URL.createObjectURL(audioBlob) + `#t=${timestamp}`;
+          console.log(`URL created: ${url}`);
+          
+          // Create a temporary audio element to test the blob
+          const testAudio = new Audio();
+          testAudio.src = url;
+          
+          // Try to load the audio data to verify it's valid
+          testAudio.addEventListener('loadedmetadata', () => {
+            console.log(`Test audio loaded, duration: ${testAudio.duration}`);
+            
+            // If we get here, the audio is valid, so update the UI state
+            setAudioUrl(url);
+            
+            if (audioRef.current) {
+              console.log("Setting audio source to main audio element");
+              audioRef.current.src = url;
+              // Preload the audio
+              audioRef.current.load();
+            }
+          });
+          
+          testAudio.addEventListener('error', (e) => {
+            console.error("Test audio loading failed:", e);
+          });
+          
+          // Load the test audio
+          testAudio.load();
+          
+          // Stop all tracks in the stream
+          stream.getTracks().forEach(track => {
+            console.log(`Stopping track: ${track.kind}`);
+            track.stop();
+          });
+        } catch (error) {
+          console.error("Error creating audio blob:", error);
         }
-        
-        // Stop all tracks in the stream
-        stream.getTracks().forEach(track => {
-          console.log(`Stopping track: ${track.kind}`);
-          track.stop();
-        });
       };
       
       // Add error handling for MediaRecorder
@@ -248,43 +277,65 @@ export function useAudioRecorder(): AudioRecorderHook {
       if (isPlaying) {
         console.log("Pausing audio playback");
         audioRef.current.pause();
+        setIsPlaying(false);
       } else {
-        // Ensure the source is set
-        if (audioRef.current.src === '' || !audioRef.current.src.includes('blob')) {
-          console.log(`Setting audio source to ${audioUrl}`);
-          audioRef.current.src = audioUrl;
-          // Force the browser to load the audio
-          audioRef.current.load();
-        } else {
-          console.log(`Using existing audio source: ${audioRef.current.src}`);
-        }
+        // Always reset the audio source to ensure we're using the latest blob URL
+        // with the timestamp to prevent browser caching issues
+        console.log(`Setting audio source to ${audioUrl}`);
+        audioRef.current.src = audioUrl;
+        
+        // Force the browser to load the audio
+        audioRef.current.load();
         
         // Provide detailed information
-        console.log(`Audio duration: ${audioRef.current.duration}`);
         console.log(`Audio ready state: ${audioRef.current.readyState}`);
-        console.log(`Audio paused: ${audioRef.current.paused}`);
         
-        // Play the audio
-        console.log("Starting audio playback");
-        const playPromise = audioRef.current.play();
+        // Handle loading events properly
+        const handleCanPlay = () => {
+          console.log(`Audio loaded, duration: ${audioRef.current?.duration}`);
+          // Play the audio after we can play
+          console.log("Starting audio playback");
+          
+          // Use a small delay to ensure the browser is ready
+          setTimeout(() => {
+            const playPromise = audioRef.current?.play();
+            if (playPromise) {
+              playPromise
+                .then(() => {
+                  console.log("Audio playback started successfully");
+                  setIsPlaying(true);
+                })
+                .catch(error => {
+                  console.error("Error playing audio:", error);
+                  // Show specific error code if available
+                  if (error.name) {
+                    console.error(`Error name: ${error.name}`);
+                  }
+                  
+                  // Create a completely new audio element as a fallback
+                  console.log("Creating new audio element as fallback");
+                  const newAudio = new Audio(audioUrl);
+                  newAudio.addEventListener('play', () => setIsPlaying(true));
+                  newAudio.addEventListener('pause', () => setIsPlaying(false));
+                  newAudio.addEventListener('ended', () => setIsPlaying(false));
+                  newAudio.addEventListener('timeupdate', () => setPlaybackProgress(newAudio.currentTime));
+                  
+                  newAudio.play().catch(e => {
+                    console.error("Final fallback attempt failed:", e);
+                  });
+                  
+                  // Replace the ref with our new element
+                  audioRef.current = newAudio;
+                });
+            }
+          }, 100);
+          
+          // Remove the event listener
+          audioRef.current?.removeEventListener('canplay', handleCanPlay);
+        };
         
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              console.log("Audio playback started successfully");
-            })
-            .catch(error => {
-              console.error("Error playing audio:", error);
-              // Try one more time with a reload
-              console.log("Attempting to reload and play again");
-              audioRef.current?.load();
-              setTimeout(() => {
-                audioRef.current?.play().catch(e => 
-                  console.error("Second attempt to play failed:", e)
-                );
-              }, 300);
-            });
-        }
+        // Add event listener for canplay
+        audioRef.current.addEventListener('canplay', handleCanPlay);
       }
     } catch (error) {
       console.error("Unexpected error in playRecording:", error);
