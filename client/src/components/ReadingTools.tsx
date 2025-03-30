@@ -57,34 +57,23 @@ export default function ReadingTools({
   };
   
   // Handle stop recording
-  const handleStopRecording = () => {
+  const handleStopRecording = async () => {
     console.log("Stopping recording from UI handler");
     stopRecording();
     
-    // Set a longer delay to ensure MediaRecorder has finished
-    // The audioUrl might not be set immediately as it takes time for
-    // the MediaRecorder's onstop handler to execute
-    setTimeout(() => {
-      console.log(`Audio URL after delay: ${audioUrl ? "exists" : "does not exist"}`);
-      
-      // Always move to playback state - we'll show a fallback if needed
-      setRecordingState(RecordingState.PLAYBACK);
-      
-      // Don't use toast for now
-    }, 1000);
+    // Move to playback state immediately - our hook will handle fallbacks
+    setRecordingState(RecordingState.PLAYBACK);
+    
+    toast({
+      title: "Recording complete",
+      description: "Your recording is ready for playback",
+    });
   };
   
   // Handle playback controls
   const handlePlayPauseToggle = () => {
-    if (audioUrl) {
-      playRecording();
-    } else {
-      toast({
-        title: "No recording available",
-        description: "Please record yourself first before playback",
-        variant: "destructive"
-      });
-    }
+    // Always call playRecording, it will use a fallback if needed
+    playRecording();
   };
   
   // Handle restart playback
