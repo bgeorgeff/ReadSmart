@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 
 export function useAudioRecorder() {
+  // State hooks
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -9,13 +10,23 @@ export function useAudioRecorder() {
   const [playbackProgress, setPlaybackProgress] = useState(0);
   const [playbackDuration, setPlaybackDuration] = useState(0);
 
+  // Ref hooks
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
   const recordingTimer = useRef<NodeJS.Timeout | null>(null);
   const audioElement = useRef<HTMLAudioElement | null>(null);
 
+  // Effect for audio element setup
   useEffect(() => {
     audioElement.current = new Audio();
+    audioElement.current.onended = () => {
+      setIsPlaying(false);
+      setPlaybackProgress(0);
+    };
+    audioElement.current.ontimeupdate = () => {
+      setPlaybackProgress(audioElement.current?.currentTime || 0);
+    };
+
     return () => {
       if (audioUrl) {
         URL.revokeObjectURL(audioUrl);
@@ -27,7 +38,6 @@ export function useAudioRecorder() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder.current = new MediaRecorder(stream);
-      
       audioChunks.current = [];
       setRecordingTime(0);
       
@@ -51,6 +61,10 @@ export function useAudioRecorder() {
   const stopRecording = () => {
     if (!mediaRecorder.current) return;
 
+    if (recordingTimer.current) {
+      clearInterval(recordingTimer.current);
+    }
+
     return new Promise<void>((resolve) => {
       mediaRecorder.current!.onstop = () => {
         const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm' });
@@ -59,12 +73,9 @@ export function useAudioRecorder() {
         
         if (audioElement.current) {
           audioElement.current.src = url;
+          audioElement.current.load();
         }
 
-        // Clean up
-        if (recordingTimer.current) {
-          clearInterval(recordingTimer.current);
-        }
         mediaRecorder.current?.stream.getTracks().forEach(track => track.stop());
         resolve();
       };
@@ -100,19 +111,6 @@ export function useAudioRecorder() {
       }
     }
   };
-
-  useEffect(() => {
-    if (audioElement.current) {
-      audioElement.current.onended = () => {
-        setIsPlaying(false);
-        setPlaybackProgress(0);
-      };
-
-      audioElement.current.ontimeupdate = () => {
-        setPlaybackProgress(audioElement.current?.currentTime || 0);
-      };
-    }
-  }, [audioUrl]);
 
   return {
     isRecording,
