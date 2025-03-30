@@ -37,23 +37,37 @@ export function useAudioRecorder() {
   const startRecording = async () => {
     try {
       console.log('Starting recording process');
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          channelCount: 1,
+          sampleRate: 44100
+        }
+      });
       console.log('Got media stream:', stream);
       
-      const options = { mimeType: 'audio/webm' };
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
+        ? 'audio/webm;codecs=opus'
+        : 'audio/webm';
+        
+      const options = { 
+        mimeType,
+        audioBitsPerSecond: 128000
+      };
+      
       mediaRecorder.current = new MediaRecorder(stream, options);
       console.log('Created MediaRecorder with options:', options);
       
       audioChunks.current = [];
       setRecordingTime(0);
       
-      // Set up data handling before starting recording
       mediaRecorder.current.ondataavailable = (event) => {
         console.log('Data available event:', event.data.type, event.data.size, 'bytes');
-        audioChunks.current.push(event.data);
+        if (event.data && event.data.size > 0) {
+          audioChunks.current.push(event.data);
+        }
       };
 
-      mediaRecorder.current.start(100);
+      mediaRecorder.current.start(200);
       setIsRecording(true);
 
       recordingTimer.current = setInterval(() => {
@@ -79,10 +93,16 @@ export function useAudioRecorder() {
           return;
         }
         
-        const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm' });
-        console.log('Created blob:', audioBlob.type, audioBlob.size, 'bytes');
-        const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url); // Set URL immediately
+        try {
+          const audioBlob = new Blob(audioChunks.current, { type: mediaRecorder.current?.mimeType || 'audio/webm' });
+          console.log('Created blob:', audioBlob.type, audioBlob.size, 'bytes');
+          if (audioBlob.size === 0) {
+            console.error('Created blob is empty');
+            return;
+          }
+          const url = URL.createObjectURL(audioBlob);
+          console.log('Created URL:', url);
+          setAudioUrl(url);
         
         if (audioElement.current) {
           audioElement.current.src = url;
