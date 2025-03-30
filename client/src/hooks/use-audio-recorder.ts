@@ -37,8 +37,11 @@ export function useAudioRecorder() {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
+        ? 'audio/webm;codecs=opus'
+        : 'audio/mp3';
       mediaRecorder.current = new MediaRecorder(stream, {
-        mimeType: 'audio/wav'
+        mimeType
       });
       audioChunks.current = [];
       setRecordingTime(0);
@@ -69,7 +72,11 @@ export function useAudioRecorder() {
 
     return new Promise<void>((resolve) => {
       mediaRecorder.current!.onstop = () => {
-        const audioBlob = new Blob(audioChunks.current, { type: 'audio/wav' });
+        if (!audioChunks.current.length) {
+          console.error('No audio data recorded');
+          return;
+        }
+        const audioBlob = new Blob(audioChunks.current, { type: mediaRecorder.current!.mimeType });
         const url = URL.createObjectURL(audioBlob);
         
         if (audioElement.current) {
