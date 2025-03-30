@@ -1,17 +1,7 @@
+
 import { useState, useRef, useEffect } from 'react';
 
-export function useAudioRecorder(): {
-  isRecording: boolean;
-  recordingTime: number;
-  audioUrl: string | null;
-  startRecording: () => void;
-  stopRecording: () => void;
-  resetRecording: () => void;
-  playRecording: () => void;
-  isPlaying: boolean;
-  playbackProgress: number;
-  playbackDuration: number;
-} {
+export function useAudioRecorder() {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -36,52 +26,52 @@ export function useAudioRecorder(): {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder.current = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
-      });
-
+      mediaRecorder.current = new MediaRecorder(stream);
+      
       audioChunks.current = [];
       setRecordingTime(0);
-      setAudioUrl(null);
-
+      
       mediaRecorder.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunks.current.push(event.data);
         }
       };
 
-      mediaRecorder.current.onstop = () => {
-        const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm;codecs=opus' });
-        const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url);
-
-        if (audioElement.current) {
-          audioElement.current.src = url;
-          audioElement.current.load();
-        }
-
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      mediaRecorder.current.start();
+      mediaRecorder.current.start(1000);
       setIsRecording(true);
 
       recordingTimer.current = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
+        setRecordingTime((prev) => prev + 1);
       }, 1000);
-    } catch (error) {
-      console.error('Error starting recording:', error);
+    } catch (err) {
+      console.error('Failed to start recording:', err);
     }
   };
 
   const stopRecording = () => {
-    if (mediaRecorder.current && isRecording) {
-      mediaRecorder.current.stop();
+    if (!mediaRecorder.current) return;
+
+    return new Promise<void>((resolve) => {
+      mediaRecorder.current!.onstop = () => {
+        const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm' });
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrl(url);
+        
+        if (audioElement.current) {
+          audioElement.current.src = url;
+        }
+
+        // Clean up
+        if (recordingTimer.current) {
+          clearInterval(recordingTimer.current);
+        }
+        mediaRecorder.current?.stream.getTracks().forEach(track => track.stop());
+        resolve();
+      };
+
+      mediaRecorder.current!.stop();
       setIsRecording(false);
-      if (recordingTimer.current) {
-        clearInterval(recordingTimer.current);
-      }
-    }
+    });
   };
 
   const resetRecording = () => {
@@ -89,9 +79,9 @@ export function useAudioRecorder(): {
       URL.revokeObjectURL(audioUrl);
     }
     setAudioUrl(null);
-    setRecordingTime(0);
     setIsPlaying(false);
     setPlaybackProgress(0);
+    setPlaybackDuration(0);
     audioChunks.current = [];
   };
 
