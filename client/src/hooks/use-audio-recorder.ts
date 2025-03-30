@@ -67,13 +67,14 @@ export function useAudioRecorder() {
 
     return new Promise<void>((resolve) => {
       mediaRecorder.current!.onstop = () => {
-        const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm' });
+        const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm; codecs=opus' });
         const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url);
         
         if (audioElement.current) {
           audioElement.current.src = url;
           audioElement.current.load();
+          setAudioUrl(url);
+          setPlaybackDuration(audioElement.current.duration || 0);
         }
 
         mediaRecorder.current?.stream.getTracks().forEach(track => track.stop());
