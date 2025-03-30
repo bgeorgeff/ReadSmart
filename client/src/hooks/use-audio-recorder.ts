@@ -72,11 +72,10 @@ export function useAudioRecorder() {
 
     return new Promise<void>((resolve) => {
       mediaRecorder.current!.onstop = () => {
-        if (!audioChunks.current.length) {
-          console.error('No audio data recorded');
-          return;
-        }
-        const audioBlob = new Blob(audioChunks.current, { type: mediaRecorder.current!.mimeType });
+        console.log('Recording stopped, chunks:', audioChunks.current.length);
+        // Force the correct MIME type regardless of browser support
+        const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm' });
+        console.log('Blob size:', audioBlob.size);
         const url = URL.createObjectURL(audioBlob);
         
         if (audioElement.current) {
