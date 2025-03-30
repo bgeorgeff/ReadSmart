@@ -79,17 +79,17 @@ export function useAudioRecorder() {
           return;
         }
         
-        const audioBlob = new Blob(audioChunks.current);
+        const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm' });
         console.log('Created blob:', audioBlob.type, audioBlob.size, 'bytes');
         const url = URL.createObjectURL(audioBlob);
+        setAudioUrl(url); // Set URL immediately
         
         if (audioElement.current) {
           audioElement.current.src = url;
           audioElement.current.preload = 'metadata';
           
-          audioElement.current.oncanplaythrough = () => {
+          audioElement.current.onloadedmetadata = () => {
             setPlaybackDuration(audioElement.current?.duration || 0);
-            setAudioUrl(url);
           };
           
           audioElement.current.load();
