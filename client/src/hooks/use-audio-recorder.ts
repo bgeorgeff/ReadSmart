@@ -40,25 +40,20 @@ export function useAudioRecorder() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       console.log('Got media stream:', stream);
       
-      mediaRecorder.current = new MediaRecorder(stream);
-      console.log('Created MediaRecorder');
+      const options = { mimeType: 'audio/webm' };
+      mediaRecorder.current = new MediaRecorder(stream, options);
+      console.log('Created MediaRecorder with options:', options);
       
-      mediaRecorder.current.ondataavailable = (event) => {
-        console.log('Got data chunk:', event.data.size, 'bytes');
-        if (event.data.size > 0) {
-          audioChunks.current.push(event.data);
-        }
-      };
       audioChunks.current = [];
       setRecordingTime(0);
       
+      // Set up data handling before starting recording
       mediaRecorder.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunks.current.push(event.data);
-        }
+        console.log('Data available event:', event.data.type, event.data.size, 'bytes');
+        audioChunks.current.push(event.data);
       };
 
-      mediaRecorder.current.start(1000);
+      mediaRecorder.current.start(100);
       setIsRecording(true);
 
       recordingTimer.current = setInterval(() => {
