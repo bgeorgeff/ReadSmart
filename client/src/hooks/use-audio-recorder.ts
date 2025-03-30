@@ -36,13 +36,19 @@ export function useAudioRecorder() {
 
   const startRecording = async () => {
     try {
+      console.log('Starting recording process');
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
-        ? 'audio/webm;codecs=opus'
-        : 'audio/mp3';
-      mediaRecorder.current = new MediaRecorder(stream, {
-        mimeType
-      });
+      console.log('Got media stream:', stream);
+      
+      mediaRecorder.current = new MediaRecorder(stream);
+      console.log('Created MediaRecorder');
+      
+      mediaRecorder.current.ondataavailable = (event) => {
+        console.log('Got data chunk:', event.data.size, 'bytes');
+        if (event.data.size > 0) {
+          audioChunks.current.push(event.data);
+        }
+      };
       audioChunks.current = [];
       setRecordingTime(0);
       
@@ -73,9 +79,13 @@ export function useAudioRecorder() {
     return new Promise<void>((resolve) => {
       mediaRecorder.current!.onstop = () => {
         console.log('Recording stopped, chunks:', audioChunks.current.length);
-        // Force the correct MIME type regardless of browser support
-        const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm' });
-        console.log('Blob size:', audioBlob.size);
+        if (audioChunks.current.length === 0) {
+          console.error('No audio chunks recorded');
+          return;
+        }
+        
+        const audioBlob = new Blob(audioChunks.current);
+        console.log('Created blob:', audioBlob.type, audioBlob.size, 'bytes');
         const url = URL.createObjectURL(audioBlob);
         
         if (audioElement.current) {
