@@ -38,29 +38,31 @@ async function attemptApiCall(text: string, retries = 3): Promise<any> {
       const modelName = process.env.OPENAI_API_KEY ? "gpt-4" : "openai/gpt-4";
       console.log(`Using model: ${modelName}`);
       
-      const response = await openai.chat.completions.create({
+      const systemPrompt = "You are an educational AI assistant that specializes in simplifying text for different grade levels. " +
+        "Your task is to summarize the provided text at 12 different grade levels (1st through 12th grade) and include the original text as grade level 13. " +
+        "For each grade level, maintain the key concepts but adjust vocabulary, sentence length, and complexity to be appropriate for that grade level. " +
+        "For lower grades (1-3), use simple words, short sentences, and focus on concrete concepts. " +
+        "For middle grades (4-8), gradually introduce more complex vocabulary and sentence structures, while still maintaining clarity. " +
+        "For higher grades (9-12), include more abstract concepts, sophisticated vocabulary, and nuanced explanations. " +
+        "Ensure each summary is accurate, educational, and tailored appropriately for the cognitive and reading abilities of students at that grade level. " +
+        "Add the original text as grade level 13 without any modifications. " +
+        "Respond with a JSON object where the keys are grade level numbers (1-13) and the values are the corresponding summaries.";
+      
+      // Basic request parameters that work with all models
+      const requestParams: any = {
         model: modelName,
         messages: [
-          {
-            role: "system",
-            content: 
-              "You are an educational AI assistant that specializes in simplifying text for different grade levels. " +
-              "Your task is to summarize the provided text at 12 different grade levels (1st through 12th grade) and include the original text as grade level 13. " +
-              "For each grade level, maintain the key concepts but adjust vocabulary, sentence length, and complexity to be appropriate for that grade level. " +
-              "For lower grades (1-3), use simple words, short sentences, and focus on concrete concepts. " +
-              "For middle grades (4-8), gradually introduce more complex vocabulary and sentence structures, while still maintaining clarity. " +
-              "For higher grades (9-12), include more abstract concepts, sophisticated vocabulary, and nuanced explanations. " +
-              "Ensure each summary is accurate, educational, and tailored appropriately for the cognitive and reading abilities of students at that grade level. " +
-              "Add the original text as grade level 13 without any modifications. " +
-              "Respond with a JSON object where the keys are grade level numbers (1-13) and the values are the corresponding summaries."
-          },
-          {
-            role: "user",
-            content: text
-          }
-        ],
-        response_format: { type: "json_object" }
-      });
+          { role: "system", content: systemPrompt },
+          { role: "user", content: text }
+        ]
+      };
+      
+      // Only add the response_format for OpenAI's GPT-4 model which supports it
+      if (process.env.OPENAI_API_KEY && modelName === "gpt-4") {
+        requestParams.response_format = { type: "json_object" };
+      }
+      
+      const response = await openai.chat.completions.create(requestParams);
       
       if (!response) {
         throw new Error("Empty response from API");
@@ -106,7 +108,9 @@ export async function testApiConnection() {
     // Simple request to check API connection
     // Use the appropriate model name format depending on which API we're using
     const modelName = process.env.OPENAI_API_KEY ? "gpt-3.5-turbo" : "openai/gpt-3.5-turbo";
-    const response = await openai.chat.completions.create({
+    
+    // Basic request parameters that work with all models
+    const requestParams: any = {
       model: modelName,  // Using a simpler model for testing
       messages: [
         {
@@ -115,7 +119,9 @@ export async function testApiConnection() {
         }
       ],
       max_tokens: 10
-    });
+    };
+    
+    const response = await openai.chat.completions.create(requestParams);
     
     console.log("API test response:", response);
     return {
