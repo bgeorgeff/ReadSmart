@@ -40,6 +40,26 @@ async function attemptApiCall(text: string, retries = 3): Promise<any> {
   }
 }
 
+// Function to clean up duplicate words in generated text
+function cleanupDuplicateWords(text: string): string {
+  // First, handle hyphenated words that might appear twice
+  let cleaned = text.replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2");
+  
+  // Handle regular duplicate words, excluding common cases where duplication might be intentional
+  const skipWords = ['the', 'a', 'an', 'and', 'or', 'but', 'if', 'of', 'to', 'in', 'on', 'at'];
+  const regex = new RegExp(`\\b(\\w+)\\s+\\1\\b`, 'gi');
+  
+  cleaned = cleaned.replace(regex, (match, word) => {
+    // Check if the word is in our skip list (case insensitive)
+    if (skipWords.includes(word.toLowerCase())) {
+      return match; // Keep the duplicate for these common words
+    }
+    return word; // Replace with single occurrence for other words
+  });
+  
+  return cleaned;
+}
+
 export async function generateGradeLevelSummaries(text: string): Promise<Record<number, string>> {
   try {
     const response = await attemptApiCall(text);
@@ -50,7 +70,14 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       throw new Error("No content returned from OpenRouter");
     }
     const result = JSON.parse(content);
-    return result;
+    
+    // Clean up each summary to remove duplicate words
+    const cleanedResult: Record<number, string> = {};
+    for (const [level, summary] of Object.entries(result)) {
+      cleanedResult[Number(level)] = cleanupDuplicateWords(summary as string);
+    }
+    
+    return cleanedResult;
   } catch (error) {
     console.error("Error generating summaries:", error);
     throw new Error("Failed to generate summaries: " + (error as Error).message);
