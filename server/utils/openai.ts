@@ -104,8 +104,10 @@ function cleanupDuplicateWords(text: string): string {
 export async function testApiConnection() {
   try {
     // Simple request to check API connection
+    // Use the appropriate model name format depending on which API we're using
+    const modelName = process.env.OPENAI_API_KEY ? "gpt-3.5-turbo" : "openai/gpt-3.5-turbo";
     const response = await openai.chat.completions.create({
-      model: "openai/gpt-3.5-turbo",  // Using a simpler model for testing
+      model: modelName,  // Using a simpler model for testing
       messages: [
         {
           role: "user",
