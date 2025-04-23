@@ -147,6 +147,7 @@ export default function ProcessingSummary({
                 onChange={handleGradeLevelChange}
                 value={currentGradeLevel}
               >
+                <option value="0">Original Paste</option>
                 <option value="1">1st Grade (Age 6-7)</option>
                 <option value="2">2nd Grade (Age 7-8)</option>
                 <option value="3">3rd Grade (Age 8-9)</option>
