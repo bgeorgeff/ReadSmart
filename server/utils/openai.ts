@@ -10,7 +10,9 @@ const openai = new OpenAI({
 async function attemptApiCall(text: string, retries = 3): Promise<any> {
   for (let i = 0; i < retries; i++) {
     try {
-      return await openai.chat.completions.create({
+      console.log(`API attempt ${i + 1} of ${retries}`);
+      
+      const response = await openai.chat.completions.create({
         model: "openai/gpt-4",
         messages: [
           {
@@ -33,11 +35,23 @@ async function attemptApiCall(text: string, retries = 3): Promise<any> {
         ],
         response_format: { type: "json_object" }
       });
+      
+      if (!response) {
+        throw new Error("Empty response from API");
+      }
+      
+      return response;
     } catch (error) {
+      console.error(`API attempt ${i + 1} failed:`, error);
       if (i === retries - 1) throw error;
+      console.log(`Retrying in ${(i + 1) * 1000}ms...`);
       await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
     }
   }
+  
+  // This should never be reached due to the throw in the catch block above,
+  // but TypeScript may complain without an explicit return
+  throw new Error("All API attempts failed");
 }
 
 // Function to clean up duplicate words in generated text
@@ -62,22 +76,43 @@ function cleanupDuplicateWords(text: string): string {
 
 export async function generateGradeLevelSummaries(text: string): Promise<Record<number, string>> {
   try {
+    // Make sure we have text to process
+    if (!text || text.trim() === '') {
+      throw new Error("Empty text provided for summarization");
+    }
+    
     const response = await attemptApiCall(text);
-
-    const content = response.choices[0].message.content || '';
+    
+    // Add safety checks for response structure
+    if (!response || !response.choices || !response.choices.length) {
+      throw new Error("Invalid response structure from API");
+    }
+    
+    const firstChoice = response.choices[0];
+    if (!firstChoice.message) {
+      throw new Error("No message in API response");
+    }
+    
+    const content = firstChoice.message.content || '';
     // If content is empty, throw an error
     if (content === '') {
       throw new Error("No content returned from OpenRouter");
     }
-    const result = JSON.parse(content);
     
-    // Clean up each summary to remove duplicate words
-    const cleanedResult: Record<number, string> = {};
-    for (const [level, summary] of Object.entries(result)) {
-      cleanedResult[Number(level)] = cleanupDuplicateWords(summary as string);
+    try {
+      const result = JSON.parse(content);
+      
+      // Clean up each summary to remove duplicate words
+      const cleanedResult: Record<number, string> = {};
+      for (const [level, summary] of Object.entries(result)) {
+        cleanedResult[Number(level)] = cleanupDuplicateWords(summary as string);
+      }
+      
+      return cleanedResult;
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
+      throw new Error("Failed to parse API response: " + (parseError as Error).message);
     }
-    
-    return cleanedResult;
   } catch (error) {
     console.error("Error generating summaries:", error);
     throw new Error("Failed to generate summaries: " + (error as Error).message);
