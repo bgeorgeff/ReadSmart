@@ -57,10 +57,8 @@ async function attemptApiCall(text: string, retries = 3): Promise<any> {
         ]
       };
       
-      // Only add the response_format for OpenAI's GPT-4 model which supports it
-      if (process.env.OPENAI_API_KEY && modelName === "gpt-4") {
-        requestParams.response_format = { type: "json_object" };
-      }
+      // Remove the response_format completely since it's causing issues
+      // We'll just rely on the system prompt to ask for JSON
       
       const response = await openai.chat.completions.create(requestParams);
       
