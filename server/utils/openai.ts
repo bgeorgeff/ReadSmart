@@ -1,180 +1,79 @@
 import OpenAI from "openai";
 
-// Choose the right API configuration based on available keys
-let openai: OpenAI;
-
-if (process.env.OPENAI_API_KEY) {
-  console.log("Using OpenAI API directly");
-  // Using OpenAI API directly
-  openai = new OpenAI({ 
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-} else if (process.env.OPENROUTER_API_KEY) {
-  console.log("Using OpenRouter API as proxy");
-  // Using OpenRouter as a proxy to access OpenAI models
-  openai = new OpenAI({ 
-    apiKey: process.env.OPENROUTER_API_KEY,
-    baseURL: "https://openrouter.ai/api/v1",
-    defaultHeaders: {
-      "HTTP-Referer": "https://replit.com/",  // This is required by OpenRouter
-      "X-Title": "TextSimplifier App"  // Optional - helpful for identifying in OpenRouter logs
-    }
-  });
-} else {
-  console.error("No API keys found!");
-  // Create a dummy client that will throw a helpful error when used
-  openai = new OpenAI({ 
-    apiKey: "missing-api-key",
-  });
-}
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENROUTER_API_KEY ? "https://openrouter.ai/api/v1" : undefined,
+  defaultHeaders: process.env.OPENROUTER_API_KEY 
+    ? {
+        "HTTP-Referer": "https://replit.com/", // Required by OpenRouter
+        "X-Title": "TextSimplifier App"
+      } 
+    : {}
+});
 
 // Function to generate summaries for different grade levels
-async function attemptApiCall(text: string, retries = 3): Promise<any> {
-  for (let i = 0; i < retries; i++) {
-    try {
-      console.log(`API attempt ${i + 1} of ${retries}`);
-      
-      // Use the appropriate model name format depending on which API we're using
-      const modelName = process.env.OPENAI_API_KEY ? "gpt-4" : "openai/gpt-4";
-      console.log(`Using model: ${modelName}`);
-      
-      const systemPrompt = "You are an educational AI assistant that specializes in simplifying text for different grade levels. " +
-        "Your task is to summarize the provided text at 12 different grade levels (1st through 12th grade) and include the original text as grade level 13. " +
-        "For each grade level, maintain the key concepts but adjust vocabulary, sentence length, and complexity to be appropriate for that grade level. " +
-        "For lower grades (1-3), use simple words, short sentences, and focus on concrete concepts. " +
-        "For middle grades (4-8), gradually introduce more complex vocabulary and sentence structures, while still maintaining clarity. " +
-        "For higher grades (9-12), include more abstract concepts, sophisticated vocabulary, and nuanced explanations. " +
-        "Ensure each summary is accurate, educational, and tailored appropriately for the cognitive and reading abilities of students at that grade level. " +
-        "Add the original text as grade level 13 without any modifications. " +
-        "Respond with a JSON object where the keys are grade level numbers (1-13) and the values are the corresponding summaries.";
-      
-      // Basic request parameters that work with all models
-      const requestParams: any = {
-        model: modelName,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: text }
-        ]
-      };
-      
-      // Remove the response_format completely since it's causing issues
-      // We'll just rely on the system prompt to ask for JSON
-      
-      const response = await openai.chat.completions.create(requestParams);
-      
-      if (!response) {
-        throw new Error("Empty response from API");
-      }
-      
-      return response;
-    } catch (error) {
-      console.error(`API attempt ${i + 1} failed:`, error);
-      if (i === retries - 1) throw error;
-      console.log(`Retrying in ${(i + 1) * 1000}ms...`);
-      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
-    }
-  }
-  
-  // This should never be reached due to the throw in the catch block above,
-  // but TypeScript may complain without an explicit return
-  throw new Error("All API attempts failed");
-}
-
-// Function to clean up duplicate words in generated text
-function cleanupDuplicateWords(text: string): string {
-  // First, handle hyphenated words that might appear twice
-  let cleaned = text.replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2");
-  
-  // Handle regular duplicate words, excluding common cases where duplication might be intentional
-  const skipWords = ['the', 'a', 'an', 'and', 'or', 'but', 'if', 'of', 'to', 'in', 'on', 'at'];
-  const regex = new RegExp(`\\b(\\w+)\\s+\\1\\b`, 'gi');
-  
-  cleaned = cleaned.replace(regex, (match, word) => {
-    // Check if the word is in our skip list (case insensitive)
-    if (skipWords.includes(word.toLowerCase())) {
-      return match; // Keep the duplicate for these common words
-    }
-    return word; // Replace with single occurrence for other words
-  });
-  
-  return cleaned;
-}
-
-// Test function to verify API connectivity
-export async function testApiConnection() {
+export async function generateGradeLevelSummaries(text: string): Promise<Record<number, string>> {
   try {
-    // Simple request to check API connection
-    // Use the appropriate model name format depending on which API we're using
-    const modelName = process.env.OPENAI_API_KEY ? "gpt-3.5-turbo" : "openai/gpt-3.5-turbo";
-    
-    // Basic request parameters that work with all models
-    const requestParams: any = {
-      model: modelName,  // Using a simpler model for testing
+    // Define the system prompt for the model
+    const systemPrompt = `
+      You are an educational AI assistant that specializes in simplifying text for different grade levels.
+      Your task is to summarize the provided text at 12 different grade levels (1st through 12th grade).
+      For each grade level, maintain the key concepts but adjust vocabulary, sentence length, and complexity to be appropriate for that grade level.
+      For lower grades (1-3), use simple words, short sentences, and focus on concrete concepts.
+      For middle grades (4-8), gradually introduce more complex vocabulary and sentence structures, while still maintaining clarity.
+      For higher grades (9-12), include more abstract concepts, sophisticated vocabulary, and nuanced explanations.
+      Ensure each summary is accurate, educational, and tailored appropriately for the cognitive and reading abilities of students at that grade level.
+      Respond with a JSON object where the keys are grade level numbers (1-12) and the values are the corresponding summaries.
+    `;
+
+    // Define the model to use based on available API keys
+    const model = process.env.OPENROUTER_API_KEY ? "openai/gpt-4-turbo" : "gpt-4";
+
+    // Make the API request
+    const response = await openai.chat.completions.create({
+      model,
       messages: [
-        {
-          role: "user",
-          content: "Hello, please reply with the word 'Connected' to confirm API connectivity."
-        }
+        { role: "system", content: systemPrompt },
+        { role: "user", content: text }
       ],
-      max_tokens: 10
-    };
-    
-    const response = await openai.chat.completions.create(requestParams);
-    
-    console.log("API test response:", response);
-    return {
-      status: "success",
-      model: response.model,
-      content: response.choices?.[0]?.message?.content,
-      raw: response
-    };
+      temperature: 0.7,
+      max_tokens: 2500
+    });
+
+    // Get the generated content
+    const content = response.choices[0].message.content;
+    if (!content) {
+      throw new Error("Empty response from API");
+    }
+
+    // Parse the JSON response
+    const summaries = JSON.parse(content);
+    return summaries;
   } catch (error) {
-    console.error("API test error:", error);
+    console.error("Error generating summaries:", error);
     throw error;
   }
 }
 
-export async function generateGradeLevelSummaries(text: string): Promise<Record<number, string>> {
+// Function to test the API connection
+export async function testApiConnection() {
   try {
-    // Make sure we have text to process
-    if (!text || text.trim() === '') {
-      throw new Error("Empty text provided for summarization");
-    }
+    const response = await openai.chat.completions.create({
+      model: process.env.OPENROUTER_API_KEY ? "openai/gpt-3.5-turbo" : "gpt-3.5-turbo",
+      messages: [
+        { role: "user", content: "Hello, please reply with the word 'Connected' to confirm connectivity." }
+      ],
+      max_tokens: 10
+    });
     
-    const response = await attemptApiCall(text);
-    
-    // Add safety checks for response structure
-    if (!response || !response.choices || !response.choices.length) {
-      throw new Error("Invalid response structure from API");
-    }
-    
-    const firstChoice = response.choices[0];
-    if (!firstChoice.message) {
-      throw new Error("No message in API response");
-    }
-    
-    const content = firstChoice.message.content || '';
-    // If content is empty, throw an error
-    if (content === '') {
-      throw new Error("No content returned from OpenRouter");
-    }
-    
-    try {
-      const result = JSON.parse(content);
-      
-      // Clean up each summary to remove duplicate words
-      const cleanedResult: Record<number, string> = {};
-      for (const [level, summary] of Object.entries(result)) {
-        cleanedResult[Number(level)] = cleanupDuplicateWords(summary as string);
-      }
-      
-      return cleanedResult;
-    } catch (parseError) {
-      console.error("JSON parse error:", parseError);
-      throw new Error("Failed to parse API response: " + (parseError as Error).message);
-    }
+    return {
+      status: "success",
+      model: response.model,
+      content: response.choices[0].message.content
+    };
   } catch (error) {
-    console.error("Error generating summaries:", error);
-    throw new Error("Failed to generate summaries: " + (error as Error).message);
+    console.error("API test error:", error);
+    throw error;
   }
 }
