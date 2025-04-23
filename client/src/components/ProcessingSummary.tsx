@@ -182,24 +182,50 @@ export default function ProcessingSummary({
           </div>
           
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
-            {selectedSummary.split(/\s+/).map((word, index) => {
-              // Clean the word from punctuation for displaying
-              const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-              const punctuation = word.replace(cleanWord, "");
-              
-              return (
-                <span key={index}>
-                  <span 
-                    className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
-                    onClick={() => onWordClick(cleanWord)}
-                  >
-                    {cleanWord}
+            {selectedSummary && currentGradeLevel === 0 && inputText ? (
+              // If the user selected "Original Paste" (grade level 0), display the input text
+              inputText.split(/\s+/).map((word, index) => {
+                // Clean the word from punctuation for displaying
+                const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+                const punctuation = word.replace(cleanWord, "");
+                
+                return (
+                  <span key={index}>
+                    <span 
+                      className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                      onClick={() => onWordClick(cleanWord)}
+                    >
+                      {cleanWord}
+                    </span>
+                    {punctuation}
+                    {' '}
                   </span>
-                  {punctuation}
-                  {' '}
-                </span>
-              );
-            })}
+                );
+              })
+            ) : selectedSummary ? (
+              // Otherwise, display the selected summary
+              selectedSummary.split(/\s+/).map((word, index) => {
+                // Clean the word from punctuation for displaying
+                const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+                const punctuation = word.replace(cleanWord, "");
+                
+                return (
+                  <span key={index}>
+                    <span 
+                      className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                      onClick={() => onWordClick(cleanWord)}
+                    >
+                      {cleanWord}
+                    </span>
+                    {punctuation}
+                    {' '}
+                  </span>
+                );
+              })
+            ) : (
+              // Fallback if no summary is available
+              <p>No summary available for this grade level.</p>
+            )}
           </div>
           
           <div className="mt-4 flex justify-end">

@@ -21,14 +21,25 @@ export default function Home() {
   const handleProcessingComplete = (newSummaryId: number, newSummaries: Summaries) => {
     setSummaryId(newSummaryId);
     setSummaries(newSummaries);
-    setSelectedSummary(newSummaries[currentGradeLevel]);
+    
+    // If current grade level is 0, show original text
+    if (currentGradeLevel === 0) {
+      setSelectedSummary(inputText);
+    } else {
+      setSelectedSummary(newSummaries[currentGradeLevel]);
+    }
+    
     setAppStep(AppStep.SUMMARY);
   };
   
   // Function to handle grade level change
   const handleGradeLevelChange = (gradeLevel: GradeLevel) => {
     setCurrentGradeLevel(gradeLevel);
-    if (summaries) {
+    // If grade level is 0, show the original text
+    if (gradeLevel === 0) {
+      setSelectedSummary(inputText);
+    } else if (summaries) {
+      // Otherwise show the appropriate summary
       setSelectedSummary(summaries[gradeLevel]);
     }
   };
