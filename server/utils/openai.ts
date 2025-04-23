@@ -1,10 +1,32 @@
 import OpenAI from "openai";
 
-// Using OpenRouter as a proxy to access OpenAI models
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
-  baseURL: "https://openrouter.ai/api/v1"
-});
+// Choose the right API configuration based on available keys
+let openai: OpenAI;
+
+if (process.env.OPENAI_API_KEY) {
+  console.log("Using OpenAI API directly");
+  // Using OpenAI API directly
+  openai = new OpenAI({ 
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+} else if (process.env.OPENROUTER_API_KEY) {
+  console.log("Using OpenRouter API as proxy");
+  // Using OpenRouter as a proxy to access OpenAI models
+  openai = new OpenAI({ 
+    apiKey: process.env.OPENROUTER_API_KEY,
+    baseURL: "https://openrouter.ai/api/v1",
+    defaultHeaders: {
+      "HTTP-Referer": "https://replit.com/",  // This is required by OpenRouter
+      "X-Title": "TextSimplifier App"  // Optional - helpful for identifying in OpenRouter logs
+    }
+  });
+} else {
+  console.error("No API keys found!");
+  // Create a dummy client that will throw a helpful error when used
+  openai = new OpenAI({ 
+    apiKey: "missing-api-key",
+  });
+}
 
 // Function to generate summaries for different grade levels
 async function attemptApiCall(text: string, retries = 3): Promise<any> {
@@ -12,8 +34,12 @@ async function attemptApiCall(text: string, retries = 3): Promise<any> {
     try {
       console.log(`API attempt ${i + 1} of ${retries}`);
       
+      // Use the appropriate model name format depending on which API we're using
+      const modelName = process.env.OPENAI_API_KEY ? "gpt-4" : "openai/gpt-4";
+      console.log(`Using model: ${modelName}`);
+      
       const response = await openai.chat.completions.create({
-        model: "openai/gpt-4",
+        model: modelName,
         messages: [
           {
             role: "system",
@@ -72,6 +98,34 @@ function cleanupDuplicateWords(text: string): string {
   });
   
   return cleaned;
+}
+
+// Test function to verify API connectivity
+export async function testApiConnection() {
+  try {
+    // Simple request to check API connection
+    const response = await openai.chat.completions.create({
+      model: "openai/gpt-3.5-turbo",  // Using a simpler model for testing
+      messages: [
+        {
+          role: "user",
+          content: "Hello, please reply with the word 'Connected' to confirm API connectivity."
+        }
+      ],
+      max_tokens: 10
+    });
+    
+    console.log("API test response:", response);
+    return {
+      status: "success",
+      model: response.model,
+      content: response.choices?.[0]?.message?.content,
+      raw: response
+    };
+  } catch (error) {
+    console.error("API test error:", error);
+    throw error;
+  }
 }
 
 export async function generateGradeLevelSummaries(text: string): Promise<Record<number, string>> {

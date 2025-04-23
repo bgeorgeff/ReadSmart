@@ -1,12 +1,29 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateGradeLevelSummaries } from "./utils/openai";
+import { generateGradeLevelSummaries, testApiConnection } from "./utils/openai";
 import { breakWordIntoSyllables } from "./utils/syllable";
 import { processTextSchema, gradeLevelSummarySchema, wordDetailSchema, saveRecordingSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Debug route to test API connectivity
+  app.get("/api/debug/test-api", async (req, res) => {
+    try {
+      const result = await testApiConnection();
+      res.json({
+        success: true,
+        message: "API connection test successful",
+        result
+      });
+    } catch (error) {
+      console.error("API connection test failed:", error);
+      res.status(500).json({
+        success: false,
+        message: "API connection test failed: " + (error instanceof Error ? error.message : String(error))
+      });
+    }
+  });
   // process text and generate summaries for all grade levels
   app.post("/api/process-text", async (req, res) => {
     try {
