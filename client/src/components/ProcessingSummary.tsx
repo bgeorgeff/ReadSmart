@@ -184,43 +184,85 @@ export default function ProcessingSummary({
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary && currentGradeLevel === 0 && inputText ? (
               // If the user selected "Original Paste" (grade level 0), display the input text
-              inputText.split(/\s+/).map((word, index) => {
-                // Clean the word from punctuation for displaying
-                const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                const punctuation = word.replace(cleanWord, "");
-                
-                return (
-                  <span key={index}>
-                    <span 
-                      className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
-                      onClick={() => onWordClick(cleanWord)}
-                    >
-                      {cleanWord}
+              // First pre-process the text to handle hyphenated words
+              inputText.replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2").split(/\s+/).map((word, index) => {
+                // Handle hyphenated words differently
+                if (word.includes('-')) {
+                  // For hyphenated words, keep the hyphen as part of the word
+                  const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
+                  const punctuation = word.replace(cleanWord, "");
+                  
+                  return (
+                    <span key={index}>
+                      <span 
+                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                        onClick={() => onWordClick(cleanWord)}
+                      >
+                        {cleanWord}
+                      </span>
+                      {punctuation}
+                      {' '}
                     </span>
-                    {punctuation}
-                    {' '}
-                  </span>
-                );
+                  );
+                } else {
+                  // Regular word processing
+                  const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+                  const punctuation = word.replace(cleanWord, "");
+                  
+                  return (
+                    <span key={index}>
+                      <span 
+                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                        onClick={() => onWordClick(cleanWord)}
+                      >
+                        {cleanWord}
+                      </span>
+                      {punctuation}
+                      {' '}
+                    </span>
+                  );
+                }
               })
             ) : selectedSummary ? (
               // Otherwise, display the selected summary
-              selectedSummary.split(/\s+/).map((word, index) => {
-                // Clean the word from punctuation for displaying
-                const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                const punctuation = word.replace(cleanWord, "");
-                
-                return (
-                  <span key={index}>
-                    <span 
-                      className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
-                      onClick={() => onWordClick(cleanWord)}
-                    >
-                      {cleanWord}
+              // Pre-process the summary text to handle hyphenated words
+              selectedSummary.replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2").split(/\s+/).map((word, index) => {
+                // Handle hyphenated words differently
+                if (word.includes('-')) {
+                  // For hyphenated words, keep the hyphen as part of the word
+                  const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
+                  const punctuation = word.replace(cleanWord, "");
+                  
+                  return (
+                    <span key={index}>
+                      <span 
+                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                        onClick={() => onWordClick(cleanWord)}
+                      >
+                        {cleanWord}
+                      </span>
+                      {punctuation}
+                      {' '}
                     </span>
-                    {punctuation}
-                    {' '}
-                  </span>
-                );
+                  );
+                } else {
+                  // Regular word processing
+                  const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+                  const punctuation = word.replace(cleanWord, "");
+                  
+                  return (
+                    <span key={index}>
+                      <span 
+                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                        onClick={() => onWordClick(cleanWord)}
+                      >
+                        {cleanWord}
+                      </span>
+                      {punctuation}
+                      {' '}
+                    </span>
+                  );
+                }
               })
             ) : (
               // Fallback if no summary is available

@@ -113,24 +113,47 @@ export default function ReadingTools({
         <div>
           <div className="bg-gray-100 p-4 rounded-lg mb-4 max-h-72 overflow-y-auto">
             <p className="font-['Merriweather'] text-gray-800 leading-relaxed">
-              {selectedSummary.split(/\s+/).map((word, index) => {
-                // Clean the word from punctuation for displaying
-                const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                const punctuation = word.replace(cleanWord, "");
-                
-                return (
-                  <span key={index}>
-                    <span 
-                      className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
-                      onClick={() => onWordClick(cleanWord)}
-                    >
-                      {cleanWord}
-                    </span>
-                    {punctuation}
-                    {' '}
-                  </span>
-                );
-              })}
+              {selectedSummary && selectedSummary
+                .replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2")
+                .split(/\s+/)
+                .map((word, index) => {
+                  // Handle hyphenated words differently
+                  if (word.includes('-')) {
+                    // For hyphenated words, keep the hyphen as part of the word
+                    const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
+                    const punctuation = word.replace(cleanWord, "");
+                    
+                    return (
+                      <span key={index}>
+                        <span 
+                          className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                          onClick={() => onWordClick(cleanWord)}
+                        >
+                          {cleanWord}
+                        </span>
+                        {punctuation}
+                        {' '}
+                      </span>
+                    );
+                  } else {
+                    // Regular word processing
+                    const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+                    const punctuation = word.replace(cleanWord, "");
+                    
+                    return (
+                      <span key={index}>
+                        <span 
+                          className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                          onClick={() => onWordClick(cleanWord)}
+                        >
+                          {cleanWord}
+                        </span>
+                        {punctuation}
+                        {' '}
+                      </span>
+                    );
+                  }
+                })}
             </p>
           </div>
           
