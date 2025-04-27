@@ -4,7 +4,7 @@ import ProcessSteps from '@/components/ProcessSteps';
 import TextInput from '@/components/TextInput';
 import ProcessingSummary from '@/components/ProcessingSummary';
 import ReadingTools from '@/components/ReadingTools';
-import WordDetail from '@/components/WordDetail';
+
 import { AppStep, GradeLevel, Summaries } from '@/types';
 
 export default function Home() {
@@ -104,15 +104,8 @@ export default function Home() {
           isVisible={appStep === AppStep.READING}
           summaryId={summaryId}
           selectedSummary={selectedSummary}
-          onWordClick={handleWordClick}
+          onWordClick={(word) => speak(word)}
           onBackToSummary={handleBackToSummary}
-        />
-        
-        {/* Word Detail Modal */}
-        <WordDetail 
-          isOpen={isWordDetailOpen}
-          word={selectedWord}
-          onClose={handleCloseWordDetail}
         />
       </main>
     </div>
