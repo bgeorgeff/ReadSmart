@@ -4,7 +4,7 @@ import ProcessSteps from '@/components/ProcessSteps';
 import TextInput from '@/components/TextInput';
 import ProcessingSummary from '@/components/ProcessingSummary';
 import ReadingTools from '@/components/ReadingTools';
-import WordDetail from '@/components/WordDetail';
+import SimpleWordModal from '@/components/SimpleWordModal';
 
 import { AppStep, GradeLevel, Summaries } from '@/types';
 
@@ -110,7 +110,7 @@ export default function Home() {
         />
         
         {/* Word Detail Modal */}
-        <WordDetail 
+        <SimpleWordModal 
           isOpen={isWordDetailOpen}
           word={selectedWord}
           onClose={handleCloseWordDetail}
