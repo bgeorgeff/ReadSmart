@@ -67,21 +67,61 @@ export default function ProcessingSummary({
     }
   }, [isProcessing, mutate, summaryId]);
   
-  // Animation for the progress bar
+  // Animation for the progress bar with more realistic pacing
   useEffect(() => {
     if (isPending) {
-      const interval = setInterval(() => {
-        setProgressWidth((prev) => {
-          // Only go up to 90% to give a sense of waiting for the API
-          if (prev >= 90) {
-            clearInterval(interval);
-            return 90;
-          }
-          return prev + 5;
-        });
-      }, 200);
+      // Reset progress when starting
+      setProgressWidth(0);
       
-      return () => clearInterval(interval);
+      // Create a more realistic progress simulation with slower increments as we approach completion
+      const simulateProgress = () => {
+        // Fast initial progress (0-30%)
+        const fastProgress = setInterval(() => {
+          setProgressWidth(prev => {
+            if (prev >= 30) {
+              clearInterval(fastProgress);
+              return 30;
+            }
+            return prev + 2;
+          });
+        }, 100);
+        
+        // Medium speed progress (30-60%)
+        setTimeout(() => {
+          const mediumProgress = setInterval(() => {
+            setProgressWidth(prev => {
+              if (prev >= 60) {
+                clearInterval(mediumProgress);
+                return 60;
+              }
+              return prev + 1;
+            });
+          }, 150);
+        }, 2000);
+        
+        // Slow progress (60-85%)
+        setTimeout(() => {
+          const slowProgress = setInterval(() => {
+            setProgressWidth(prev => {
+              if (prev >= 85) {
+                clearInterval(slowProgress);
+                return 85;
+              }
+              return prev + 0.5;
+            });
+          }, 200);
+        }, 5000);
+      };
+      
+      simulateProgress();
+      
+      return () => {
+        // Clear any lingering intervals on cleanup
+        const highId = window.setTimeout(() => {}, 0);
+        for (let i = highId; i >= 0; i--) {
+          if (i !== highId) window.clearInterval(i);
+        }
+      };
     } else if (!isPending && isProcessing) {
       // Complete the progress bar when done
       setProgressWidth(100);
@@ -170,7 +210,7 @@ export default function ProcessingSummary({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center">
               <span className="material-icons text-[#4285F4] mr-2">info</span>
-              <p className="text-sm text-gray-500 font-['Roboto']">Click any word for pronunciation & syllables</p>
+              <p className="text-sm text-gray-500 font-['Roboto']">Click any word for definition & pronunciation</p>
             </div>
             <button 
               className="text-[#4285F4] hover:bg-[#4285F4]/10 p-1 rounded flex items-center text-sm"
