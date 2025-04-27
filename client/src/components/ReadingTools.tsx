@@ -112,24 +112,7 @@ export default function ReadingTools({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <div className="bg-gray-100 p-4 rounded-lg mb-4 max-h-72 overflow-y-auto">
-            <p className="font-['Merriweather'] text-gray-800 leading-relaxed whitespace-pre-wrap">
-              {selectedSummary.split(/\s+/).map((word, index) => {
-                const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                const punctuation = word.replace(cleanWord, "");
-                
-                return (
-                  <span key={index}>
-                    <span 
-                      className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
-                      onClick={() => onWordClick(cleanWord)}
-                    >
-                      {cleanWord}
-                    </span>
-                    {punctuation}
-                    {' '}
-                  </span>
-                );
-              })}
+            <p className="font-['Merriweather'] text-gray-800 leading-relaxed">
               {selectedSummary && selectedSummary
                 .replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2")
                 .split(/\s+/)
