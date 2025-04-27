@@ -4,12 +4,10 @@ import ProcessSteps from '@/components/ProcessSteps';
 import TextInput from '@/components/TextInput';
 import ProcessingSummary from '@/components/ProcessingSummary';
 import ReadingTools from '@/components/ReadingTools';
-import { useTextToSpeech } from '@/hooks/use-text-to-speech';
 
 import { AppStep, GradeLevel, Summaries } from '@/types';
 
 export default function Home() {
-  const { speak } = useTextToSpeech();
   const [appStep, setAppStep] = useState<AppStep>(AppStep.TEXT_INPUT);
   const [inputText, setInputText] = useState('');
   const [summaryId, setSummaryId] = useState<number | null>(null);
