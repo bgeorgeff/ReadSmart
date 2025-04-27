@@ -224,11 +224,22 @@ export default function ProcessingSummary({
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary && currentGradeLevel === 0 && inputText ? (
               // If the user selected "Original Paste" (grade level 0), display the input text
-              // Explicitly check for the pattern "On Free Will"Will,"
-              (inputText.includes('"On Free Will"Will,') ? 
-                inputText.replace('"On Free Will"Will,', '"On Free Will",') :
-                // Otherwise use the original text
-                inputText)
+              // Fix issue with duplicated words after quotation marks with commas
+              inputText
+                // First, handle the specific case we know about
+                .replace(/"On Free Will"Will,/g, '"On Free Will",')
+                // Then handle more general cases
+                .replace(/"([^",]+),([^"]*)"(\w+)/g, (match, quote1, quote2, duplicate) => {
+                // Check if the duplicate word appears at the end of the quoted text
+                const words = (quote1 + quote2).split(/\s+/);
+                const lastWord = words[words.length - 1];
+                
+                // If the word after the closing quote duplicates the last word in the quote
+                if (lastWord === duplicate || lastWord.toLowerCase() === duplicate.toLowerCase()) {
+                  return `"${quote1},${quote2}"`;
+                }
+                return match;
+              })
                 .split(/\s+/).map((word, index) => {
                 // Handle hyphenated words differently
                 if (word.includes('-')) {
@@ -269,11 +280,22 @@ export default function ProcessingSummary({
               })
             ) : selectedSummary ? (
               // Otherwise, display the selected summary
-              // Pre-process the summary text to handle duplication issues
-              (selectedSummary.includes('"On Free Will"Will,') ? 
-                selectedSummary.replace('"On Free Will"Will,', '"On Free Will",') :
-                // Otherwise use the original summary
-                selectedSummary)
+              // Fix issue with duplicated words after quotation marks with commas
+              selectedSummary
+                // First, handle the specific case we know about
+                .replace(/"On Free Will"Will,/g, '"On Free Will",')
+                // Then handle more general cases
+                .replace(/"([^",]+),([^"]*)"(\w+)/g, (match, quote1, quote2, duplicate) => {
+                // Check if the duplicate word appears at the end of the quoted text
+                const words = (quote1 + quote2).split(/\s+/);
+                const lastWord = words[words.length - 1];
+                
+                // If the word after the closing quote duplicates the last word in the quote
+                if (lastWord === duplicate || lastWord.toLowerCase() === duplicate.toLowerCase()) {
+                  return `"${quote1},${quote2}"`;
+                }
+                return match;
+              })
                 .split(/\s+/).map((word, index) => {
                 // Handle hyphenated words differently
                 if (word.includes('-')) {
