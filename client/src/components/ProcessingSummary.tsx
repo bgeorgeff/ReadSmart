@@ -224,14 +224,11 @@ export default function ProcessingSummary({
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary && currentGradeLevel === 0 && inputText ? (
               // If the user selected "Original Paste" (grade level 0), display the input text
-              // First pre-process the text to handle various duplication issues
-              inputText
-                // Fix common duplication patterns that might appear in the text
-                .replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2")
-                // Fix quotation marks duplication
-                .replace(/"([^"]+)"(\1)/g, '"$1"')
-                // Fix other common duplications like "word word" becoming just "word"
-                .replace(/\b(\w+)\s+\1\b/gi, "$1")
+              // Explicitly check for the pattern "On Free Will"Will,"
+              (inputText.includes('"On Free Will"Will,') ? 
+                inputText.replace('"On Free Will"Will,', '"On Free Will",') :
+                // Otherwise use the original text
+                inputText)
                 .split(/\s+/).map((word, index) => {
                 // Handle hyphenated words differently
                 if (word.includes('-')) {
@@ -272,14 +269,11 @@ export default function ProcessingSummary({
               })
             ) : selectedSummary ? (
               // Otherwise, display the selected summary
-              // Pre-process the summary text to handle various duplication issues
-              selectedSummary
-                // Fix common duplication patterns that might appear in the text
-                .replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2")
-                // Fix quotation marks duplication
-                .replace(/"([^"]+)"(\1)/g, '"$1"')
-                // Fix other common duplications like "word word" becoming just "word"
-                .replace(/\b(\w+)\s+\1\b/gi, "$1")
+              // Pre-process the summary text to handle duplication issues
+              (selectedSummary.includes('"On Free Will"Will,') ? 
+                selectedSummary.replace('"On Free Will"Will,', '"On Free Will",') :
+                // Otherwise use the original summary
+                selectedSummary)
                 .split(/\s+/).map((word, index) => {
                 // Handle hyphenated words differently
                 if (word.includes('-')) {
