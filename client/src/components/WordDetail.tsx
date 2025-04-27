@@ -74,10 +74,14 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
         <div className="bg-[#4285F4] text-white px-6 py-4 flex items-center justify-between">
           <h3 className="font-['Google_Sans'] text-xl">Word Details</h3>
           <button 
-            className="text-white/80 hover:text-white"
+            className="text-white/80 hover:text-white p-1"
             onClick={onClose}
+            aria-label="Close"
           >
-            <span className="material-icons">close</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
         
@@ -107,8 +111,13 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
                   <button 
                     className="text-[#4285F4] hover:bg-[#4285F4]/10 p-1 rounded-full"
                     onClick={handlePronounce}
+                    aria-label="Pronounce Word"
                   >
-                    <span className="material-icons text-sm">volume_up</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    </svg>
                   </button>
                 </div>
               </div>
@@ -120,10 +129,14 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
                     <p className="text-gray-800">{data.definition}</p>
                   </div>
                   <button 
-                    className="text-[#4285F4] text-xs flex items-center hover:underline"
+                    className="text-[#4285F4] text-xs flex items-center hover:underline mt-2"
                     onClick={() => speak(data.definition)}
+                    aria-label="Listen to definition"
                   >
-                    <span className="material-icons text-sm mr-1">volume_up</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
                     Listen
                   </button>
                 </div>
@@ -134,10 +147,14 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
                     <p className="text-gray-800">{data.exampleSentence}</p>
                   </div>
                   <button 
-                    className="text-[#34A853] text-xs flex items-center hover:underline"
+                    className="text-[#34A853] text-xs flex items-center hover:underline mt-2"
                     onClick={() => speak(data.exampleSentence)}
+                    aria-label="Listen to example"
                   >
-                    <span className="material-icons text-sm mr-1">volume_up</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
                     Listen
                   </button>
                 </div>
@@ -155,11 +172,15 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
         </div>
         
         {/* Footer */}
-        <div className="bg-gray-50 px-6 py-3 flex justify-end">
+        <div className="bg-gray-50 px-6 py-3 flex justify-center">
           <button 
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-['Google_Sans']"
+            className="bg-[#4285F4] hover:bg-[#4285F4]/90 text-white py-2 px-8 rounded-lg font-['Google_Sans'] text-center flex items-center"
             onClick={onClose}
           >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
             Close
           </button>
         </div>
