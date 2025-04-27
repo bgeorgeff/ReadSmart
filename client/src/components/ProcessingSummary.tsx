@@ -224,8 +224,15 @@ export default function ProcessingSummary({
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary && currentGradeLevel === 0 && inputText ? (
               // If the user selected "Original Paste" (grade level 0), display the input text
-              // First pre-process the text to handle hyphenated words
-              inputText.replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2").split(/\s+/).map((word, index) => {
+              // First pre-process the text to handle various duplication issues
+              inputText
+                // Fix common duplication patterns that might appear in the text
+                .replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2")
+                // Fix quotation marks duplication
+                .replace(/"([^"]+)"(\1)/g, '"$1"')
+                // Fix other common duplications like "word word" becoming just "word"
+                .replace(/\b(\w+)\s+\1\b/gi, "$1")
+                .split(/\s+/).map((word, index) => {
                 // Handle hyphenated words differently
                 if (word.includes('-')) {
                   // For hyphenated words, keep the hyphen as part of the word
@@ -265,8 +272,15 @@ export default function ProcessingSummary({
               })
             ) : selectedSummary ? (
               // Otherwise, display the selected summary
-              // Pre-process the summary text to handle hyphenated words
-              selectedSummary.replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2").split(/\s+/).map((word, index) => {
+              // Pre-process the summary text to handle various duplication issues
+              selectedSummary
+                // Fix common duplication patterns that might appear in the text
+                .replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2")
+                // Fix quotation marks duplication
+                .replace(/"([^"]+)"(\1)/g, '"$1"')
+                // Fix other common duplications like "word word" becoming just "word"
+                .replace(/\b(\w+)\s+\1\b/gi, "$1")
+                .split(/\s+/).map((word, index) => {
                 // Handle hyphenated words differently
                 if (word.includes('-')) {
                   // For hyphenated words, keep the hyphen as part of the word
