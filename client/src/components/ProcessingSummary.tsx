@@ -224,12 +224,8 @@ export default function ProcessingSummary({
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary && currentGradeLevel === 0 && inputText ? (
               // If the user selected "Original Paste" (grade level 0), display the input text
-              // Direct fix for each known duplication pattern based on the screenshot
+              // Do not modify the original text in any way
               inputText
-                .replace(/"([^"]*)"([^", ]*),/g, '"$1",')  // Fix "On Free Will"Will,
-                .replace(/"([^"]*)"([^", ]*)[^,.]/g, '"$1" ')  // Fix other cases without comma
-                .replace(/"([^"]*)"\1/g, '"$1"')  // Fix cases where the entire content is duplicated
-                .replace(/"([^"]*)"([^", ]*),/g, '"$1",')  // Second pass for any missed patterns
                 .split(/\s+/).map((word, index) => {
                 // Handle hyphenated words differently
                 if (word.includes('-')) {
@@ -270,12 +266,8 @@ export default function ProcessingSummary({
               })
             ) : selectedSummary ? (
               // Otherwise, display the selected summary
-              // Direct fix for each known duplication pattern based on the screenshot
+              // Do not modify the summary
               selectedSummary
-                .replace(/"([^"]*)"([^", ]*),/g, '"$1",')  // Fix "On Free Will"Will,
-                .replace(/"([^"]*)"([^", ]*)[^,.]/g, '"$1" ')  // Fix other cases without comma
-                .replace(/"([^"]*)"\1/g, '"$1"')  // Fix cases where the entire content is duplicated
-                .replace(/"([^"]*)"([^", ]*),/g, '"$1",')  // Second pass for any missed patterns
                 .split(/\s+/).map((word, index) => {
                 // Handle hyphenated words differently
                 if (word.includes('-')) {
