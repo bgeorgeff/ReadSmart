@@ -53,30 +53,22 @@ export default function SimpleWordModal({ isOpen, word, onClose }: SimpleWordMod
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/50" 
-        onClick={onClose}
-      ></div>
-      
+    <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
       {/* Modal */}
-      <div className="bg-white rounded-xl shadow-lg w-11/12 max-w-md relative z-10">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-          aria-label="Close"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-        
+      <div className="bg-white rounded-lg shadow-xl w-11/12 max-w-sm relative z-10" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="p-6 border-b">
-          <h3 className="text-xl font-semibold text-gray-900">Word Details</h3>
+        <div className="bg-[#4285F4] text-white px-6 py-4 flex items-center justify-between">
+          <h3 className="text-xl font-semibold">Word Details</h3>
+          <button
+            onClick={onClose}
+            className="text-white/80 hover:text-white"
+            aria-label="Close"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
         
         {/* Content */}
@@ -113,40 +105,20 @@ export default function SimpleWordModal({ isOpen, word, onClose }: SimpleWordMod
                 </button>
               </div>
               
-              <div className="space-y-6">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 uppercase mb-2">Definition</h4>
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <p className="text-gray-800">{data.definition}</p>
-                  </div>
-                  <button
-                    onClick={() => speak(data.definition)}
-                    className="mt-2 text-sm text-blue-500 hover:text-blue-700 flex items-center"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
-                      <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    Listen
-                  </button>
+              <div className="mt-4">
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <p className="text-gray-800">{data.definition}</p>
                 </div>
-                
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 uppercase mb-2">Example</h4>
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <p className="text-gray-800">{data.exampleSentence}</p>
-                  </div>
-                  <button
-                    onClick={() => speak(data.exampleSentence)}
-                    className="mt-2 text-sm text-green-600 hover:text-green-800 flex items-center"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
-                      <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    Listen
-                  </button>
-                </div>
+                <button
+                  onClick={() => speak(data.definition)}
+                  className="mt-2 text-sm text-blue-500 hover:text-blue-700 flex items-center"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
+                    <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Listen to definition
+                </button>
               </div>
             </div>
           ) : (
@@ -157,10 +129,10 @@ export default function SimpleWordModal({ isOpen, word, onClose }: SimpleWordMod
         </div>
         
         {/* Footer */}
-        <div className="bg-gray-50 p-4 flex justify-center border-t rounded-b-xl">
+        <div className="bg-gray-50 p-4 flex justify-center border-t">
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium"
+            className="w-1/2 py-2 bg-[#4285F4] text-white rounded-md hover:bg-[#4285F4]/90 font-medium"
           >
             Close
           </button>
