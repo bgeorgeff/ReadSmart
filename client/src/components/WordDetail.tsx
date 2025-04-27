@@ -93,19 +93,36 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
               </div>
               
               <div>
-                <h4 className="font-['Google_Sans'] text-sm uppercase text-gray-500 mb-2">Syllables</h4>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {data.syllables.map((syllable, index) => (
-                    <div 
-                      key={index}
-                      className="bg-[#FBBC05]/10 text-[#FBBC05] px-3 py-1 rounded-full font-['Roboto'] font-medium"
-                    >
-                      {syllable}
-                    </div>
-                  ))}
+                <div className="mb-4">
+                  <h4 className="font-['Google_Sans'] text-sm uppercase text-gray-500 mb-2">Definition</h4>
+                  <div className="bg-[#4285F4]/5 p-3 rounded-lg mb-1">
+                    <p className="text-gray-800">{data.definition}</p>
+                  </div>
+                  <button 
+                    className="text-[#4285F4] text-xs flex items-center hover:underline"
+                    onClick={() => speak(data.definition)}
+                  >
+                    <span className="material-icons text-sm mr-1">volume_up</span>
+                    Listen
+                  </button>
                 </div>
-                <p className="text-sm text-center text-gray-500 mt-2">
-                  Click the sound icon to hear pronunciation
+                
+                <div className="mb-4">
+                  <h4 className="font-['Google_Sans'] text-sm uppercase text-gray-500 mb-2">Example</h4>
+                  <div className="bg-[#34A853]/5 p-3 rounded-lg mb-1">
+                    <p className="text-gray-800">{data.exampleSentence}</p>
+                  </div>
+                  <button 
+                    className="text-[#34A853] text-xs flex items-center hover:underline"
+                    onClick={() => speak(data.exampleSentence)}
+                  >
+                    <span className="material-icons text-sm mr-1">volume_up</span>
+                    Listen
+                  </button>
+                </div>
+                
+                <p className="text-sm text-center text-gray-500 mt-4">
+                  Click any listen button to hear the word, definition, or example
                 </p>
               </div>
             </div>

@@ -5,6 +5,7 @@ import { generateGradeLevelSummaries, testApiConnection } from "./utils/openai";
 import { breakWordIntoSyllables } from "./utils/syllable";
 import { processTextSchema, gradeLevelSummarySchema, wordDetailSchema, saveRecordingSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
+import OpenAI from "openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Debug route to test API connectivity
@@ -98,19 +99,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Get word syllables
+  // Get word details
   app.get("/api/word/:word", async (req, res) => {
     try {
       const { word } = wordDetailSchema.parse({ word: req.params.word });
       
-      // Break the word into syllables
-      const syllables = breakWordIntoSyllables(word);
+      // Generate word definition and example sentence
+      // In a production environment, this would call a dictionary API or language model
+      
+      let definition = "";
+      let exampleSentence = "";
+      
+      try {
+        // Use OpenAI to generate definition and example sentence
+        const openai = new OpenAI({
+          apiKey: process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY
+        });
+        
+        const prompt = `Please provide a short definition and example sentence for the word "${word}". 
+                        Format the response as a JSON object with two fields: 
+                        "definition" (a brief, clear definition appropriate for students) and 
+                        "exampleSentence" (a simple, clear sentence using the word correctly).`;
+        
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [{ role: "user", content: prompt }],
+          response_format: { type: "json_object" }
+        });
+        
+        const result = JSON.parse(response.choices[0].message.content);
+        definition = result.definition;
+        exampleSentence = result.exampleSentence;
+      } catch (apiError) {
+        console.error("API error:", apiError);
+        // Fallback definitions if API call fails
+        definition = `Definition for the word "${word}"`;
+        exampleSentence = `This is an example sentence using the word "${word}".`;
+      }
       
       res.json({
         success: true,
         word,
-        syllables,
-        pronunciation: word // In a production env, we'd use a proper pronunciation API
+        pronunciation: word, // In a production env, we'd use a proper pronunciation API
+        definition,
+        exampleSentence
       });
     } catch (error) {
       if (error.name === "ZodError") {

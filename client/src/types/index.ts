@@ -22,8 +22,9 @@ export interface GradeLevelSummaryResponse {
 export interface WordDetailResponse {
   success: boolean;
   word: string;
-  syllables: string[];
   pronunciation: string;
+  exampleSentence: string;
+  definition: string;
   message?: string;
 }
 
