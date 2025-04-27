@@ -30,12 +30,27 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
   
-  // Stop speaking when modal closes
+  // Stop speaking when modal closes and add keyboard support
   useEffect(() => {
     if (!isOpen) {
       stopSpeaking();
+      return;
     }
-  }, [isOpen, stopSpeaking]);
+    
+    // Add keyboard support for closing modal with Escape key
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, stopSpeaking, onClose]);
   
   if (!isOpen) return null;
   
@@ -47,8 +62,14 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
   };
   
   return (
-    <div className="fixed inset-0 bg-black/25 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
+    <div 
+      className="fixed inset-0 bg-black/25 backdrop-blur-sm flex items-center justify-center z-50"
+      onClick={onClose} // Close when clicking outside the modal
+    >
+      <div 
+        className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden"
+        onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
+      >
         {/* Header */}
         <div className="bg-[#4285F4] text-white px-6 py-4 flex items-center justify-between">
           <h3 className="font-['Google_Sans'] text-xl">Word Details</h3>
