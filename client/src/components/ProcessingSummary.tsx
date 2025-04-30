@@ -18,6 +18,8 @@ interface ProcessingSummaryProps {
   inputText: string;
 }
 
+
+
 export default function ProcessingSummary({
   isProcessing,
   isVisible,
@@ -223,20 +225,17 @@ export default function ProcessingSummary({
           
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary && currentGradeLevel === 0 && inputText ? (
-              // If the user selected "Original Paste" (grade level 0), display the input text
-              // Do not modify the original text in any way
-              inputText
-                .split(/\s+/).map((word, index) => {
-                // Handle hyphenated words differently
-                if (word.includes('-')) {
-                  // For hyphenated words, keep the hyphen as part of the word
+              // If the user selected "Original Paste" (grade level 0), display the input text as plain text
+              <div className="word-interaction-container">
+                {inputText.split(/\s+/).map((word, index) => {
+                  // Simple cleanup for interaction
                   const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
                   const punctuation = word.replace(cleanWord, "");
                   
                   return (
-                    <span key={index}>
+                    <span key={index} className="word-container">
                       <span 
-                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
                         onClick={() => onWordClick(cleanWord)}
                       >
                         {cleanWord}
@@ -245,40 +244,20 @@ export default function ProcessingSummary({
                       {' '}
                     </span>
                   );
-                } else {
-                  // Regular word processing
-                  const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                  const punctuation = word.replace(cleanWord, "");
-                  
-                  return (
-                    <span key={index}>
-                      <span 
-                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
-                        onClick={() => onWordClick(cleanWord)}
-                      >
-                        {cleanWord}
-                      </span>
-                      {punctuation}
-                      {' '}
-                    </span>
-                  );
-                }
-              })
+                })}
+              </div>
             ) : selectedSummary ? (
               // Otherwise, display the selected summary
-              // Do not modify the summary
-              selectedSummary
-                .split(/\s+/).map((word, index) => {
-                // Handle hyphenated words differently
-                if (word.includes('-')) {
-                  // For hyphenated words, keep the hyphen as part of the word
+              <div className="word-interaction-container">
+                {selectedSummary.split(/\s+/).map((word, index) => {
+                  // Simple cleanup for interaction
                   const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
                   const punctuation = word.replace(cleanWord, "");
                   
                   return (
-                    <span key={index}>
+                    <span key={index} className="word-container">
                       <span 
-                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
+                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
                         onClick={() => onWordClick(cleanWord)}
                       >
                         {cleanWord}
@@ -287,25 +266,8 @@ export default function ProcessingSummary({
                       {' '}
                     </span>
                   );
-                } else {
-                  // Regular word processing
-                  const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                  const punctuation = word.replace(cleanWord, "");
-                  
-                  return (
-                    <span key={index}>
-                      <span 
-                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
-                        onClick={() => onWordClick(cleanWord)}
-                      >
-                        {cleanWord}
-                      </span>
-                      {punctuation}
-                      {' '}
-                    </span>
-                  );
-                }
-              })
+                })}
+              </div>
             ) : (
               // Fallback if no summary is available
               <p>No summary available for this grade level.</p>
