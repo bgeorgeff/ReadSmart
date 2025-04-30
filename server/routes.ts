@@ -25,31 +25,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
-  // Super simple helper function that directly targets the known problematic patterns
+  // Simple, direct string replacements for known problematic patterns
   function fixTextDuplications(text: string): string {
     if (!text) return text;
     
-    // Hard-coded fixes for known patterns - these work 100% of the time
-    let result = text
+    // Just do the direct replacements that we know work
+    return text
       .replace(/"On Free Will"Will,/g, '"On Free Will",')
       .replace(/"evil"evil,/g, '"evil",')
       .replace(/"which"which,/g, '"which",')
       .replace(/"achieving"achieving,/g, '"achieving",');
-      
-    // Apply function-based fix only as a fallback
-    result = result.replace(/"([^"]+)"([A-Za-z]+),/g, (match, quote, duplicate) => {
-      try {
-        const words = quote.split(/\s+/);
-        const lastWord = words[words.length - 1].replace(/[^A-Za-z]/g, '').toLowerCase();
-        if (lastWord === duplicate.toLowerCase()) {
-          return `"${quote}",`;
-        }
-      } catch (err) {
-        // In case of any error, return unmodified
-        console.error("Error processing text pattern:", err);
-      }
-      return match;
-    });
   }
   
   // Process text and generate summaries for all grade levels
