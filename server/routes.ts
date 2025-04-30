@@ -25,25 +25,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
-  // process text and generate summaries for all grade levels
+  // Helper function to fix common text duplication issues
+  function fixTextDuplications(text: string): string {
+    // A more direct approach that specifically targets the known patterns
+    return text
+      // Fix "On Free Will"Will, pattern - target a quoted segment followed by the last word repeated
+      .replace(/("[^"]+")(\w+)/g, (match, quote, duplicate) => {
+        // Get the last word from inside the quotes (considering it might have punctuation)
+        const lastWordInQuote = quote.split(/\s+/).pop()?.replace(/[^\w]/g, '');
+        
+        // If the word after quotes duplicates the last word in quotes, remove it
+        if (lastWordInQuote && lastWordInQuote.toLowerCase() === duplicate.toLowerCase()) {
+          return quote;
+        }
+        return match;
+      });
+  }
+  
+  // Process text and generate summaries for all grade levels
   app.post("/api/process-text", async (req, res) => {
     try {
       const { text } = processTextSchema.parse(req.body);
       
-      // Generate summaries for all grade levels
-      const summaries = await generateGradeLevelSummaries(text);
+      // Apply pre-processing to fix duplication issues
+      const processedText = fixTextDuplications(text);
+      console.log("Original:", text);
+      console.log("Processed:", processedText);
       
-      // Save the summaries
+      // Generate summaries for all grade levels using the pre-processed text
+      const summaries = await generateGradeLevelSummaries(processedText);
+      
+      // Apply the same fix to each summary text
+      const fixedSummaries: Record<number, string> = {};
+      Object.entries(summaries).forEach(([level, summary]) => {
+        fixedSummaries[parseInt(level)] = fixTextDuplications(summary);
+      });
+      
+      // Save the summaries with the original text (not the pre-processed version)
       const textSummary = await storage.saveTextSummary({
-        originalText: text,
-        summaries,
+        originalText: text, // Keep the original text as submitted
+        summaries: fixedSummaries,
         createdAt: new Date().toISOString()
       });
       
       res.json({
         success: true,
         summaryId: textSummary.id,
-        summaries
+        summaries: fixedSummaries
       });
     } catch (error) {
       if (error.name === "ZodError") {
