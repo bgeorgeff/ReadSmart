@@ -81,14 +81,14 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
           
           return (
             <span key={index} className="word-container">
-              <span className="quote-highlight mr-0.5">"</span>
+              <span className="quote-highlight">"</span>
               <span 
-                className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
+                className="word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
                 onClick={() => onWordClick(cleanToken)}
               >
                 {cleanToken}
               </span>
-              <span className="quote-highlight ml-0.5">"</span>
+              <span className="quote-highlight">"</span>
               {' '}
             </span>
           );
