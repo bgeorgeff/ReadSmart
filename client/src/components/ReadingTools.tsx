@@ -4,6 +4,51 @@ import { useTextToSpeech } from '@/hooks/use-text-to-speech';
 import { RecordingState } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
+// Component to display text with fixes for duplications
+interface DisplayTextWithFixesProps {
+  text: string;
+  onWordClick: (word: string) => void;
+  fixDuplicates?: boolean;
+}
+
+function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: DisplayTextWithFixesProps) {
+  // Apply fixes to known problematic patterns if requested
+  const processText = (input: string): string => {
+    if (!fixDuplicates) return input;
+    
+    return input
+      .replace(/"On Free Will"Will,/g, '"On Free Will",')
+      .replace(/"evil"evil,/g, '"evil",')
+      .replace(/"which"which,/g, '"which",')
+      .replace(/"achieving"achieving,/g, '"achieving",');
+  };
+  
+  const processedText = processText(text);
+  
+  return (
+    <div className="word-interaction-container">
+      {processedText.split(/\s+/).map((word, index) => {
+        // Simple cleanup for interaction
+        const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
+        const punctuation = word.replace(cleanWord, "");
+        
+        return (
+          <span key={index} className="word-container">
+            <span 
+              className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
+              onClick={() => onWordClick(cleanWord)}
+            >
+              {cleanWord}
+            </span>
+            {punctuation}
+            {' '}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 interface ReadingToolsProps {
   isVisible: boolean;
   summaryId: number | null;
@@ -111,50 +156,16 @@ export default function ReadingTools({
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <div className="bg-gray-100 p-4 rounded-lg mb-4 max-h-72 overflow-y-auto">
-            <p className="font-['Merriweather'] text-gray-800 leading-relaxed">
-              {selectedSummary && selectedSummary
-                .replace(/(\w+)[-](\w+)\s+\1[-]?\2/gi, "$1-$2")
-                .split(/\s+/)
-                .map((word, index) => {
-                  // Handle hyphenated words differently
-                  if (word.includes('-')) {
-                    // For hyphenated words, keep the hyphen as part of the word
-                    const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
-                    const punctuation = word.replace(cleanWord, "");
-                    
-                    return (
-                      <span key={index}>
-                        <span 
-                          className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
-                          onClick={() => onWordClick(cleanWord)}
-                        >
-                          {cleanWord}
-                        </span>
-                        {punctuation}
-                        {' '}
-                      </span>
-                    );
-                  } else {
-                    // Regular word processing
-                    const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                    const punctuation = word.replace(cleanWord, "");
-                    
-                    return (
-                      <span key={index}>
-                        <span 
-                          className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer" 
-                          onClick={() => onWordClick(cleanWord)}
-                        >
-                          {cleanWord}
-                        </span>
-                        {punctuation}
-                        {' '}
-                      </span>
-                    );
-                  }
-                })}
-            </p>
+          <div className="bg-gray-100 p-4 rounded-lg mb-4 max-h-72 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
+            {selectedSummary ? (
+              <DisplayTextWithFixes 
+                text={selectedSummary}
+                onWordClick={onWordClick}
+                fixDuplicates={true}
+              />
+            ) : (
+              <p>No text available for reading practice.</p>
+            )}
           </div>
           
           <div className="flex flex-wrap gap-3 mb-4">
