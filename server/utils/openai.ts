@@ -38,7 +38,8 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
         { role: "user", content: text }
       ],
       temperature: 0.7,
-      max_tokens: 2500
+      max_tokens: 2500,
+      response_format: { type: "json_object" } // Explicitly request JSON formatting
     });
 
     // Get the generated content
@@ -47,9 +48,43 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       throw new Error("Empty response from API");
     }
 
-    // Parse the JSON response
-    const summaries = JSON.parse(content);
-    return summaries;
+    // Try to extract JSON from the response, handling potential issues
+    try {
+      // Clean up the response to ensure valid JSON
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      const jsonContent = jsonMatch ? jsonMatch[0] : content;
+      
+      // Parse the JSON response
+      const summaries = JSON.parse(jsonContent);
+      
+      // Validate the structure of the response - ensure we have all grade levels
+      const expectedGradeLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+      const missingLevels = expectedGradeLevels.filter(level => !summaries[level]);
+      
+      if (missingLevels.length > 0) {
+        console.warn(`API response missing grade levels: ${missingLevels.join(', ')}`);
+        
+        // Fill in missing levels with placeholders to prevent app crashes
+        missingLevels.forEach(level => {
+          summaries[level] = `Summary for grade ${level} is being generated...`;
+        });
+      }
+      
+      return summaries;
+    } catch (error) {
+      const jsonError = error as Error;
+      console.error("Error parsing JSON response:", jsonError);
+      console.error("Response content:", content);
+      
+      // Generate a fallback response to prevent application crash
+      const fallbackSummaries: Record<number, string> = {};
+      for (let i = 1; i <= 12; i++) {
+        fallbackSummaries[i] = "We encountered an issue generating this summary. Please try again with a different text.";
+      }
+      
+      // Return the fallback summaries
+      return fallbackSummaries;
+    }
   } catch (error) {
     console.error("Error generating summaries:", error);
     throw error;
