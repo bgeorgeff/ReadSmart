@@ -29,12 +29,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   function fixTextDuplications(text: string): string {
     if (!text) return text;
     
-    // Just do the direct replacements that we know work
-    return text
+    // Handle quote duplications
+    let fixed = text
       .replace(/"On Free Will"Will,/g, '"On Free Will",')
       .replace(/"evil"evil,/g, '"evil",')
       .replace(/"which"which,/g, '"which",')
       .replace(/"achieving"achieving,/g, '"achieving",');
+    
+    // Handle parentheses issues - fix cases where content gets separated from parentheses
+    // Pattern: word( content) -> (word content)
+    fixed = fixed.replace(/(\w+)\(\s*([^)]+)\s*\)/g, '($1 $2)');
+    
+    // Pattern: content )year( -> content (year)
+    fixed = fixed.replace(/([^(]+)\s*\)\s*(\d+)\s*\(/g, '$1 ($2)');
+    
+    return fixed;
   }
   
   // Process text and generate summaries for all grade levels
