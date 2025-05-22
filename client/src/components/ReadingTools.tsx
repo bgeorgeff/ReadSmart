@@ -60,7 +60,8 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
-        const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
+        // Don't separate parentheses from words - keep them attached
+        const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
         const punctuation = token.replace(cleanWord, "");
         
         if (cleanWord) {

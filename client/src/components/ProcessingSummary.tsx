@@ -60,7 +60,8 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
-        const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
+        // Don't separate parentheses from words - keep them attached
+        const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
         const punctuation = token.replace(cleanWord, "");
         
         if (cleanWord) {
@@ -311,26 +312,12 @@ export default function ProcessingSummary({
           
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary && currentGradeLevel === 0 && inputText ? (
-              // If the user selected "Original Paste" (grade level 0), display the raw input text without any processing
-              <div className="word-interaction-container">
-                {inputText.split(/\s+/).map((word, index) => {
-                  const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
-                  const punctuation = word.replace(cleanWord, "");
-                  
-                  return (
-                    <span key={index} className="word-container">
-                      <span 
-                        className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
-                        onClick={() => onWordClick(cleanWord)}
-                      >
-                        {cleanWord}
-                      </span>
-                      <span className="punctuation">{punctuation}</span>
-                      {' '}
-                    </span>
-                  );
-                })}
-              </div>
+              // If the user selected "Original Paste" (grade level 0), display the input text without any fixes
+              <DisplayTextWithFixes 
+                text={inputText}
+                onWordClick={onWordClick}
+                fixDuplicates={false}
+              />
             ) : selectedSummary ? (
               // Otherwise, display the selected summary
               <DisplayTextWithFixes 
