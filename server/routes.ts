@@ -37,11 +37,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       .replace(/"achieving"achieving,/g, '"achieving",');
     
     // Handle parentheses issues - fix cases where content gets separated from parentheses
-    // Pattern: word( content) -> (word content)
+    // Pattern: word( and content) -> (word and content)
     fixed = fixed.replace(/(\w+)\(\s*([^)]+)\s*\)/g, '($1 $2)');
     
     // Pattern: content )year( -> content (year)
     fixed = fixed.replace(/([^(]+)\s*\)\s*(\d+)\s*\(/g, '$1 ($2)');
+    
+    // More comprehensive parentheses fixes
+    // Fix: "Larry( and Bill)" -> "(Larry and Bill)"
+    fixed = fixed.replace(/(\w+)\(\s*(and\s+\w+)\s*\)/g, '($1 $2)');
+    
+    // Fix: "ago 1972()." -> "ago (1972)."
+    fixed = fixed.replace(/(\d+)\(\s*\)/g, '($1)');
     
     return fixed;
   }

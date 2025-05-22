@@ -23,6 +23,9 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       For lower grades (1-3), use simple words, short sentences, and focus on concrete concepts.
       For middle grades (4-8), gradually introduce more complex vocabulary and sentence structures, while still maintaining clarity.
       For higher grades (9-12), include more abstract concepts, sophisticated vocabulary, and nuanced explanations.
+      
+      IMPORTANT: Always preserve proper punctuation formatting. Keep parentheses attached to their content (Larry and Bill), not separated like Larry( and Bill). Keep quoted text intact with proper spacing.
+      
       Ensure each summary is accurate, educational, and tailored appropriately for the cognitive and reading abilities of students at that grade level.
       Respond with a JSON object where the keys are grade level numbers (1-12) and the values are the corresponding summaries.
     `;
