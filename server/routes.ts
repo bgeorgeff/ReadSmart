@@ -43,12 +43,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Pattern: content )year( -> content (year)
     fixed = fixed.replace(/([^(]+)\s*\)\s*(\d+)\s*\(/g, '$1 ($2)');
     
-    // More comprehensive parentheses fixes
+    // More comprehensive parentheses fixes targeting the exact patterns we're seeing
     // Fix: "Larry( and Bill)" -> "(Larry and Bill)"
     fixed = fixed.replace(/(\w+)\(\s*(and\s+\w+)\s*\)/g, '($1 $2)');
     
     // Fix: "ago 1972()." -> "ago (1972)."
     fixed = fixed.replace(/(\d+)\(\s*\)/g, '($1)');
+    
+    // Fix the exact pattern: "Both men Larry( and Bill) were" -> "Both men (Larry and Bill) were"
+    fixed = fixed.replace(/(\w+)\(\s*and\s*(\w+)\)/g, '($1 and $2)');
+    
+    // Fix the exact pattern: "decades ago 1972()." -> "decades ago (1972)."
+    fixed = fixed.replace(/(\w+)\s+(\d+)\(\)/g, '$1 ($2)');
+    
+    // General fix for any word followed by opening paren
+    fixed = fixed.replace(/(\w+)\(\s*/g, '($1 ');
+    
+    // General fix for closing paren followed by nothing or punctuation
+    fixed = fixed.replace(/\s*\)([\.,:;!?]?)/g, ')$1');
     
     return fixed;
   }
@@ -69,7 +81,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Apply the same fix to each summary text
       const fixedSummaries: Record<number, string> = {};
       Object.entries(summaries).forEach(([level, summary]) => {
-        fixedSummaries[parseInt(level)] = fixTextDuplications(summary);
+        console.log(`Raw API Summary Level ${level}:`, summary);
+        const fixed = fixTextDuplications(summary);
+        console.log(`Fixed Summary Level ${level}:`, fixed);
+        fixedSummaries[parseInt(level)] = fixed;
       });
       
       // Save the summaries with the original text (not the pre-processed version)
