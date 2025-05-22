@@ -25,45 +25,10 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
   
   const processedText = processText(text);
   
-  // Special handling for text with quotes
-  // We need to keep quoted phrases together rather than splitting them on spaces
+  // Simple tokenization that preserves quotes and parentheses properly
   const tokenize = (text: string): string[] => {
-    const tokens: string[] = [];
-    let inQuote = false;
-    let currentToken = '';
-    
-    // First pass: group by quotes
-    for (let i = 0; i < text.length; i++) {
-      const char = text[i];
-      
-      if (char === '"') {
-        inQuote = !inQuote;
-        currentToken += char;
-        
-        // If ending a quote, add the token and reset
-        if (!inQuote) {
-          tokens.push(currentToken);
-          currentToken = '';
-        }
-      } else if (inQuote) {
-        // Inside quote, keep adding to current token
-        currentToken += char;
-      } else if (char === ' ' && currentToken) {
-        // Space outside quote, finish the token
-        tokens.push(currentToken);
-        currentToken = '';
-      } else {
-        // Regular character outside quote
-        currentToken += char;
-      }
-    }
-    
-    // Add any remaining token
-    if (currentToken) {
-      tokens.push(currentToken);
-    }
-    
-    return tokens.filter(t => t.trim() !== '');
+    // Just split by spaces - this is much more reliable
+    return text.split(/\s+/).filter(token => token.trim() !== '');
   };
   
   const tokens = tokenize(processedText);
@@ -94,22 +59,32 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
           );
         }
         
-        // Regular word processing
+        // For regular tokens, separate the word from punctuation but keep them together visually
         const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~()]/g, "");
         const punctuation = token.replace(cleanWord, "");
         
-        return (
-          <span key={index} className="word-container">
-            <span 
-              className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
-              onClick={() => onWordClick(cleanWord)}
-            >
-              {cleanWord}
+        if (cleanWord) {
+          return (
+            <span key={index} className="word-container">
+              <span 
+                className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
+                onClick={() => onWordClick(cleanWord)}
+              >
+                {cleanWord}
+              </span>
+              <span className="punctuation">{punctuation}</span>
+              {' '}
             </span>
-            {punctuation}
-            {' '}
-          </span>
-        );
+          );
+        } else {
+          // If it's just punctuation, display it as-is
+          return (
+            <span key={index} className="word-container">
+              <span className="punctuation">{token}</span>
+              {' '}
+            </span>
+          );
+        }
       })}
     </div>
   );
