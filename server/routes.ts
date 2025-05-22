@@ -30,39 +30,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!text) return text;
     
     // Handle quote duplications
-    let fixed = text
+    return text
       .replace(/"On Free Will"Will,/g, '"On Free Will",')
       .replace(/"evil"evil,/g, '"evil",')
       .replace(/"which"which,/g, '"which",')
       .replace(/"achieving"achieving,/g, '"achieving",');
-    
-    // Handle parentheses issues - fix cases where content gets separated from parentheses
-    // Pattern: word( and content) -> (word and content)
-    fixed = fixed.replace(/(\w+)\(\s*([^)]+)\s*\)/g, '($1 $2)');
-    
-    // Pattern: content )year( -> content (year)
-    fixed = fixed.replace(/([^(]+)\s*\)\s*(\d+)\s*\(/g, '$1 ($2)');
-    
-    // More comprehensive parentheses fixes targeting the exact patterns we're seeing
-    // Fix: "Larry( and Bill)" -> "(Larry and Bill)"
-    fixed = fixed.replace(/(\w+)\(\s*(and\s+\w+)\s*\)/g, '($1 $2)');
-    
-    // Fix: "ago 1972()." -> "ago (1972)."
-    fixed = fixed.replace(/(\d+)\(\s*\)/g, '($1)');
-    
-    // Fix the exact pattern: "Both men Larry( and Bill) were" -> "Both men (Larry and Bill) were"
-    fixed = fixed.replace(/(\w+)\(\s*and\s*(\w+)\)/g, '($1 and $2)');
-    
-    // Fix the exact pattern: "decades ago 1972()." -> "decades ago (1972)."
-    fixed = fixed.replace(/(\w+)\s+(\d+)\(\)/g, '$1 ($2)');
-    
-    // General fix for any word followed by opening paren
-    fixed = fixed.replace(/(\w+)\(\s*/g, '($1 ');
-    
-    // General fix for closing paren followed by nothing or punctuation
-    fixed = fixed.replace(/\s*\)([\.,:;!?]?)/g, ')$1');
-    
-    return fixed;
   }
   
   // Process text and generate summaries for all grade levels
@@ -70,21 +42,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { text } = processTextSchema.parse(req.body);
       
-      // Apply pre-processing to fix duplication issues
-      const processedText = fixTextDuplications(text);
-      console.log("Original:", text);
-      console.log("Processed:", processedText);
-      
-      // Generate summaries for all grade levels using the pre-processed text
-      const summaries = await generateGradeLevelSummaries(processedText);
+      // Generate summaries for all grade levels
+      const summaries = await generateGradeLevelSummaries(text);
       
       // Apply the same fix to each summary text
       const fixedSummaries: Record<number, string> = {};
       Object.entries(summaries).forEach(([level, summary]) => {
-        console.log(`Raw API Summary Level ${level}:`, summary);
-        const fixed = fixTextDuplications(summary);
-        console.log(`Fixed Summary Level ${level}:`, fixed);
-        fixedSummaries[parseInt(level)] = fixed;
+        fixedSummaries[parseInt(level)] = fixTextDuplications(summary);
       });
       
       // Save the summaries with the original text (not the pre-processed version)
