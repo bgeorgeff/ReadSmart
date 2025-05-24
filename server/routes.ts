@@ -43,8 +43,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { text } = processTextSchema.parse(req.body);
       
+      // Fix duplications in the original input text first
+      const cleanedText = fixTextDuplications(text);
+      
       // Generate summaries for all grade levels
-      const summaries = await generateGradeLevelSummaries(text);
+      const summaries = await generateGradeLevelSummaries(cleanedText);
       
       // Apply the same fix to each summary text
       const fixedSummaries: Record<number, string> = {};
@@ -52,9 +55,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fixedSummaries[parseInt(level)] = fixTextDuplications(summary);
       });
       
-      // Save the summaries with the original text (not the pre-processed version)
+      // Save the summaries with the cleaned text
       const textSummary = await storage.saveTextSummary({
-        originalText: text, // Keep the original text as submitted
+        originalText: cleanedText, // Use the cleaned text
         summaries: fixedSummaries,
         createdAt: new Date().toISOString()
       });
