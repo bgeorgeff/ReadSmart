@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Target, MousePointer, Volume2, X } from "lucide-react";
 
@@ -26,6 +26,9 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
               <X className="h-4 w-4" />
             </Button>
           </div>
+          <DialogDescription className="sr-only">
+            Learn how to use ReadSmart's features for text comprehension and reading improvement
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6 mt-4">
@@ -86,11 +89,11 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             <h3 className="text-lg font-semibold text-gray-800 mb-3">Try This Sample Text</h3>
             <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-700">
               <p className="italic">
-                "Climate change refers to long-term shifts in global temperatures and weather patterns. 
-                While climate variations are natural, scientific evidence shows that human activities 
-                have been the main driver of climate change since the 1800s. The burning of fossil 
-                fuels generates greenhouse gas emissions that act like a blanket wrapped around Earth, 
-                trapping the sun's heat and raising temperatures."
+                "The water cycle is the continuous movement of water on, above, and below the surface 
+                of the Earth. Water evaporates from oceans, lakes, and rivers, forming water vapor 
+                that rises into the atmosphere. As the water vapor cools, it condenses into tiny 
+                droplets that form clouds. When the droplets become heavy enough, they fall as 
+                precipitation in the form of rain, snow, or hail, completing the cycle."
               </p>
             </div>
             <p className="text-sm text-gray-500 mt-2">
