@@ -54,9 +54,21 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
-        // Don't separate parentheses from words - keep them attached
-        const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~"]/g, "");
-        const punctuation = token.replace(new RegExp(cleanWord, 'g'), "");
+        // Handle the specific duplication pattern first
+        let cleanWord, punctuation;
+        if (token.match(/^(\w+)"(\w+)\."/)) {
+          const match = token.match(/^(\w+)"(\w+)\."/);
+          if (match && match[1].toLowerCase() === match[2].toLowerCase()) {
+            cleanWord = match[1];
+            punctuation = '."';
+          } else {
+            cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
+            punctuation = token.replace(cleanWord, "");
+          }
+        } else {
+          cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
+          punctuation = token.replace(cleanWord, "");
+        }
         
         if (cleanWord) {
           return (
