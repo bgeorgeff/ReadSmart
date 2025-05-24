@@ -58,11 +58,11 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
         let punctuation = token.replace(cleanWord, "");
         
-        // Special handling for tokens ending with ." to prevent duplication
-        if (token.endsWith('."') && cleanWord) {
-          const parts = token.match(/^(.+?)"([^"]+)\."/);
-          if (parts && parts[1] === parts[2]) {
-            cleanWord = parts[1];
+        // Special handling for the cycle"cycle." pattern
+        if (token.includes('"') && token.endsWith('."')) {
+          const match = token.match(/^(\w+)"(\w+)\."/);
+          if (match && match[1].toLowerCase() === match[2].toLowerCase()) {
+            cleanWord = match[1];
             punctuation = '."';
           }
         }
