@@ -28,11 +28,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   function fixTextDuplications(text: string): string {
     if (!text) return text;
     
-    // Fix pattern from test-regex.js: "quote content"duplicate -> "quote content"
-    return text.replace(/"([^"]+)"([A-Za-z]+)/g, (match, quote, duplicate) => {
-      const lastWordInQuote = quote.split(/\s+/).pop()?.toLowerCase();
-      if (lastWordInQuote === duplicate.toLowerCase()) {
-        return `"${quote}"`;
+    // Fix the specific pattern: word"word." -> word."
+    return text.replace(/(\w+)"(\w+)\."/g, (match, word1, word2) => {
+      if (word1.toLowerCase() === word2.toLowerCase()) {
+        return `${word1}."`;
       }
       return match;
     });

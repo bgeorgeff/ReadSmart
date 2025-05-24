@@ -15,11 +15,10 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
     
-    // Fix pattern from test-regex.js: "quote content"duplicate -> "quote content"
-    return input.replace(/"([^"]+)"([A-Za-z]+)/g, (match, quote, duplicate) => {
-      const lastWordInQuote = quote.split(/\s+/).pop()?.toLowerCase();
-      if (lastWordInQuote === duplicate.toLowerCase()) {
-        return `"${quote}"`;
+    // Fix the specific pattern: word"word." -> word."
+    return input.replace(/(\w+)"(\w+)\."/g, (match, word1, word2) => {
+      if (word1.toLowerCase() === word2.toLowerCase()) {
+        return `${word1}."`;
       }
       return match;
     });
@@ -29,7 +28,7 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
   
   // Simple tokenization that preserves quotes and parentheses properly
   const tokenize = (text: string): string[] => {
-    // Just split by spaces - this is much more reliable
+    // Split by spaces and filter empty tokens
     return text.split(/\s+/).filter(token => token.trim() !== '');
   };
   
