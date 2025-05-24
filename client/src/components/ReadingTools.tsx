@@ -54,17 +54,12 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
-        // Handle the specific duplication pattern first (with or without space)
+        // Handle the specific pattern: "word.""
         let cleanWord, punctuation;
-        if (token.match(/^(\w+)"\s*(\w+)\."/)) {
-          const match = token.match(/^(\w+)"\s*(\w+)\."/);
-          if (match && match[1].toLowerCase() === match[2].toLowerCase()) {
-            cleanWord = match[1];
-            punctuation = '."';
-          } else {
-            cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
-            punctuation = token.replace(cleanWord, "");
-          }
+        if (token.match(/^"(\w+)\.""/)) {
+          const match = token.match(/^"(\w+)\.""/);
+          cleanWord = match![1];
+          punctuation = '."';
         } else {
           cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
           punctuation = token.replace(cleanWord, "");
