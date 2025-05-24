@@ -21,7 +21,7 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
       .replace(/"evil"evil,/g, '"evil",')
       .replace(/"which"which,/g, '"which",')
       .replace(/"achieving"achieving,/g, '"achieving",')
-      .replace(/"cycle\."cycle\./g, '"cycle."');
+      .replace(/cycle"cycle\./g, 'cycle.');
   };
   
   const processedText = processText(text);
