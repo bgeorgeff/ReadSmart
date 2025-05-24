@@ -14,7 +14,13 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: DisplayTextWithFixesProps) {
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
-    return input;
+    
+    // Fix the specific quote duplication issue
+    // Replace patterns like: "The water cycle" with: "The water cycle"
+    // This handles the beginning and end quote issues
+    let processed = input.replace(/"([^"]+)"\s+([^"]+)\."/g, '"$1 $2."');
+    
+    return processed;
   };
   
   const processedText = processText(text);

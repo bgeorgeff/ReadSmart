@@ -14,7 +14,13 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: DisplayTextWithFixesProps) {
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
-    return input;
+    
+    // Fix the specific quote duplication issue
+    // Replace patterns like: "The water cycle" with: "The water cycle"
+    // This handles the beginning and end quote issues
+    let processed = input.replace(/"([^"]+)"\s+([^"]+)\."/g, '"$1 $2."');
+    
+    return processed;
   };
   
   const processedText = processText(text);
@@ -54,21 +60,8 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
-        // Debug: log all tokens that contain quotes or the word "cycle"
-        if (token.includes('"') || token.includes('cycle')) {
-          console.log('Token with quote/cycle:', JSON.stringify(token));
-        }
-        
-        // Handle the specific pattern: "word.""
-        let cleanWord, punctuation;
-        if (token.match(/^"(\w+)\.""/)) {
-          const match = token.match(/^"(\w+)\.""/);
-          cleanWord = match![1];
-          punctuation = '."';
-        } else {
-          cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
-          punctuation = token.replace(cleanWord, "");
-        }
+        const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
+        const punctuation = token.replace(cleanWord, "");
         
         if (cleanWord) {
           return (
