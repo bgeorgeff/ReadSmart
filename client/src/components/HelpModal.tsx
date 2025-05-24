@@ -89,11 +89,11 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             <h3 className="text-lg font-semibold text-gray-800 mb-3">Try This Sample Text</h3>
             <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-700">
               <p className="italic">
-                The water cycle is the continuous movement of water on, above, and below the surface 
+                "The water cycle is the continuous movement of water on, above, and below the surface 
                 of the Earth. Water evaporates from oceans, lakes, and rivers, forming water vapor 
                 that rises into the atmosphere. As the water vapor cools, it condenses into tiny 
                 droplets that form clouds. When the droplets become heavy enough, they fall as 
-                precipitation in the form of rain, snow, or hail, completing the cycle.
+                precipitation in the form of rain, snow, or hail, completing the cycle."
               </p>
             </div>
             <p className="text-sm text-gray-500 mt-2">

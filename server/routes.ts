@@ -34,7 +34,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       .replace(/"On Free Will"Will,/g, '"On Free Will",')
       .replace(/"evil"evil,/g, '"evil",')
       .replace(/"which"which,/g, '"which",')
-      .replace(/"achieving"achieving,/g, '"achieving",');
+      .replace(/"achieving"achieving,/g, '"achieving",')
+      .replace(/"cycle\."cycle\./g, '"cycle."');
   }
   
   // Process text and generate summaries for all grade levels

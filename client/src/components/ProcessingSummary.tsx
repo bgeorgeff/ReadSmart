@@ -20,7 +20,8 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
       .replace(/"On Free Will"Will,/g, '"On Free Will",')
       .replace(/"evil"evil,/g, '"evil",')
       .replace(/"which"which,/g, '"which",')
-      .replace(/"achieving"achieving,/g, '"achieving",');
+      .replace(/"achieving"achieving,/g, '"achieving",')
+      .replace(/"cycle\."cycle\./g, '"cycle."');
   };
   
   const processedText = processText(text);
