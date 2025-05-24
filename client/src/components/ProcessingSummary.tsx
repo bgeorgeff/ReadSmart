@@ -12,16 +12,13 @@ interface DisplayTextWithFixesProps {
 }
 
 function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: DisplayTextWithFixesProps) {
-  // Apply fixes to known problematic patterns if requested
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
     
-    return input
-      .replace(/"On Free Will"Will,/g, '"On Free Will",')
-      .replace(/"evil"evil,/g, '"evil",')
-      .replace(/"which"which,/g, '"which",')
-      .replace(/"achieving"achieving,/g, '"achieving",')
-      .replace(/cycle"cycle\./g, 'cycle.');
+    // Fix pattern: word"word -> word
+    return input.replace(/(\w+)"(\w+)/g, (match, word1, word2) => {
+      return word1.toLowerCase() === word2.toLowerCase() ? word1 : match;
+    });
   };
   
   const processedText = processText(text);
