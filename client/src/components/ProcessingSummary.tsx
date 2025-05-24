@@ -54,6 +54,11 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
+        // Debug: log tokens that contain both quote and period
+        if (token.includes('"') && token.includes('.')) {
+          console.log('Debug token:', JSON.stringify(token));
+        }
+        
         // Handle the specific duplication pattern first (with or without space)
         let cleanWord, punctuation;
         if (token.match(/^(\w+)"\s*(\w+)\."/)) {
