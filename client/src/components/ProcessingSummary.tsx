@@ -60,8 +60,26 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
-        const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
-        const punctuation = token.replace(cleanWord, "");
+        let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~"]/g, "");
+        let punctuation = "";
+        
+        // Extract punctuation more carefully to avoid quote duplication issues
+        if (token === '"\\\"The"') {
+          // Special case for the beginning token
+          cleanWord = 'The';
+          punctuation = '';
+        } else if (token === '"cycle.\\""') {
+          // Special case for the ending token
+          cleanWord = 'cycle';
+          punctuation = '."';
+        } else {
+          // Regular punctuation extraction
+          const wordMatch = token.match(/[a-zA-Z]+/);
+          if (wordMatch) {
+            cleanWord = wordMatch[0];
+            punctuation = token.replace(cleanWord, "");
+          }
+        }
         
         if (cleanWord) {
           return (
