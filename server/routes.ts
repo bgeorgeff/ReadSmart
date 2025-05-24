@@ -25,17 +25,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
-  // Simple, direct string replacements for known problematic patterns
+  // Fix text duplications for any word pattern
   function fixTextDuplications(text: string): string {
     if (!text) return text;
     
-    // Handle quote duplications
+    // Handle general quote duplications: "word"word, or "word"word.
     return text
-      .replace(/"On Free Will"Will,/g, '"On Free Will",')
-      .replace(/"evil"evil,/g, '"evil",')
-      .replace(/"which"which,/g, '"which",')
-      .replace(/"achieving"achieving,/g, '"achieving",')
-      .replace(/cycle"cycle\./g, 'cycle.');
+      .replace(/(\w+)"(\w+)([.,!?]?)/g, (match, word1, word2, punctuation) => {
+        if (word1.toLowerCase() === word2.toLowerCase()) {
+          return word1 + (punctuation || '');
+        }
+        return match;
+      });
   }
   
   // Process text and generate summaries for all grade levels
