@@ -54,6 +54,11 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
+        // Debug: log all tokens that contain quotes or the word "cycle"
+        if (token.includes('"') || token.includes('cycle')) {
+          console.log('Token with quote/cycle:', JSON.stringify(token));
+        }
+        
         // Handle the specific pattern: "word.""
         let cleanWord, punctuation;
         if (token.match(/^"(\w+)\.""/)) {
