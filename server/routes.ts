@@ -25,46 +25,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
-  function fixTextDuplications(text: string): string {
-    if (!text) return text;
-    
-    // Fix the specific pattern: word"word." -> word."
-    return text.replace(/(\w+)"(\w+)\."/g, (match, word1, word2) => {
-      if (word1.toLowerCase() === word2.toLowerCase()) {
-        return `${word1}."`;
-      }
-      return match;
-    });
-  }
-  
   // Process text and generate summaries for all grade levels
   app.post("/api/process-text", async (req, res) => {
     try {
       const { text } = processTextSchema.parse(req.body);
       
-      // Fix duplications in the original input text first
-      const cleanedText = fixTextDuplications(text);
-      
       // Generate summaries for all grade levels
-      const summaries = await generateGradeLevelSummaries(cleanedText);
+      const summaries = await generateGradeLevelSummaries(text);
       
-      // Apply the same fix to each summary text
-      const fixedSummaries: Record<number, string> = {};
-      Object.entries(summaries).forEach(([level, summary]) => {
-        fixedSummaries[parseInt(level)] = fixTextDuplications(summary);
-      });
-      
-      // Save the summaries with the cleaned text
+      // Save the summaries with the original text
       const textSummary = await storage.saveTextSummary({
-        originalText: cleanedText, // Use the cleaned text
-        summaries: fixedSummaries,
+        originalText: text,
+        summaries: summaries,
         createdAt: new Date().toISOString()
       });
       
       res.json({
         success: true,
         summaryId: textSummary.id,
-        summaries: fixedSummaries
+        summaries: summaries
       });
     } catch (error) {
       if (error.name === "ZodError") {

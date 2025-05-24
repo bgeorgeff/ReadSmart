@@ -14,14 +14,7 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: DisplayTextWithFixesProps) {
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
-    
-    // Fix the specific pattern: word"word." -> word."
-    return input.replace(/(\w+)"(\w+)\."/g, (match, word1, word2) => {
-      if (word1.toLowerCase() === word2.toLowerCase()) {
-        return `${word1}."`;
-      }
-      return match;
-    });
+    return input;
   };
   
   const processedText = processText(text);
