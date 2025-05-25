@@ -15,13 +15,13 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
     
-    // Debug: check if the input text contains the duplicate pattern
-    if (input.includes('cycle"cycle')) {
-      console.log('Found duplicate pattern in input text!');
-      console.log('Input text:', JSON.stringify(input));
-    }
+    // Fix quote duplication patterns that can occur in AI-generated text
+    let processed = input;
     
-    return input;
+    // Remove patterns like: word"word. → word.
+    processed = processed.replace(/(\w+)"(\1)(\.|,|!|\?)/g, '$1$3');
+    
+    return processed;
   };
   
   const processedText = processText(text);
@@ -66,16 +66,7 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         
         // Fix duplicate quote issues when fixDuplicates is enabled
         if (fixDuplicates) {
-          // Debug: log ALL tokens containing "cycle" to see the exact patterns
-          if (token.includes('cycle')) {
-            console.log('Debug cycle token:', JSON.stringify(token), 'index:', index, 'of', tokens.length);
-          }
-          // Also log the last few tokens to see what's happening at the end
-          if (index >= tokens.length - 5) {
-            console.log('End token:', JSON.stringify(token), 'index:', index);
-          }
-          
-          // Handle "word" pattern (like "cycle")
+          // Handle "word" pattern (like "cycle") - remove quotes
           if (token.match(/^"[A-Za-z]+"$/)) {
             const match = token.match(/^"([A-Za-z]+)"$/);
             if (match) {
@@ -83,17 +74,13 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
               punctuation = '';
             }
           }
-          // Handle "word." pattern (like "cycle.")
+          // Handle "word." pattern (like "cycle.") - remove quotes but keep punctuation
           else if (token.match(/^"[A-Za-z]+\."$/)) {
             const match = token.match(/^"([A-Za-z]+)\."$/);
             if (match) {
               cleanWord = match[1];
-              punctuation = '."';
+              punctuation = '.';
             }
-          }
-          // Skip duplicate tokens: if this is a cycle token and we've already seen one, hide it
-          if (cleanWord === 'cycle' && index > 10) {
-            return null; // Don't render this duplicate token
           }
         }
         
