@@ -15,12 +15,15 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
     
-    // Fix quote duplication patterns that can occur in AI-generated text
+    // Convert to rich text format - parse out proper quotations and clean duplications
     let processed = input;
     
-    // Comprehensive pattern to handle all quote duplication cases
-    // Pattern: word"word + any punctuation
-    processed = processed.replace(/(\w+)"(\1)([.,"!?])/g, '$1$3');
+    // Handle dialogue format: Remove AI tokenization artifacts
+    processed = processed.replace(/([^"]*)"([^"]*)"([^"]*)/g, (match, before, quoted, after) => {
+      // Clean any word duplications within the quoted section
+      const cleanQuoted = quoted.replace(/(\w+)"(\1)/g, '$1');
+      return `${before}"${cleanQuoted}"${after}`;
+    });
     
     return processed;
   };
