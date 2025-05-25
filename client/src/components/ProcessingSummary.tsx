@@ -63,6 +63,11 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~"]/g, "");
         let punctuation = "";
         
+        // Debug: log first and last tokens that contain "The" or "cycle"
+        if (token.includes('The') || token.includes('cycle')) {
+          console.log('Debug The/cycle token:', JSON.stringify(token));
+        }
+        
         // Extract punctuation more carefully to avoid quote duplication issues
         if (token === '"\\\"The"') {
           // Special case for the beginning token
