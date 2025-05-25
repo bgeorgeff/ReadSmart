@@ -15,10 +15,12 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
     
-    // Fix the specific quote duplication issue
-    // Replace patterns like: "The water cycle" with: "The water cycle"
-    // This handles the beginning and end quote issues
-    let processed = input.replace(/"([^"]+)"\s+([^"]+)\."/g, '"$1 $2."');
+    // Fix the specific quote duplication patterns that occur in the original paste
+    let processed = input;
+    
+    // Fix pattern like: "The water cycle repeats itself" → "The water cycle repeats itself."
+    // This handles the malformed quote tokenization from OpenAI
+    processed = processed.replace(/^"(.+?)" (.+?)\.$/g, '"$1 $2."');
     
     return processed;
   };
@@ -60,31 +62,8 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
-        let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~"]/g, "");
-        let punctuation = "";
-        
-        // Debug: log first and last tokens that contain "The" or "cycle"
-        if (token.includes('The') || token.includes('cycle')) {
-          console.log('Debug The/cycle token:', JSON.stringify(token));
-        }
-        
-        // Extract punctuation more carefully to avoid quote duplication issues
-        if (token === '"\\"The"') {
-          // Special case for the beginning token  
-          cleanWord = 'The';
-          punctuation = '';
-        } else if (token === '"cycle.\\""') {
-          // Special case for the ending token
-          cleanWord = 'cycle';
-          punctuation = '."';
-        } else {
-          // Regular punctuation extraction
-          const wordMatch = token.match(/[a-zA-Z]+/);
-          if (wordMatch) {
-            cleanWord = wordMatch[0];
-            punctuation = token.replace(cleanWord, "");
-          }
-        }
+        const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
+        const punctuation = token.replace(cleanWord, "");
         
         if (cleanWord) {
           return (
