@@ -14,15 +14,7 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: DisplayTextWithFixesProps) {
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
-    
-    // Fix the specific quote duplication patterns that occur in the original paste
-    let processed = input;
-    
-    // Fix pattern like: "The water cycle repeats itself" → "The water cycle repeats itself."
-    // This handles the malformed quote tokenization from OpenAI
-    processed = processed.replace(/^"(.+?)" (.+?)\.$/g, '"$1 $2."');
-    
-    return processed;
+    return input;
   };
   
   const processedText = processText(text);
@@ -62,24 +54,26 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
-        let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~"]/g, "");
-        let punctuation = "";
+        let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
+        let punctuation = token.replace(cleanWord, "");
         
-        // Extract punctuation more carefully to avoid quote duplication issues
-        if (token === '"\\"The"') {
-          // Special case for the beginning token
-          cleanWord = 'The';
-          punctuation = '';
-        } else if (token === '"cycle.\\""') {
-          // Special case for the ending token
-          cleanWord = 'cycle';
-          punctuation = '."';
-        } else {
-          // Regular punctuation extraction
-          const wordMatch = token.match(/[a-zA-Z]+/);
-          if (wordMatch) {
-            cleanWord = wordMatch[0];
-            punctuation = token.replace(cleanWord, "");
+        // Fix duplicate quote issues when fixDuplicates is enabled
+        if (fixDuplicates) {
+          // Handle "word" pattern (like "cycle")
+          if (token.match(/^"[A-Za-z]+"$/)) {
+            const match = token.match(/^"([A-Za-z]+)"$/);
+            if (match) {
+              cleanWord = match[1];
+              punctuation = '';
+            }
+          }
+          // Handle "word." pattern (like "cycle.")
+          else if (token.match(/^"[A-Za-z]+\."$/)) {
+            const match = token.match(/^"([A-Za-z]+)\."$/);
+            if (match) {
+              cleanWord = match[1];
+              punctuation = '."';
+            }
           }
         }
         

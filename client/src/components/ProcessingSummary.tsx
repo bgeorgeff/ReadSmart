@@ -14,20 +14,7 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: DisplayTextWithFixesProps) {
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
-    
-    // Debug: log the input text to see what we're working with
-    console.log('ProcessText input:', JSON.stringify(input));
-    
-    // Fix the specific quote duplication patterns that occur in the original paste
-    let processed = input;
-    
-    // Fix pattern like: "The water cycle repeats itself" → "The water cycle repeats itself."
-    // This handles the malformed quote tokenization from OpenAI
-    processed = processed.replace(/^"(.+?)" (.+?)\.$/g, '"$1 $2."');
-    
-    console.log('ProcessText output:', JSON.stringify(processed));
-    
-    return processed;
+    return input;
   };
   
   const processedText = processText(text);
@@ -67,8 +54,28 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // For regular tokens, separate the word from punctuation but keep them together visually
-        const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
-        const punctuation = token.replace(cleanWord, "");
+        let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
+        let punctuation = token.replace(cleanWord, "");
+        
+        // Fix duplicate quote issues when fixDuplicates is enabled
+        if (fixDuplicates) {
+          // Handle "word" pattern (like "cycle")
+          if (token.match(/^"[A-Za-z]+"$/)) {
+            const match = token.match(/^"([A-Za-z]+)"$/);
+            if (match) {
+              cleanWord = match[1];
+              punctuation = '';
+            }
+          }
+          // Handle "word." pattern (like "cycle.")
+          else if (token.match(/^"[A-Za-z]+\."$/)) {
+            const match = token.match(/^"([A-Za-z]+)\."$/);
+            if (match) {
+              cleanWord = match[1];
+              punctuation = '."';
+            }
+          }
+        }
         
         if (cleanWord) {
           return (
