@@ -15,12 +15,17 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
     
+    // Debug: log the input text to see what we're working with
+    console.log('ProcessText input:', JSON.stringify(input));
+    
     // Fix the specific quote duplication patterns that occur in the original paste
     let processed = input;
     
     // Fix pattern like: "The water cycle repeats itself" → "The water cycle repeats itself."
     // This handles the malformed quote tokenization from OpenAI
     processed = processed.replace(/^"(.+?)" (.+?)\.$/g, '"$1 $2."');
+    
+    console.log('ProcessText output:', JSON.stringify(processed));
     
     return processed;
   };
