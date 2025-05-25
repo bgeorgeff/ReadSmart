@@ -75,6 +75,10 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
               punctuation = '."';
             }
           }
+          // Skip duplicate tokens: if this is a cycle token and we've already seen one, hide it
+          if (cleanWord === 'cycle' && index > 10) {
+            return null; // Don't render this duplicate token
+          }
         }
         
         if (cleanWord) {
