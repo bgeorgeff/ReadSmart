@@ -28,7 +28,8 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
     return processed;
   };
   
-  const processedText = processText(text);
+  // For Original Paste (grade level 0), bypass AI processing entirely
+  const processedText = fixDuplicates ? processText(text) : text;
   
   // Simple tokenization that preserves quotes and parentheses properly
   const tokenize = (text: string): string[] => {
@@ -336,12 +337,20 @@ export default function ProcessingSummary({
           
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary && currentGradeLevel === 0 && inputText ? (
-              // If the user selected "Original Paste" (grade level 0), display the input text without any fixes
-              <DisplayTextWithFixes 
-                text={inputText}
-                onWordClick={onWordClick}
-                fixDuplicates={false}
-              />
+              // For Original Paste, show user's original text with simple word splitting
+              <div className="text-base leading-relaxed text-gray-800">
+                {inputText.split(/\s+/).map((word, index) => (
+                  <span key={index} className="word-container">
+                    <button
+                      onClick={() => onWordClick(word.replace(/[^\w]/g, ''))}
+                      className="hover:bg-blue-100 hover:text-blue-600 px-1 py-0.5 rounded transition-colors duration-200 cursor-pointer"
+                    >
+                      {word}
+                    </button>
+                    {index < inputText.split(/\s+/).length - 1 && ' '}
+                  </span>
+                ))}
+              </div>
             ) : selectedSummary ? (
               // Otherwise, display the selected summary
               <DisplayTextWithFixes 
