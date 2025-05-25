@@ -8,27 +8,10 @@ import { useToast } from '@/hooks/use-toast';
 interface DisplayTextWithFixesProps {
   text: string;
   onWordClick: (word: string) => void;
-  fixDuplicates?: boolean;
 }
 
-function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: DisplayTextWithFixesProps) {
-  const processText = (input: string): string => {
-    if (!fixDuplicates) return input;
-    
-    // Convert to rich text format - parse out proper quotations and clean duplications
-    let processed = input;
-    
-    // Handle dialogue format: Remove AI tokenization artifacts
-    processed = processed.replace(/([^"]*)"([^"]*)"([^"]*)/g, (match, before, quoted, after) => {
-      // Clean any word duplications within the quoted section
-      const cleanQuoted = quoted.replace(/(\w+)"(\1)/g, '$1');
-      return `${before}"${cleanQuoted}"${after}`;
-    });
-    
-    return processed;
-  };
-  
-  const processedText = processText(text);
+function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) {
+  const processedText = text;
   
   // Simple tokenization that preserves quotes and parentheses properly
   const tokenize = (text: string): string[] => {
@@ -68,25 +51,7 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
         let punctuation = token.replace(cleanWord, "");
         
-        // Fix duplicate quote issues when fixDuplicates is enabled
-        if (fixDuplicates) {
-          // Handle "word" pattern (like "cycle") - remove quotes
-          if (token.match(/^"[A-Za-z]+"$/)) {
-            const match = token.match(/^"([A-Za-z]+)"$/);
-            if (match) {
-              cleanWord = match[1];
-              punctuation = '';
-            }
-          }
-          // Handle "word." pattern (like "cycle.") - remove quotes but keep punctuation
-          else if (token.match(/^"[A-Za-z]+\."$/)) {
-            const match = token.match(/^"([A-Za-z]+)\."$/);
-            if (match) {
-              cleanWord = match[1];
-              punctuation = '.';
-            }
-          }
-        }
+
         
         if (cleanWord) {
           return (

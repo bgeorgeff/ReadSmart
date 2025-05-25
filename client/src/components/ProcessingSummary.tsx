@@ -8,28 +8,10 @@ import { GradeLevel, Summaries, ProcessTextResponse } from '@/types';
 interface DisplayTextWithFixesProps {
   text: string;
   onWordClick: (word: string) => void;
-  fixDuplicates?: boolean;
 }
 
-function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: DisplayTextWithFixesProps) {
-  const processText = (input: string): string => {
-    if (!fixDuplicates) return input;
-    
-    // Convert to rich text format - parse out proper quotations and clean duplications
-    let processed = input;
-    
-    // Handle dialogue format: Remove AI tokenization artifacts
-    processed = processed.replace(/([^"]*)"([^"]*)"([^"]*)/g, (match, before, quoted, after) => {
-      // Clean any word duplications within the quoted section
-      const cleanQuoted = quoted.replace(/(\w+)"(\1)/g, '$1');
-      return `${before}"${cleanQuoted}"${after}`;
-    });
-    
-    return processed;
-  };
-  
-  // For Original Paste (grade level 0), bypass AI processing entirely
-  const processedText = fixDuplicates ? processText(text) : text;
+function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) {
+  const processedText = text;
   
   // Simple tokenization that preserves quotes and parentheses properly
   const tokenize = (text: string): string[] => {
@@ -69,25 +51,7 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
         let punctuation = token.replace(cleanWord, "");
         
-        // Fix duplicate quote issues when fixDuplicates is enabled
-        if (fixDuplicates) {
-          // Handle "word" pattern (like "cycle") - remove quotes
-          if (token.match(/^"[A-Za-z]+"$/)) {
-            const match = token.match(/^"([A-Za-z]+)"$/);
-            if (match) {
-              cleanWord = match[1];
-              punctuation = '';
-            }
-          }
-          // Handle "word." pattern (like "cycle.") - remove quotes but keep punctuation
-          else if (token.match(/^"[A-Za-z]+\."$/)) {
-            const match = token.match(/^"([A-Za-z]+)\."$/);
-            if (match) {
-              cleanWord = match[1];
-              punctuation = '.';
-            }
-          }
-        }
+
         
         if (cleanWord) {
           return (
@@ -356,7 +320,6 @@ export default function ProcessingSummary({
               <DisplayTextWithFixes 
                 text={selectedSummary}
                 onWordClick={onWordClick}
-                fixDuplicates={true}
               />
             ) : (
               // Fallback if no summary is available
