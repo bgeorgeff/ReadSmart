@@ -14,6 +14,13 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: DisplayTextWithFixesProps) {
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
+    
+    // Debug: check if the input text contains the duplicate pattern
+    if (input.includes('cycle"cycle')) {
+      console.log('Found duplicate pattern in input text!');
+      console.log('Input text:', JSON.stringify(input));
+    }
+    
     return input;
   };
   
