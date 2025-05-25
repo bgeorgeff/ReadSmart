@@ -69,7 +69,7 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         }
         
         // Extract punctuation more carefully to avoid quote duplication issues
-        if (token === '"\\\"The"') {
+        if (token === '"\\"The"') {
           // Special case for the beginning token  
           cleanWord = 'The';
           punctuation = '';
