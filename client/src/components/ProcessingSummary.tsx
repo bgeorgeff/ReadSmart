@@ -63,6 +63,10 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
           if (token.includes('cycle')) {
             console.log('Debug cycle token:', JSON.stringify(token), 'index:', index, 'of', tokens.length);
           }
+          // Also log the last few tokens to see what's happening at the end
+          if (index >= tokens.length - 5) {
+            console.log('End token:', JSON.stringify(token), 'index:', index);
+          }
           
           // Handle "word" pattern (like "cycle")
           if (token.match(/^"[A-Za-z]+"$/)) {
