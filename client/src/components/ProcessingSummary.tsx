@@ -59,6 +59,11 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
         
         // Fix duplicate quote issues when fixDuplicates is enabled
         if (fixDuplicates) {
+          // Debug: log tokens containing "cycle" to see the exact patterns
+          if (token.includes('cycle')) {
+            console.log('Debug cycle token:', JSON.stringify(token), 'index:', index);
+          }
+          
           // Handle "word" pattern (like "cycle")
           if (token.match(/^"[A-Za-z]+"$/)) {
             const match = token.match(/^"([A-Za-z]+)"$/);
