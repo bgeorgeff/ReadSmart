@@ -18,6 +18,9 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
     // Fix quote duplication patterns that can occur in AI-generated text
     let processed = input;
     
+    // Remove patterns like: "word"word. → word.
+    processed = processed.replace(/"(\w+)"\1(\.|,|!|\?|")/g, '$1$2');
+    
     // Remove patterns like: word"word. → word.
     processed = processed.replace(/(\w+)"(\1)(\.|,|!|\?)/g, '$1$3');
     
