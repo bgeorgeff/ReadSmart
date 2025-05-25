@@ -50,7 +50,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3">Understanding Grade Levels</h3>
             <div className="bg-blue-50 p-4 rounded-lg space-y-2 text-sm">
-              <p><strong>Grades 0-2:</strong> Very simple language, short sentences</p>
+              <p><strong>Grades 1-2:</strong> Very simple language, short sentences</p>
               <p><strong>Grades 3-5:</strong> Elementary level with basic vocabulary</p>
               <p><strong>Grades 6-8:</strong> Middle school level with more complex ideas</p>
               <p><strong>Grades 9-12:</strong> High school level with advanced concepts</p>
