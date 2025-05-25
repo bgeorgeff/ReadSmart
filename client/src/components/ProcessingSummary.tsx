@@ -15,8 +15,16 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
   const processText = (input: string): string => {
     if (!fixDuplicates) return input;
     
+    // Debug: show what we're trying to fix
+    if (input.includes('cycle"cycle')) {
+      console.log('Processing text with duplication:', input);
+    }
+    
     // Fix quote duplication patterns that can occur in AI-generated text
     let processed = input;
+    
+    // More aggressive pattern to catch cycle"cycle.
+    processed = processed.replace(/(\w+)"(\1)\."/g, '$1."');
     
     // Remove patterns like: "word"word. → word.
     processed = processed.replace(/"(\w+)"\1(\.|,|!|\?|")/g, '$1$2');
@@ -26,6 +34,10 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
     
     // Remove patterns like: word"word" → word
     processed = processed.replace(/(\w+)"(\1)"/g, '$1');
+    
+    if (input.includes('cycle"cycle')) {
+      console.log('After processing:', processed);
+    }
     
     return processed;
   };
