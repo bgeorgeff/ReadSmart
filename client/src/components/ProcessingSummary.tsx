@@ -21,6 +21,9 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
     // Remove patterns like: word"word. → word.
     processed = processed.replace(/(\w+)"(\1)(\.|,|!|\?)/g, '$1$3');
     
+    // Remove patterns like: word"word" → word
+    processed = processed.replace(/(\w+)"(\1)"/g, '$1');
+    
     return processed;
   };
   
