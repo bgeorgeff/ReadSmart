@@ -62,6 +62,9 @@ function DisplayTextWithFixes({ text, onWordClick, fixDuplicates = false }: Disp
           // Debug: log tokens containing "cycle" to see the exact patterns
           if (token.includes('cycle')) {
             console.log('Debug cycle token:', JSON.stringify(token), 'index:', index);
+            // Also log the next few tokens to see the pattern
+            console.log('Next token:', JSON.stringify(tokens[index + 1]));
+            console.log('Token after that:', JSON.stringify(tokens[index + 2]));
           }
           
           // Handle "word" pattern (like "cycle")
