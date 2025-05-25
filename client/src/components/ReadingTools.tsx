@@ -192,7 +192,6 @@ export default function ReadingTools({
               <DisplayTextWithFixes 
                 text={selectedSummary}
                 onWordClick={onWordClick}
-                fixDuplicates={true}
               />
             ) : (
               <p>No text available for reading practice.</p>
