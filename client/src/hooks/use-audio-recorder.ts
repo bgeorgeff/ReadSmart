@@ -23,6 +23,7 @@ export function useAudioRecorder() {
   useEffect(() => {
     if (!audioElement.current) {
       audioElement.current = new Audio();
+      audioElement.current.volume = 1.0; // Ensure volume is at maximum
     }
     
     // Set up event listeners
@@ -213,8 +214,10 @@ export function useAudioRecorder() {
           audioElement.current.load();
         }
         
+        console.log('Attempting to play audio with src:', audioElement.current.src);
         audioElement.current.play()
           .then(() => {
+            console.log('Audio playback started successfully');
             setIsPlaying(true);
             setPlaybackDuration(audioElement.current?.duration || 3);
           })
