@@ -59,15 +59,8 @@ export function useAudioRecorder() {
         });
         console.log('Got media stream:', stream);
 
-        // Create recorder with compatible format
-        let options = {};
-        if (MediaRecorder.isTypeSupported('audio/mp4')) {
-          options = { mimeType: 'audio/mp4' };
-        } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
-          options = { mimeType: 'audio/webm;codecs=opus' };
-        }
-        
-        mediaRecorder.current = new MediaRecorder(stream, options);
+        // Create recorder with default settings (like it was working before)
+        mediaRecorder.current = new MediaRecorder(stream);
         console.log('Created MediaRecorder with options:', { mimeType: mediaRecorder.current.mimeType });
 
         // Setup data collection
@@ -79,8 +72,8 @@ export function useAudioRecorder() {
           }
         };
 
-        // Start recording
-        mediaRecorder.current.start(200);
+        // Start recording with larger chunks
+        mediaRecorder.current.start(1000);
         setIsRecording(true);
 
         // Start timer
@@ -117,9 +110,7 @@ export function useAudioRecorder() {
     
     // If we have a real recorder, stop it
     if (mediaRecorder.current && mediaRecorder.current.state === 'recording') {
-      mediaRecorder.current.requestData(); // Force a final data event
-      
-      // Handle the stop event
+      // Handle the stop event BEFORE stopping
       mediaRecorder.current.onstop = () => {
         console.log('Recording stopped, chunks:', audioChunks.current.length);
         
@@ -134,10 +125,11 @@ export function useAudioRecorder() {
         }
 
         try {
-          // Create blob and URL
-          const mimeType = mediaRecorder.current?.mimeType || 'audio/webm';
+          // Create blob and URL - ensure we use the same mimeType that was recorded
+          const mimeType = mediaRecorder.current?.mimeType || 'audio/webm;codecs=opus';
           const audioBlob = new Blob(audioChunks.current, { type: mimeType });
           console.log('Created blob:', mimeType, audioBlob.size, 'bytes');
+          console.log('Blob type:', audioBlob.type);
           
           if (audioBlob.size === 0) {
             console.log('Created blob is empty, using fallback');
