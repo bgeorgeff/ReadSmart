@@ -69,12 +69,12 @@ export function useAudioRecorder() {
         });
         console.log('Got media stream:', stream);
 
-        // Try different audio formats for better compatibility
+        // Try MP4 first for better playback compatibility
         let options = {};
-        if (MediaRecorder.isTypeSupported('audio/webm')) {
-          options = { mimeType: 'audio/webm' };
-        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        if (MediaRecorder.isTypeSupported('audio/mp4')) {
           options = { mimeType: 'audio/mp4' };
+        } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+          options = { mimeType: 'audio/webm' };
         } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
           options = { mimeType: 'audio/ogg' };
         }
