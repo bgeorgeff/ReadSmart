@@ -289,75 +289,54 @@ export default function ReadingTools({
             )}
             
             {/* Playback State */}
-            {recordingState === RecordingState.PLAYBACK && (
+            {recordingState === RecordingState.PLAYBACK && audioUrl && (
               <div className="flex flex-col items-center justify-center h-full">
-                {audioUrl ? (
-                  <>
-                    <div className="w-full mb-4">
-                      <div className="relative pt-1">
-                        <div className="flex mb-2 items-center justify-between">
-                          <div>
-                            <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-[#4285F4] bg-[#4285F4]/10">
-                              Your Recording
-                            </span>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-xs text-gray-500">
-                              {formatTime(playbackProgress)} / {formatTime(playbackDuration)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="w-full bg-gray-100 rounded-full h-2">
-                          <div 
-                            className="bg-[#4285F4] h-2 rounded-full transition-all" 
-                            style={{ width: `${(playbackProgress / playbackDuration) * 100}%` }}
-                          ></div>
-                        </div>
+                <div className="w-full mb-4">
+                  <div className="relative pt-1">
+                    <div className="flex mb-2 items-center justify-between">
+                      <div>
+                        <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-[#4285F4] bg-[#4285F4]/10">
+                          Your Recording
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs text-gray-500">
+                          {formatTime(playbackProgress)} / {formatTime(playbackDuration)}
+                        </span>
                       </div>
                     </div>
-                    
-                    <div className="flex gap-3 mb-2">
-                      <button 
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-full"
-                        onClick={handleRestartPlayback}
-                      >
-                        <span className="material-icons">replay</span>
-                      </button>
-                      <button 
-                        className="bg-[#4285F4] text-white p-3 rounded-full"
-                        onClick={handlePlayPauseToggle}
-                      >
-                        <span className="material-icons">{isPlaying ? 'pause' : 'play_arrow'}</span>
-                      </button>
-                      <button 
-                        className="bg-gray-100 hover:bg-gray-200 text-[#EA4335] p-3 rounded-full"
-                        onClick={handleDeleteRecording}
-                      >
-                        <span className="material-icons">delete</span>
-                      </button>
+                    <div className="w-full bg-gray-100 rounded-full h-2">
+                      <div 
+                        className="bg-[#4285F4] h-2 rounded-full transition-all" 
+                        style={{ width: `${(playbackProgress / playbackDuration) * 100}%` }}
+                      ></div>
                     </div>
-                    <p className="text-center text-gray-500 text-sm font-['Roboto']">
-                      Record again to replace this recording
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <div className="bg-[#EA4335]/10 rounded-lg p-4 mb-4 text-center">
-                      <span className="material-icons text-3xl text-[#EA4335] mb-2">warning</span>
-                      <h4 className="font-['Google_Sans'] text-[#EA4335] font-medium">Recording issue</h4>
-                      <p className="text-gray-600 mt-1">
-                        No audio was recorded. This could be due to permission issues or browser limitations.
-                      </p>
-                    </div>
-                    <button 
-                      className="bg-[#FBBC05] text-white py-2 px-6 rounded-full font-['Google_Sans'] flex items-center"
-                      onClick={handleRecordToggle}
-                    >
-                      <span className="material-icons mr-1">mic</span>
-                      Try Again
-                    </button>
-                  </>
-                )}
+                  </div>
+                </div>
+                
+                <div className="flex gap-3 mb-2">
+                  <button 
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-full"
+                    onClick={handleRestartPlayback}
+                  >
+                    <span className="material-icons">replay</span>
+                  </button>
+                  <button 
+                    className="bg-[#4285F4] text-white p-3 rounded-full"
+                    onClick={handlePlayPauseToggle}
+                  >
+                    <span className="material-icons">{isPlaying ? 'pause' : 'play_arrow'}</span>
+                  </button>
+                  <button 
+                    className="bg-gray-100 hover:bg-gray-200 text-[#EA4335] p-3 rounded-full"
+                    onClick={handleDeleteRecording}
+                  >
+                    <span className="material-icons">delete</span>
+                  </button>
+                </div>
+                <p className="text-center text-gray-500 text-sm font-['Roboto']">
+                  Record again to replace this recording
+                </p>
               </div>
             )}
           </div>
