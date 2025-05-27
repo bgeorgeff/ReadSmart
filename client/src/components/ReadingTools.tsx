@@ -40,8 +40,8 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
             <span key={index} className="word-container">
               <span className="quote-highlight">"</span>
               <span 
-                className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 ${
-                  isHighlighted ? 'bg-[#4285F4]/30 rounded px-1' : ''
+                className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
+                  isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
                 }`}
                 onClick={() => onWordClick(cleanToken)}
               >
@@ -63,8 +63,8 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
           return (
             <span key={index} className="word-container">
               <span 
-                className={`word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 ${
-                  isHighlighted ? 'bg-[#4285F4]/30 rounded px-1' : ''
+                className={`word-highlight px-1 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 ${
+                  isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
                 }`}
                 onClick={() => onWordClick(cleanWord)}
               >
