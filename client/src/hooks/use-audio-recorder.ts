@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 export function useAudioRecorder() {
   const [isRecording, setIsRecording] = useState(false);
@@ -11,21 +11,6 @@ export function useAudioRecorder() {
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
   const recordingTimer = useRef<NodeJS.Timeout | null>(null);
-  const audioElement = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    audioElement.current = new Audio();
-    audioElement.current.onended = () => {
-      setIsPlaying(false);
-      setPlaybackProgress(0);
-    };
-    audioElement.current.ontimeupdate = () => {
-      setPlaybackProgress(audioElement.current?.currentTime || 0);
-    };
-    audioElement.current.onloadedmetadata = () => {
-      setPlaybackDuration(audioElement.current?.duration || 0);
-    };
-  }, []);
 
   const startRecording = async () => {
     try {
@@ -37,18 +22,16 @@ export function useAudioRecorder() {
       audioChunks.current = [];
 
       mediaRecorder.current.ondataavailable = (event) => {
-        audioChunks.current.push(event.data);
+        if (event.data.size > 0) {
+          audioChunks.current.push(event.data);
+        }
       };
 
       mediaRecorder.current.onstop = () => {
-        const audioBlob = new Blob(audioChunks.current, { type: 'audio/wav' });
+        const audioBlob = new Blob(audioChunks.current);
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
-        
-        if (audioElement.current) {
-          audioElement.current.src = url;
-          audioElement.current.load();
-        }
+        console.log('Recording complete, blob size:', audioBlob.size);
       };
 
       mediaRecorder.current.start();
@@ -81,11 +64,6 @@ export function useAudioRecorder() {
       URL.revokeObjectURL(audioUrl);
     }
     
-    if (audioElement.current) {
-      audioElement.current.pause();
-      audioElement.current.src = '';
-    }
-    
     setAudioUrl(null);
     setIsPlaying(false);
     setPlaybackProgress(0);
@@ -94,20 +72,40 @@ export function useAudioRecorder() {
   };
 
   const playRecording = () => {
-    if (audioElement.current && audioUrl) {
-      if (isPlaying) {
-        audioElement.current.pause();
-        setIsPlaying(false);
-      } else {
-        audioElement.current.play()
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch(error => {
-            console.error('Error playing audio:', error);
-          });
-      }
+    if (!audioUrl) return;
+    
+    if (isPlaying) {
+      setIsPlaying(false);
+      return;
     }
+
+    // Create fresh audio element each time
+    const audio = new Audio(audioUrl);
+    console.log('Playing audio from URL:', audioUrl);
+    
+    audio.onloadedmetadata = () => {
+      console.log('Audio loaded, duration:', audio.duration);
+      setPlaybackDuration(audio.duration || 0);
+    };
+    
+    audio.ontimeupdate = () => {
+      setPlaybackProgress(audio.currentTime || 0);
+    };
+    
+    audio.onended = () => {
+      setIsPlaying(false);
+      setPlaybackProgress(0);
+    };
+    
+    audio.play()
+      .then(() => {
+        console.log('Audio started playing successfully');
+        setIsPlaying(true);
+      })
+      .catch(error => {
+        console.error('Failed to play audio:', error);
+        setIsPlaying(false);
+      });
   };
 
   return {
