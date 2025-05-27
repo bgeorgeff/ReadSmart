@@ -13,21 +13,18 @@ export function useTextToSpeech(): TextToSpeechHook {
   const speechSynthRef = useRef<SpeechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   
-  // Initialize speech synthesis
-  useEffect(() => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  // Initialize speech synthesis only when needed (not on component mount)
+  const initializeSpeechSynthesis = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window && !speechSynthRef.current) {
       speechSynthRef.current = window.speechSynthesis;
     }
-    
-    return () => {
-      if (speechSynthRef.current) {
-        speechSynthRef.current.cancel();
-      }
-    };
-  }, []);
+  };
   
   // Function to speak text with optional word highlighting and custom rate
   const speak = (text: string, onWordHighlight?: (wordIndex: number) => void, rate: number = 0.9) => {
+    // Initialize only when actually needed
+    initializeSpeechSynthesis();
+    
     if (!speechSynthRef.current) {
       console.error('Speech synthesis not supported');
       return;
