@@ -23,10 +23,11 @@ export function useAudioRecorder() {
   useEffect(() => {
     if (!audioElement.current) {
       audioElement.current = new Audio();
-      audioElement.current.volume = 1.0; // Ensure volume is at maximum
+      audioElement.current.volume = 1.0;
+      audioElement.current.preload = 'auto';
     }
     
-    // Set up event listeners
+    // Set up event listeners with error handling
     audioElement.current.onended = () => {
       setIsPlaying(false);
       setPlaybackProgress(0);
@@ -37,7 +38,16 @@ export function useAudioRecorder() {
     };
     
     audioElement.current.onloadedmetadata = () => {
+      console.log('Audio metadata loaded, duration:', audioElement.current?.duration);
       setPlaybackDuration(audioElement.current?.duration || 3);
+    };
+
+    audioElement.current.onerror = (e) => {
+      console.error('Audio element error:', e);
+    };
+
+    audioElement.current.oncanplay = () => {
+      console.log('Audio can play, duration:', audioElement.current?.duration);
     };
 
     return () => {
@@ -205,34 +215,50 @@ export function useAudioRecorder() {
         audioElement.current.pause();
         setIsPlaying(false);
       } else {
-        // Update source if needed
-        if (audioElement.current.src !== src) {
-          audioElement.current.src = src;
-          audioElement.current.load();
-        }
+        // Create a new audio element for each playback to avoid browser caching issues
+        const newAudio = new Audio(src);
+        newAudio.volume = 1.0;
+        newAudio.preload = 'auto';
         
-        console.log('Attempting to play audio with src:', audioElement.current.src);
-        console.log('Audio element volume:', audioElement.current.volume);
-        console.log('Audio element muted:', audioElement.current.muted);
+        console.log('Attempting to play audio with src:', src);
+        console.log('Audio element volume:', newAudio.volume);
+        console.log('Audio element muted:', newAudio.muted);
         
-        audioElement.current.play()
+        newAudio.onloadedmetadata = () => {
+          console.log('New audio metadata loaded, duration:', newAudio.duration);
+          setPlaybackDuration(newAudio.duration || 3);
+        };
+
+        newAudio.onended = () => {
+          setIsPlaying(false);
+          setPlaybackProgress(0);
+        };
+
+        newAudio.ontimeupdate = () => {
+          setPlaybackProgress(newAudio.currentTime || 0);
+        };
+        
+        newAudio.play()
           .then(() => {
             console.log('Audio playback started successfully');
-            console.log('Audio duration:', audioElement.current?.duration);
+            console.log('Audio duration:', newAudio.duration);
             setIsPlaying(true);
-            setPlaybackDuration(audioElement.current?.duration || 3);
+            setPlaybackDuration(newAudio.duration || 3);
+            // Replace the old audio element with the new one
+            audioElement.current = newAudio;
           })
           .catch(error => {
             console.error('Error playing audio:', error);
             
             // Try with default audio as fallback
             if (src !== DEFAULT_AUDIO_URL) {
-              audioElement.current!.src = DEFAULT_AUDIO_URL;
-              audioElement.current!.load();
-              audioElement.current!.play()
+              const fallbackAudio = new Audio(DEFAULT_AUDIO_URL);
+              fallbackAudio.volume = 1.0;
+              fallbackAudio.play()
                 .then(() => {
                   setIsPlaying(true);
-                  setPlaybackDuration(audioElement.current?.duration || 3);
+                  setPlaybackDuration(fallbackAudio.duration || 3);
+                  audioElement.current = fallbackAudio;
                 })
                 .catch(e => console.error('Fallback audio failed too:', e));
             }
