@@ -19,12 +19,14 @@ export function useAudioRecorder() {
       
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
-      // Try to force a compatible audio format
+      // Try to use the most compatible audio format for playback
       let options = {};
-      if (MediaRecorder.isTypeSupported('audio/webm;codecs=pcm')) {
-        options = { mimeType: 'audio/webm;codecs=pcm' };
-      } else if (MediaRecorder.isTypeSupported('audio/wav')) {
-        options = { mimeType: 'audio/wav' };
+      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        options = { mimeType: 'audio/webm;codecs=opus' };
+      } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+        options = { mimeType: 'audio/webm' };
+      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        options = { mimeType: 'audio/mp4' };
       }
       
       mediaRecorder.current = new MediaRecorder(stream, options);
@@ -38,10 +40,13 @@ export function useAudioRecorder() {
       };
 
       mediaRecorder.current.onstop = () => {
-        const audioBlob = new Blob(audioChunks.current);
+        const audioBlob = new Blob(audioChunks.current, { 
+          type: mediaRecorder.current?.mimeType || 'audio/webm' 
+        });
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
         console.log('Recording complete, blob size:', audioBlob.size);
+        console.log('Audio blob type:', audioBlob.type);
       };
 
       mediaRecorder.current.start();
