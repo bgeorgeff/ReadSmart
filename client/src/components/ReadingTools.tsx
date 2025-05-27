@@ -132,79 +132,23 @@ export default function ReadingTools({
   const handleRecordToggle = async () => {
     if (recordingState === RecordingState.INACTIVE || recordingState === RecordingState.PLAYBACK) {
       try {
-        toast({
-          title: "Starting recording...",
-          description: "Please allow microphone access if prompted",
-        });
-        
         await startRecording();
         setRecordingState(RecordingState.RECORDING);
-        
-        toast({
-          title: "Recording started",
-          description: "Speak clearly into your device's microphone",
-        });
       } catch (error) {
         console.error('Recording start failed:', error);
-        
-        let errorMessage = "Could not start recording";
-        let errorDescription = "Please check your microphone permissions and try again";
-        
-        if (error instanceof Error) {
-          if (error.message.includes('not supported')) {
-            errorDescription = "Audio recording is not supported in this browser. Try using Chrome or Safari.";
-          } else if (error.message.includes('permission')) {
-            errorDescription = "Microphone access was denied. Please enable microphone permissions in your browser settings.";
-          } else if (error.message.includes('No audio')) {
-            errorDescription = "No audio was captured. Make sure your microphone is working and try again.";
-          }
-        }
-        
         toast({
-          title: errorMessage,
-          description: errorDescription,
+          title: "Recording failed",
+          description: "Please check microphone permissions and try again",
           variant: "destructive"
         });
-        
-        setRecordingState(RecordingState.INACTIVE);
       }
     }
   };
   
   // Handle stop recording
-  const handleStopRecording = async () => {
-    console.log("Stopping recording from UI handler");
-    try {
-      stopRecording();
-      
-      // Give the recording a moment to process
-      setTimeout(() => {
-        if (audioUrl) {
-          setRecordingState(RecordingState.PLAYBACK);
-          toast({
-            title: "Recording complete",
-            description: "Your recording is ready for playback",
-          });
-        } else {
-          // No audio was captured
-          setRecordingState(RecordingState.PLAYBACK);
-          toast({
-            title: "Recording issue",
-            description: "No audio was recorded. This could be due to permission issues or browser limitations.",
-            variant: "destructive"
-          });
-        }
-      }, 500);
-      
-    } catch (error) {
-      console.error('Error stopping recording:', error);
-      setRecordingState(RecordingState.PLAYBACK);
-      toast({
-        title: "Recording issue",
-        description: "There was a problem with the recording. Please try again.",
-        variant: "destructive"
-      });
-    }
+  const handleStopRecording = () => {
+    stopRecording();
+    setRecordingState(RecordingState.PLAYBACK);
   };
   
   // Handle playback controls
