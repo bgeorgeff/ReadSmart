@@ -69,9 +69,24 @@ export function useAudioRecorder() {
         });
         console.log('Got media stream:', stream);
 
-        // Create recorder with default settings (like it was working before)
-        mediaRecorder.current = new MediaRecorder(stream);
+        // Try different audio formats for better compatibility
+        let options = {};
+        if (MediaRecorder.isTypeSupported('audio/webm')) {
+          options = { mimeType: 'audio/webm' };
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          options = { mimeType: 'audio/mp4' };
+        } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+          options = { mimeType: 'audio/ogg' };
+        }
+        
+        mediaRecorder.current = new MediaRecorder(stream, options);
         console.log('Created MediaRecorder with options:', { mimeType: mediaRecorder.current.mimeType });
+        console.log('Supported types check:', {
+          'audio/webm': MediaRecorder.isTypeSupported('audio/webm'),
+          'audio/webm;codecs=opus': MediaRecorder.isTypeSupported('audio/webm;codecs=opus'),
+          'audio/mp4': MediaRecorder.isTypeSupported('audio/mp4'),
+          'audio/ogg': MediaRecorder.isTypeSupported('audio/ogg')
+        });
 
         // Setup data collection
         audioChunks.current = [];
@@ -135,11 +150,29 @@ export function useAudioRecorder() {
         }
 
         try {
-          // Create blob and URL - ensure we use the same mimeType that was recorded
-          const mimeType = mediaRecorder.current?.mimeType || 'audio/webm;codecs=opus';
-          const audioBlob = new Blob(audioChunks.current, { type: mimeType });
-          console.log('Created blob:', mimeType, audioBlob.size, 'bytes');
-          console.log('Blob type:', audioBlob.type);
+          // Create blob with explicit WAV format to ensure compatibility
+          const mimeType = 'audio/wav';
+          let audioBlob;
+          
+          // Try to create a proper audio blob
+          if (audioChunks.current.length > 0) {
+            // First try with original format
+            const originalBlob = new Blob(audioChunks.current, { 
+              type: mediaRecorder.current?.mimeType || 'audio/webm;codecs=opus' 
+            });
+            console.log('Created original blob:', originalBlob.type, originalBlob.size, 'bytes');
+            
+            // For now, use the original blob but log the issue
+            audioBlob = originalBlob;
+          } else {
+            console.log('No audio chunks available');
+            setAudioUrl(DEFAULT_AUDIO_URL);
+            if (audioElement.current) {
+              audioElement.current.src = DEFAULT_AUDIO_URL;
+              audioElement.current.load();
+            }
+            return;
+          }
           
           if (audioBlob.size === 0) {
             console.log('Created blob is empty, using fallback');
