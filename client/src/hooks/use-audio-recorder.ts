@@ -1,5 +1,25 @@
 import { useState, useRef } from 'react';
 
+// Helper function to detect iOS
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
+};
+
+// Helper function to check microphone permissions
+const checkMicrophonePermission = async () => {
+  if (!navigator.permissions) {
+    return 'unknown';
+  }
+  
+  try {
+    const permission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+    return permission.state;
+  } catch (error) {
+    console.log('Permission query not supported:', error);
+    return 'unknown';
+  }
+};
+
 export function useAudioRecorder() {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -17,46 +37,104 @@ export function useAudioRecorder() {
       setRecordingTime(0);
       setAudioUrl(null);
       
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Check if MediaDevices is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Audio recording is not supported in this browser');
+      }
+
+      // Check permissions first
+      const permissionState = await checkMicrophonePermission();
+      console.log('Microphone permission state:', permissionState);
       
-      // Try to use the most compatible audio format for playback
+      if (permissionState === 'denied') {
+        throw new Error('Microphone permission was denied. Please enable microphone access in your browser settings.');
+      }
+
+      // Enhanced constraints for mobile devices, especially iOS
+      const constraints = {
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          // iOS-specific optimizations
+          ...(isIOS() && {
+            sampleRate: { ideal: 44100 },
+            channelCount: { ideal: 1 },
+            latency: { ideal: 0.2 }
+          })
+        }
+      };
+
+      console.log('Requesting microphone access with constraints:', constraints);
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      // Enhanced format detection for iOS/Safari compatibility
       let options = {};
-      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+      if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        // Prefer MP4 for iOS compatibility
+        options = { mimeType: 'audio/mp4' };
+      } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
         options = { mimeType: 'audio/webm;codecs=opus' };
       } else if (MediaRecorder.isTypeSupported('audio/webm')) {
         options = { mimeType: 'audio/webm' };
-      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-        options = { mimeType: 'audio/mp4' };
+      } else if (MediaRecorder.isTypeSupported('audio/wav')) {
+        options = { mimeType: 'audio/wav' };
       }
       
       mediaRecorder.current = new MediaRecorder(stream, options);
       console.log('Recording with format:', mediaRecorder.current.mimeType);
+      console.log('Audio constraints:', constraints);
       audioChunks.current = [];
 
       mediaRecorder.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunks.current.push(event.data);
+          console.log('Audio chunk received, size:', event.data.size);
         }
       };
 
       mediaRecorder.current.onstop = () => {
         const audioBlob = new Blob(audioChunks.current, { 
-          type: mediaRecorder.current?.mimeType || 'audio/webm' 
+          type: mediaRecorder.current?.mimeType || 'audio/mp4' 
         });
-        const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url);
         console.log('Recording complete, blob size:', audioBlob.size);
         console.log('Audio blob type:', audioBlob.type);
+        
+        if (audioBlob.size === 0) {
+          console.error('Recording failed - empty audio blob');
+          throw new Error('No audio was recorded. This could be due to permission issues or browser limitations.');
+        }
+        
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrl(url);
       };
 
-      mediaRecorder.current.start();
+      mediaRecorder.current.onerror = (event) => {
+        console.error('MediaRecorder error:', event);
+        throw new Error('Recording failed due to an internal error');
+      };
+
+      // Start recording with a small timeslice for better mobile performance
+      mediaRecorder.current.start(1000);
       setIsRecording(true);
 
       recordingTimer.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
+      
+      console.log('Recording started successfully');
     } catch (error) {
       console.error('Error starting recording:', error);
+      setIsRecording(false);
+      
+      // Clean up any resources
+      if (recordingTimer.current) {
+        clearInterval(recordingTimer.current);
+        recordingTimer.current = null;
+      }
+      
+      // Re-throw the error to be handled by the UI
+      throw error;
     }
   };
 
