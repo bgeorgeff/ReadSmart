@@ -57,6 +57,15 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       // Parse the JSON response
       const summaries = JSON.parse(jsonContent);
       
+      // Normalize quote characters in all summaries
+      Object.keys(summaries).forEach(key => {
+        if (typeof summaries[key] === 'string') {
+          summaries[key] = summaries[key]
+            .replace(/[""]/g, '"')  // Replace smart double quotes with regular double quotes
+            .replace(/['']/g, "'"); // Replace smart single quotes with regular single quotes
+        }
+      });
+      
       // Validate the structure of the response - ensure we have all grade levels
       const expectedGradeLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
       const missingLevels = expectedGradeLevels.filter(level => !summaries[level]);
