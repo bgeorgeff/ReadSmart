@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import { useTextToSpeech } from '@/hooks/use-text-to-speech';
 import { RecordingState } from '@/types';
@@ -106,7 +106,6 @@ export default function ReadingTools({
   const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
   const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
   const [speechRate, setSpeechRate] = useState<number>(0.9);
-  const speedChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const { 
     isRecording, 
@@ -213,6 +212,29 @@ export default function ReadingTools({
             )}
           </div>
           
+          {/* Reading Speed Slider */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Choose Reading Speed: {speechRate.toFixed(1)}x
+            </label>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-xs text-gray-500">Slow</span>
+              <input
+                type="range"
+                min="0.5"
+                max="2.0"
+                step="0.1"
+                value={speechRate}
+                onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${((speechRate - 0.5) / 1.5) * 100}%, #e5e7eb ${((speechRate - 0.5) / 1.5) * 100}%, #e5e7eb 100%)`
+                }}
+              />
+              <span className="text-xs text-gray-500">Fast</span>
+            </div>
+          </div>
+          
           <div className="flex flex-wrap gap-3 mb-4">
             <button 
               className={`flex-1 ${isSpeaking ? 'bg-[#EA4335] text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'} py-2 px-4 rounded-lg font-['Google_Sans'] flex items-center justify-center`}
@@ -229,53 +251,6 @@ export default function ReadingTools({
               <span className="material-icons mr-1">mic</span>
               Record Me
             </button>
-          </div>
-          
-          {/* Reading Speed Slider */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Reading Speed: {speechRate.toFixed(1)}x
-            </label>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-gray-500">0.5x</span>
-              <input
-                type="range"
-                min="0.5"
-                max="2.0"
-                step="0.1"
-                value={speechRate}
-                onChange={(e) => {
-                  const newRate = parseFloat(e.target.value);
-                  setSpeechRate(newRate);
-                  
-                  // If currently speaking, use debounced restart
-                  if (isSpeaking) {
-                    // Clear any existing timeout
-                    if (speedChangeTimeoutRef.current) {
-                      clearTimeout(speedChangeTimeoutRef.current);
-                    }
-                    
-                    // Set new timeout to restart speech after user stops sliding
-                    speedChangeTimeoutRef.current = setTimeout(() => {
-                      stopSpeaking();
-                      setHighlightedWordIndex(-1);
-                      
-                      // Small delay to ensure stop takes effect, then restart
-                      setTimeout(() => {
-                        speak(selectedSummary, (wordIndex: number) => {
-                          setHighlightedWordIndex(wordIndex);
-                        }, newRate);
-                      }, 100);
-                    }, 300); // Wait 300ms after user stops moving slider
-                  }
-                }}
-                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                style={{
-                  background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${((speechRate - 0.5) / 1.5) * 100}%, #e5e7eb ${((speechRate - 0.5) / 1.5) * 100}%, #e5e7eb 100%)`
-                }}
-              />
-              <span className="text-xs text-gray-500">2.0x</span>
-            </div>
           </div>
         </div>
         
