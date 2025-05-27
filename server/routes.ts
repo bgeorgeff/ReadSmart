@@ -170,9 +170,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         function playRecording() {
             console.log('Playing audio...');
+            console.log('Audio player volume:', audioPlayer.volume);
+            console.log('Audio player muted:', audioPlayer.muted);
+            console.log('Audio player duration:', audioPlayer.duration);
+            console.log('Audio player src:', audioPlayer.src);
+            console.log('Audio player readyState:', audioPlayer.readyState);
+            
             audioPlayer.play()
                 .then(() => {
                     console.log('Audio playing successfully');
+                    console.log('Current time:', audioPlayer.currentTime);
                     status.textContent = 'Playing recording...';
                 })
                 .catch(error => {
