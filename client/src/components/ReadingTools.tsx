@@ -4,13 +4,14 @@ import { useTextToSpeech } from '@/hooks/use-text-to-speech';
 import { RecordingState } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
-// Component to display text with clickable words for definitions
+// Component to display text with clickable words for definitions and highlighting
 interface DisplayTextWithFixesProps {
   text: string;
   onWordClick: (word: string) => void;
+  highlightedWordIndex?: number;
 }
 
-function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) {
+function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: DisplayTextWithFixesProps) {
   const processedText = text;
   
   // Simple tokenization that preserves quotes and parentheses properly
@@ -26,6 +27,9 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
         // Check if this is a quoted phrase (starts and ends with ")
         const isQuotedPhrase = token.startsWith('"') && token.endsWith('"');
         
+        // Check if this token should be highlighted during speech
+        const isHighlighted = highlightedWordIndex === index;
+        
         // For quoted phrases, preserve the entire token
         if (isQuotedPhrase) {
           // Remove quotes for clicking, but preserve in display
@@ -35,7 +39,9 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
             <span key={index} className="word-container">
               <span className="quote-highlight">"</span>
               <span 
-                className="word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1"
+                className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
+                  isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
+                }`}
                 onClick={() => onWordClick(cleanToken)}
               >
                 {cleanToken}
@@ -54,7 +60,9 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
           return (
             <span key={index} className="word-container">
               <span 
-                className="word-highlight px-1 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200"
+                className={`word-highlight px-1 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 ${
+                  isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
+                }`}
                 onClick={() => onWordClick(cleanWord)}
               >
                 {cleanWord}
@@ -93,6 +101,7 @@ export default function ReadingTools({
   onBackToSummary 
 }: ReadingToolsProps) {
   const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
+  const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
 
   const [speechRate, setSpeechRate] = useState<number>(0.9);
   const { toast } = useToast();
@@ -171,12 +180,15 @@ export default function ReadingTools({
     setRecordingState(RecordingState.INACTIVE);
   };
   
-  // Handle listen (text-to-speech)
+  // Handle listen (text-to-speech) with word highlighting
   const handleListen = () => {
     if (isSpeaking) {
       stopSpeaking();
+      setHighlightedWordIndex(-1); // Clear highlighting when stopped
     } else {
-      speak(selectedSummary, undefined, speechRate);
+      speak(selectedSummary, (wordIndex: number) => {
+        setHighlightedWordIndex(wordIndex);
+      }, speechRate);
     }
   };
   
@@ -191,7 +203,7 @@ export default function ReadingTools({
               <DisplayTextWithFixes 
                 text={selectedSummary}
                 onWordClick={onWordClick}
-
+                highlightedWordIndex={highlightedWordIndex}
               />
             ) : (
               <p>No text available for reading practice.</p>
