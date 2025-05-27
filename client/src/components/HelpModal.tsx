@@ -23,20 +23,10 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-bold text-[#4285F4] flex items-center gap-2">
-              <BookOpen className="h-6 w-6" />
-              How to Use ReadSmart
-            </DialogTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="h-8 w-8 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle className="text-2xl font-bold text-[#4285F4] flex items-center gap-2">
+            <BookOpen className="h-6 w-6" />
+            How to Use ReadSmart
+          </DialogTitle>
           <DialogDescription className="sr-only">
             Learn how to use ReadSmart's features for text comprehension and reading improvement
           </DialogDescription>
