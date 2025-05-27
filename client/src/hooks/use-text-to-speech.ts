@@ -47,8 +47,6 @@ export function useTextToSpeech(): TextToSpeechHook {
       utterance.pitch = 1;
       utterance.volume = 1;
       
-      console.log('Setting speech rate to:', rate);
-      
       // Wait for voices to load if they haven't already
       const setVoiceAndSpeak = () => {
         const voices = speechSynthRef.current!.getVoices();

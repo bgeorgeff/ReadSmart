@@ -1,0 +1,30 @@
+
+> rest-express@1.0.0 dev
+1:43:03 AM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+1:44:36 AM [vite] hmr update /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw, /src/components/SimpleWordModal.tsx, /src/components/ReadingTools.tsx, /src/components/HelpModal.tsx
+1:44:58 AM [vite] hmr update /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw, /src/components/SimpleWordModal.tsx, /src/components/ReadingTools.tsx, /src/components/HelpModal.tsx (x2)
+1:45:08 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw
+1:45:20 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw (x2)
+1:45:32 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw (x3)
+1:45:46 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw (x4)
+1:45:56 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw (x5)
+1:46:17 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw (x6)
+1:48:25 AM [express] POST /api/process-text 200 in 15009ms :: {"success":true,"summaryId":1,"summari…
+1:50:02 AM [express] GET /api/word/environment 200 in 1420ms :: {"success":true,"word":"environment"…
+1:50:24 AM [express] GET /api/word/constantly 200 in 4365ms :: {"success":true,"word":"constantly","…
+1:54:40 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw (x7)
+1:54:46 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw (x8)
+1:55:45 AM [express] POST /api/process-text 200 in 12911ms :: {"success":true,"summaryId":2,"summari…
+1:57:40 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw (x9)
+1:57:47 AM [vite] hmr update /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw, /src/components/SimpleWordModal.tsx, /src/components/ReadingTools.tsx, /src/components/HelpModal.tsx
+1:57:53 AM [vite] hmr update /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw, /src/components/SimpleWordModal.tsx, /src/components/ReadingTools.tsx, /src/components/HelpModal.tsx (x2)
+1:57:58 AM [vite] hmr update /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw, /src/components/SimpleWordModal.tsx, /src/components/ReadingTools.tsx, /src/components/HelpModal.tsx (x3)
+1:58:06 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw
+1:58:19 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw (x2)
+1:58:48 AM [express] POST /api/process-text 200 in 10819ms :: {"success":true,"summaryId":3,"summari…
+1:59:50 AM [vite] hmr update /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw, /src/components/SimpleWordModal.tsx, /src/components/ReadingTools.tsx, /src/components/HelpModal.tsx
+1:59:57 AM [vite] hmr update /src/components/ReadingTools.tsx, /src/index.css?v=Nvu1Fgxi4M-VMAQHNlYvw
+2:01:01 AM [express] POST /api/process-text 200 in 16114ms :: {"success":true,"summaryId":4,"summari…

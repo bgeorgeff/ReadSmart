@@ -188,7 +188,6 @@ export default function ReadingTools({
       stopSpeaking();
       setHighlightedWordIndex(-1); // Clear highlighting when stopped
     } else {
-      console.log('Using speech rate:', speechRate);
       speak(selectedSummary, (wordIndex: number) => {
         setHighlightedWordIndex(wordIndex);
       }, speechRate);
@@ -244,7 +243,23 @@ export default function ReadingTools({
                 max="2.0"
                 step="0.1"
                 value={speechRate}
-                onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+                onChange={(e) => {
+                  const newRate = parseFloat(e.target.value);
+                  setSpeechRate(newRate);
+                  
+                  // If currently speaking, restart with new rate
+                  if (isSpeaking) {
+                    stopSpeaking();
+                    setHighlightedWordIndex(-1);
+                    
+                    // Small delay to ensure stop takes effect, then restart
+                    setTimeout(() => {
+                      speak(selectedSummary, (wordIndex: number) => {
+                        setHighlightedWordIndex(wordIndex);
+                      }, newRate);
+                    }, 100);
+                  }
+                }}
                 className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
                   background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${((speechRate - 0.5) / 1.5) * 100}%, #e5e7eb ${((speechRate - 0.5) / 1.5) * 100}%, #e5e7eb 100%)`
