@@ -289,7 +289,7 @@ export default function ReadingTools({
             )}
             
             {/* Playback State */}
-            {recordingState === RecordingState.PLAYBACK && audioUrl && (
+            {recordingState === RecordingState.PLAYBACK && (
               <div className="flex flex-col items-center justify-center h-full">
                 <div className="w-full mb-4">
                   <div className="relative pt-1">
