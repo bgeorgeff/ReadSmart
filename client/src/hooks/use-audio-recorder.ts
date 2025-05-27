@@ -41,9 +41,7 @@ export function useAudioRecorder() {
     };
 
     return () => {
-      if (audioUrl && audioUrl !== DEFAULT_AUDIO_URL) {
-        URL.revokeObjectURL(audioUrl);
-      }
+      // Cleanup will be handled in resetRecording function
     };
   }, []);
 
