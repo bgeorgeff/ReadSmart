@@ -1,131 +1,68 @@
 import { useState, useRef, useEffect } from 'react';
 
-// Default audio file - a simple tone that will play as a fallback
-// This ensures the audio player works even if recording doesn't
-const DEFAULT_AUDIO_URL = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//uQZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAGAAANdgAaGhoaGhoaGhoaSkpKSkpKSkpKSmtra2tra2tra2trjo6Ojo6Ojo6Ojo6urq6urq6urq6ursrKysrKysrKysrK//////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAA2iUoJHI0AAE=";
-
 export function useAudioRecorder() {
-  // State hooks
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackProgress, setPlaybackProgress] = useState(0);
-  const [playbackDuration, setPlaybackDuration] = useState(3); // Default duration
+  const [playbackDuration, setPlaybackDuration] = useState(0);
 
-  // Ref hooks
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
   const recordingTimer = useRef<NodeJS.Timeout | null>(null);
   const audioElement = useRef<HTMLAudioElement | null>(null);
 
-  // Effect for audio element setup
   useEffect(() => {
-    if (!audioElement.current) {
-      audioElement.current = new Audio();
-      audioElement.current.volume = 1.0;
-      audioElement.current.preload = 'auto';
-    }
-    
-    // Set up event listeners with error handling
+    audioElement.current = new Audio();
     audioElement.current.onended = () => {
       setIsPlaying(false);
       setPlaybackProgress(0);
     };
-    
     audioElement.current.ontimeupdate = () => {
       setPlaybackProgress(audioElement.current?.currentTime || 0);
     };
-    
     audioElement.current.onloadedmetadata = () => {
-      console.log('Audio metadata loaded, duration:', audioElement.current?.duration);
-      setPlaybackDuration(audioElement.current?.duration || 3);
-    };
-
-    audioElement.current.onerror = (e) => {
-      console.error('Audio element error:', e);
-    };
-
-    audioElement.current.oncanplay = () => {
-      console.log('Audio can play, duration:', audioElement.current?.duration);
-    };
-
-    return () => {
-      // Cleanup will be handled in resetRecording function
+      setPlaybackDuration(audioElement.current?.duration || 0);
     };
   }, []);
 
   const startRecording = async () => {
     try {
-      console.log('Starting recording process');
+      setRecordingTime(0);
+      setAudioUrl(null);
       
-      // Reset previous recording
-      resetRecording();
-      
-      // Try to get microphone access
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true
-        });
-        console.log('Got media stream:', stream);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder.current = new MediaRecorder(stream);
+      audioChunks.current = [];
 
-        // Try MP4 first for better playback compatibility
-        let options = {};
-        if (MediaRecorder.isTypeSupported('audio/mp4')) {
-          options = { mimeType: 'audio/mp4' };
-        } else if (MediaRecorder.isTypeSupported('audio/webm')) {
-          options = { mimeType: 'audio/webm' };
-        } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
-          options = { mimeType: 'audio/ogg' };
-        }
+      mediaRecorder.current.ondataavailable = (event) => {
+        audioChunks.current.push(event.data);
+      };
+
+      mediaRecorder.current.onstop = () => {
+        const audioBlob = new Blob(audioChunks.current, { type: 'audio/wav' });
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrl(url);
         
-        mediaRecorder.current = new MediaRecorder(stream, options);
-        console.log('Created MediaRecorder with options:', { mimeType: mediaRecorder.current.mimeType });
-        console.log('Supported types check:', {
-          'audio/webm': MediaRecorder.isTypeSupported('audio/webm'),
-          'audio/webm;codecs=opus': MediaRecorder.isTypeSupported('audio/webm;codecs=opus'),
-          'audio/mp4': MediaRecorder.isTypeSupported('audio/mp4'),
-          'audio/ogg': MediaRecorder.isTypeSupported('audio/ogg')
-        });
-
-        // Setup data collection
-        audioChunks.current = [];
-        mediaRecorder.current.ondataavailable = (event) => {
-          console.log('Data available event:', mediaRecorder.current?.mimeType, event.data.size, 'bytes');
-          if (event.data && event.data.size > 0) {
-            audioChunks.current.push(event.data);
-          }
-        };
-
-        // Start recording with larger chunks
-        mediaRecorder.current.start(1000);
-        setIsRecording(true);
-
-        // Start timer
-        recordingTimer.current = setInterval(() => {
-          setRecordingTime((prev) => prev + 1);
-        }, 1000);
-      } catch (error) {
-        console.error('Failed to get microphone access:', error);
-        // Fall back to a simple tone
-        setAudioUrl(DEFAULT_AUDIO_URL);
         if (audioElement.current) {
-          audioElement.current.src = DEFAULT_AUDIO_URL;
+          audioElement.current.src = url;
           audioElement.current.load();
         }
-        // Simulate recording
-        setIsRecording(true);
-        recordingTimer.current = setInterval(() => {
-          setRecordingTime((prev) => prev + 1);
-        }, 1000);
-      }
-    } catch (err) {
-      console.error('Failed to start recording:', err);
+      };
+
+      mediaRecorder.current.start();
+      setIsRecording(true);
+
+      recordingTimer.current = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+    } catch (error) {
+      console.error('Error starting recording:', error);
     }
   };
 
   const stopRecording = () => {
-    // Stop the timer
     if (recordingTimer.current) {
       clearInterval(recordingTimer.current);
       recordingTimer.current = null;
@@ -133,97 +70,14 @@ export function useAudioRecorder() {
     
     setIsRecording(false);
     
-    // If we have a real recorder, stop it
     if (mediaRecorder.current && mediaRecorder.current.state === 'recording') {
-      // Handle the stop event BEFORE stopping
-      mediaRecorder.current.onstop = () => {
-        console.log('Recording stopped, chunks:', audioChunks.current.length);
-        
-        if (audioChunks.current.length === 0) {
-          console.log('No audio chunks recorded, using fallback');
-          setAudioUrl(DEFAULT_AUDIO_URL);
-          if (audioElement.current) {
-            audioElement.current.src = DEFAULT_AUDIO_URL;
-            audioElement.current.load();
-          }
-          return;
-        }
-
-        try {
-          // Create blob with explicit WAV format to ensure compatibility
-          const mimeType = 'audio/wav';
-          let audioBlob;
-          
-          // Try to create a proper audio blob
-          if (audioChunks.current.length > 0) {
-            // First try with original format
-            const originalBlob = new Blob(audioChunks.current, { 
-              type: mediaRecorder.current?.mimeType || 'audio/webm;codecs=opus' 
-            });
-            console.log('Created original blob:', originalBlob.type, originalBlob.size, 'bytes');
-            
-            // For now, use the original blob but log the issue
-            audioBlob = originalBlob;
-          } else {
-            console.log('No audio chunks available');
-            setAudioUrl(DEFAULT_AUDIO_URL);
-            if (audioElement.current) {
-              audioElement.current.src = DEFAULT_AUDIO_URL;
-              audioElement.current.load();
-            }
-            return;
-          }
-          
-          if (audioBlob.size === 0) {
-            console.log('Created blob is empty, using fallback');
-            setAudioUrl(DEFAULT_AUDIO_URL);
-            if (audioElement.current) {
-              audioElement.current.src = DEFAULT_AUDIO_URL;
-              audioElement.current.load();
-            }
-            return;
-          }
-
-          // Create URL and setup audio
-          const url = URL.createObjectURL(audioBlob);
-          console.log('Created URL:', url);
-          setAudioUrl(url);
-          
-          if (audioElement.current) {
-            audioElement.current.src = url;
-            audioElement.current.load();
-          }
-        } catch (error) {
-          console.error('Error processing recording:', error);
-          
-          // Fall back to default audio
-          setAudioUrl(DEFAULT_AUDIO_URL);
-          if (audioElement.current) {
-            audioElement.current.src = DEFAULT_AUDIO_URL;
-            audioElement.current.load();
-          }
-        }
-
-        // Clean up
-        mediaRecorder.current?.stream.getTracks().forEach(track => track.stop());
-      };
-      
-      // Stop the recorder
       mediaRecorder.current.stop();
-    } 
-    else {
-      // If no recorder, use fallback
-      console.log('No active recorder, using fallback');
-      setAudioUrl(DEFAULT_AUDIO_URL);
-      if (audioElement.current) {
-        audioElement.current.src = DEFAULT_AUDIO_URL;
-        audioElement.current.load();
-      }
+      mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
     }
   };
 
   const resetRecording = () => {
-    if (audioUrl && audioUrl !== DEFAULT_AUDIO_URL) {
+    if (audioUrl) {
       URL.revokeObjectURL(audioUrl);
     }
     
@@ -235,71 +89,22 @@ export function useAudioRecorder() {
     setAudioUrl(null);
     setIsPlaying(false);
     setPlaybackProgress(0);
-    setPlaybackDuration(3);
+    setPlaybackDuration(0);
     audioChunks.current = [];
   };
 
   const playRecording = () => {
-    // If no audioUrl is set, use default
-    const src = audioUrl || DEFAULT_AUDIO_URL;
-    
-    // Stop any ongoing speech synthesis that might interfere
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
-    
-    if (audioElement.current) {
+    if (audioElement.current && audioUrl) {
       if (isPlaying) {
         audioElement.current.pause();
         setIsPlaying(false);
       } else {
-        // Create a new audio element for each playback to avoid browser caching issues
-        const newAudio = new Audio(src);
-        newAudio.volume = 1.0;
-        newAudio.preload = 'auto';
-        
-        console.log('Attempting to play audio with src:', src);
-        console.log('Audio element volume:', newAudio.volume);
-        console.log('Audio element muted:', newAudio.muted);
-        
-        newAudio.onloadedmetadata = () => {
-          console.log('New audio metadata loaded, duration:', newAudio.duration);
-          setPlaybackDuration(newAudio.duration || 3);
-        };
-
-        newAudio.onended = () => {
-          setIsPlaying(false);
-          setPlaybackProgress(0);
-        };
-
-        newAudio.ontimeupdate = () => {
-          setPlaybackProgress(newAudio.currentTime || 0);
-        };
-        
-        newAudio.play()
+        audioElement.current.play()
           .then(() => {
-            console.log('Audio playback started successfully');
-            console.log('Audio duration:', newAudio.duration);
             setIsPlaying(true);
-            setPlaybackDuration(newAudio.duration || 3);
-            // Replace the old audio element with the new one
-            audioElement.current = newAudio;
           })
           .catch(error => {
             console.error('Error playing audio:', error);
-            
-            // Try with default audio as fallback
-            if (src !== DEFAULT_AUDIO_URL) {
-              const fallbackAudio = new Audio(DEFAULT_AUDIO_URL);
-              fallbackAudio.volume = 1.0;
-              fallbackAudio.play()
-                .then(() => {
-                  setIsPlaying(true);
-                  setPlaybackDuration(fallbackAudio.duration || 3);
-                  audioElement.current = fallbackAudio;
-                })
-                .catch(e => console.error('Fallback audio failed too:', e));
-            }
           });
       }
     }
