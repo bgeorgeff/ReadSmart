@@ -11,29 +11,8 @@ interface HelpModalProps {
 export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
   const { speak } = useTextToSpeech();
 
-  const speakGettingStarted = () => {
-    const text = "Getting Started. 1. Paste or type your text in the input box on the main page. 2. Click Process Text to generate summaries at different reading levels. 3. Choose your grade level to see a summary that matches your reading ability. 4. Click Continue to Reading Tools for interactive features.";
-    speak(text);
-  };
-
-  const speakGradeLevels = () => {
-    const text = "Understanding Grade Levels. Grades 1-2: Very simple language, short sentences. Grades 3-5: Elementary level with basic vocabulary. Grades 6-8: Middle school level with more complex ideas. Grades 9-12: High school level with advanced concepts.";
-    speak(text);
-  };
-
-  const speakInteractiveFeatures = () => {
-    const text = "Interactive Features. Click any word to see its definition, pronunciation, and example sentence. Use the audio button to hear words or text read aloud. Navigate back and forth between summary and reading tools.";
-    speak(text);
-  };
-
-  const speakTipsForSuccess = () => {
-    const text = "Tips for Success. Start with a grade level that feels comfortable, then try higher levels. Use the word lookup feature to build your vocabulary. Listen to pronunciation to improve speaking skills. Try different types of text: news articles, stories, or educational content.";
-    speak(text);
-  };
-
-  const speakSampleTextHeading = () => {
-    const text = "Copy this Sample Text to Paste into the App";
-    speak(text);
+  const speakSection = (sectionText: string) => {
+    speak(sectionText);
   };
 
   return (
@@ -64,7 +43,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={speakGettingStarted}
+                onClick={() => speakSection("Getting Started. 1. Paste or type your text in the input box on the main page. 2. Click Process Text to generate summaries at different reading levels. 3. Choose your grade level to see a summary that matches your reading ability. 4. Click Continue to Reading Tools for interactive features.")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
                 aria-label="Listen to Getting Started section"
               >
@@ -84,7 +63,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={speakGradeLevels}
+                onClick={() => speakSection("Understanding Grade Levels. Grades 1-2: Very simple language, short sentences. Grades 3-5: Elementary level with basic vocabulary. Grades 6-8: Middle school level with more complex ideas. Grades 9-12: High school level with advanced concepts.")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
                 aria-label="Listen to Understanding Grade Levels section"
               >
@@ -104,7 +83,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={speakInteractiveFeatures}
+                onClick={() => speakSection("Interactive Features. Click any word to see its definition, pronunciation, and example sentence. Use the audio button to hear words or text read aloud. Navigate back and forth between summary and reading tools.")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
                 aria-label="Listen to Interactive Features section"
               >
@@ -123,7 +102,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={speakTipsForSuccess}
+                onClick={() => speakSection("Tips for Success. Start with a grade level that feels comfortable, then try higher levels. Use the word lookup feature to build your vocabulary. Listen to pronunciation to improve speaking skills. Try different types of text: news articles, stories, or educational content.")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
                 aria-label="Listen to Tips for Success section"
               >
@@ -143,7 +122,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={speakSampleTextHeading}
+                onClick={() => speakSection("Try This Sample Text")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
                 aria-label="Listen to section heading"
               >
