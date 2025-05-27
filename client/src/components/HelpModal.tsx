@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Target, MousePointer, Volume2, X } from "lucide-react";
+import { BookOpen, Volume2, X } from "lucide-react";
+import { useTextToSpeech } from "@/hooks/use-text-to-speech";
 
 interface HelpModalProps {
   isOpen: boolean;
@@ -8,6 +9,33 @@ interface HelpModalProps {
 }
 
 export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
+  const { speak } = useTextToSpeech();
+
+  const speakGettingStarted = () => {
+    const text = "Getting Started. 1. Paste or type your text in the input box on the main page. 2. Click Process Text to generate summaries at different reading levels. 3. Choose your grade level to see a summary that matches your reading ability. 4. Click Continue to Reading Tools for interactive features.";
+    speak(text);
+  };
+
+  const speakGradeLevels = () => {
+    const text = "Understanding Grade Levels. Grades 1-2: Very simple language, short sentences. Grades 3-5: Elementary level with basic vocabulary. Grades 6-8: Middle school level with more complex ideas. Grades 9-12: High school level with advanced concepts.";
+    speak(text);
+  };
+
+  const speakInteractiveFeatures = () => {
+    const text = "Interactive Features. Click any word to see its definition, pronunciation, and example sentence. Use the audio button to hear words or text read aloud. Navigate back and forth between summary and reading tools.";
+    speak(text);
+  };
+
+  const speakTipsForSuccess = () => {
+    const text = "Tips for Success. Start with a grade level that feels comfortable, then try higher levels. Use the word lookup feature to build your vocabulary. Listen to pronunciation to improve speaking skills. Try different types of text: news articles, stories, or educational content.";
+    speak(text);
+  };
+
+  const speakSampleTextHeading = () => {
+    const text = "Copy this Sample Text to Paste into the App";
+    speak(text);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -35,7 +63,13 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           {/* Getting Started */}
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <Target className="h-5 w-5 text-[#4285F4]" />
+              <button 
+                onClick={speakGettingStarted}
+                className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
+                aria-label="Listen to Getting Started section"
+              >
+                <Volume2 className="h-5 w-5" />
+              </button>
               Getting Started
             </h3>
             <div className="space-y-2 text-gray-600">
@@ -48,7 +82,16 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
 
           {/* Understanding Grade Levels */}
           <section>
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">Understanding Grade Levels</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              <button 
+                onClick={speakGradeLevels}
+                className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
+                aria-label="Listen to Understanding Grade Levels section"
+              >
+                <Volume2 className="h-5 w-5" />
+              </button>
+              Understanding Grade Levels
+            </h3>
             <div className="bg-blue-50 p-4 rounded-lg space-y-2 text-sm">
               <p><strong>Grades 1-2:</strong> Very simple language, short sentences</p>
               <p><strong>Grades 3-5:</strong> Elementary level with basic vocabulary</p>
@@ -60,7 +103,13 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           {/* Interactive Features */}
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <MousePointer className="h-5 w-5 text-[#4285F4]" />
+              <button 
+                onClick={speakInteractiveFeatures}
+                className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
+                aria-label="Listen to Interactive Features section"
+              >
+                <Volume2 className="h-5 w-5" />
+              </button>
               Interactive Features
             </h3>
             <div className="space-y-2 text-gray-600">
@@ -73,7 +122,13 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           {/* Tips for Success */}
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <Volume2 className="h-5 w-5 text-[#4285F4]" />
+              <button 
+                onClick={speakTipsForSuccess}
+                className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
+                aria-label="Listen to Tips for Success section"
+              >
+                <Volume2 className="h-5 w-5" />
+              </button>
               Tips for Success
             </h3>
             <div className="space-y-2 text-gray-600">
@@ -86,7 +141,16 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
 
           {/* Sample Text */}
           <section>
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">Try This Sample Text</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              <button 
+                onClick={speakSampleTextHeading}
+                className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
+                aria-label="Listen to section heading"
+              >
+                <Volume2 className="h-5 w-5" />
+              </button>
+              Copy this Sample Text to Paste into the App
+            </h3>
             <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-700">
               <p className="italic">
                 The water cycle is the continuous movement of water on, above, and below the surface of the Earth. Water evaporates from oceans, lakes, and rivers, forming water vapor that rises into the atmosphere. As the water vapor cools, it condenses into tiny droplets that form clouds. When the droplets become heavy enough, they fall as precipitation in the form of rain, snow, or hail, completing the cycle.
@@ -97,10 +161,10 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             </p>
           </section>
 
-          <div className="pt-4 border-t">
+          <div className="pt-4 border-t flex justify-center">
             <Button 
               onClick={onClose}
-              className="w-full bg-[#4285F4] hover:bg-[#3367D6] text-white"
+              className="bg-[#4285F4] hover:bg-[#3367D6] text-white px-8 py-2"
             >
               Got it! Let's get started
             </Button>
