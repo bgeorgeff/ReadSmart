@@ -204,6 +204,7 @@ export default function ReadingTools({
               <DisplayTextWithFixes 
                 text={selectedSummary}
                 onWordClick={onWordClick}
+                highlightedWordIndex={highlightedWordIndex}
               />
             ) : (
               <p>No text available for reading practice.</p>
