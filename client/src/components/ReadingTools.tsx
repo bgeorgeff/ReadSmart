@@ -148,7 +148,10 @@ export default function ReadingTools({
   // Handle stop recording
   const handleStopRecording = () => {
     stopRecording();
-    setRecordingState(RecordingState.PLAYBACK);
+    // Small delay to let the audioUrl get set before switching to playback state
+    setTimeout(() => {
+      setRecordingState(RecordingState.PLAYBACK);
+    }, 100);
   };
   
   // Handle playback controls
