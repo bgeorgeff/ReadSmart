@@ -4,13 +4,14 @@ import { useTextToSpeech } from '@/hooks/use-text-to-speech';
 import { RecordingState } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
-// Component to display text with fixes for duplications
+// Component to display text with fixes for duplications and word highlighting
 interface DisplayTextWithFixesProps {
   text: string;
   onWordClick: (word: string) => void;
+  highlightedWordIndex?: number;
 }
 
-function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) {
+function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: DisplayTextWithFixesProps) {
   const processedText = text;
   
   // Simple tokenization that preserves quotes and parentheses properly
@@ -24,6 +25,9 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
   return (
     <div className="word-interaction-container">
       {tokens.map((token, index) => {
+        // Check if this token should be highlighted during speech
+        const isHighlighted = highlightedWordIndex === index;
+        
         // Check if this is a quoted phrase (starts and ends with ")
         const isQuotedPhrase = token.startsWith('"') && token.endsWith('"');
         
@@ -36,7 +40,9 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
             <span key={index} className="word-container">
               <span className="quote-highlight">"</span>
               <span 
-                className="word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
+                className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 ${
+                  isHighlighted ? 'bg-[#4285F4]/30 rounded px-1' : ''
+                }`}
                 onClick={() => onWordClick(cleanToken)}
               >
                 {cleanToken}
@@ -57,7 +63,9 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
           return (
             <span key={index} className="word-container">
               <span 
-                className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
+                className={`word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 ${
+                  isHighlighted ? 'bg-[#4285F4]/30 rounded px-1' : ''
+                }`}
                 onClick={() => onWordClick(cleanWord)}
               >
                 {cleanWord}
@@ -96,6 +104,7 @@ export default function ReadingTools({
   onBackToSummary 
 }: ReadingToolsProps) {
   const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
+  const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
   const { toast } = useToast();
   const { 
     isRecording, 
@@ -172,12 +181,15 @@ export default function ReadingTools({
     setRecordingState(RecordingState.INACTIVE);
   };
   
-  // Handle listen (text-to-speech)
+  // Handle listen (text-to-speech) with word highlighting
   const handleListen = () => {
     if (isSpeaking) {
       stopSpeaking();
+      setHighlightedWordIndex(-1); // Clear highlighting when stopped
     } else {
-      speak(selectedSummary);
+      speak(selectedSummary, (wordIndex: number) => {
+        setHighlightedWordIndex(wordIndex);
+      });
     }
   };
   

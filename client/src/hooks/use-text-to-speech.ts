@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 interface TextToSpeechHook {
-  speak: (text: string) => void;
+  speak: (text: string, onWordHighlight?: (wordIndex: number) => void) => void;
   stopSpeaking: () => void;
   isSpeaking: boolean;
   isPaused: boolean;
@@ -26,8 +26,8 @@ export function useTextToSpeech(): TextToSpeechHook {
     };
   }, []);
   
-  // Function to speak text
-  const speak = (text: string) => {
+  // Function to speak text with optional word highlighting
+  const speak = (text: string, onWordHighlight?: (wordIndex: number) => void) => {
     if (!speechSynthRef.current) {
       console.error('Speech synthesis not supported');
       return;
@@ -64,17 +64,37 @@ export function useTextToSpeech(): TextToSpeechHook {
         // Set up event handlers
         utterance.onstart = () => {
           setIsSpeaking(true);
+          if (onWordHighlight) {
+            onWordHighlight(0); // Start with first word
+          }
         };
         
         utterance.onend = () => {
           setIsSpeaking(false);
           setIsPaused(false);
+          if (onWordHighlight) {
+            onWordHighlight(-1); // Clear highlighting
+          }
         };
         
         utterance.onerror = () => {
           setIsSpeaking(false);
           setIsPaused(false);
+          if (onWordHighlight) {
+            onWordHighlight(-1); // Clear highlighting
+          }
         };
+        
+        // Add word boundary event for highlighting
+        if (onWordHighlight) {
+          let currentWordIndex = 0;
+          utterance.onboundary = (event) => {
+            if (event.name === 'word') {
+              onWordHighlight(currentWordIndex);
+              currentWordIndex++;
+            }
+          };
+        }
         
         // Start speaking
         try {
@@ -83,6 +103,9 @@ export function useTextToSpeech(): TextToSpeechHook {
           console.error('Failed to start speech synthesis:', error);
           setIsSpeaking(false);
           setIsPaused(false);
+          if (onWordHighlight) {
+            onWordHighlight(-1);
+          }
         }
       };
       
