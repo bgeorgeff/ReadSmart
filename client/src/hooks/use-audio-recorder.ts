@@ -18,7 +18,17 @@ export function useAudioRecorder() {
       setAudioUrl(null);
       
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder.current = new MediaRecorder(stream);
+      
+      // Try to force a compatible audio format
+      let options = {};
+      if (MediaRecorder.isTypeSupported('audio/webm;codecs=pcm')) {
+        options = { mimeType: 'audio/webm;codecs=pcm' };
+      } else if (MediaRecorder.isTypeSupported('audio/wav')) {
+        options = { mimeType: 'audio/wav' };
+      }
+      
+      mediaRecorder.current = new MediaRecorder(stream, options);
+      console.log('Recording with format:', mediaRecorder.current.mimeType);
       audioChunks.current = [];
 
       mediaRecorder.current.ondataavailable = (event) => {
