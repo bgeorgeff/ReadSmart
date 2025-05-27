@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 interface TextToSpeechHook {
-  speak: (text: string, onWordHighlight?: (wordIndex: number) => void) => void;
+  speak: (text: string, onWordHighlight?: (wordIndex: number) => void, rate?: number) => void;
   stopSpeaking: () => void;
   isSpeaking: boolean;
   isPaused: boolean;
@@ -26,8 +26,8 @@ export function useTextToSpeech(): TextToSpeechHook {
     };
   }, []);
   
-  // Function to speak text with optional word highlighting
-  const speak = (text: string, onWordHighlight?: (wordIndex: number) => void) => {
+  // Function to speak text with optional word highlighting and custom rate
+  const speak = (text: string, onWordHighlight?: (wordIndex: number) => void, rate: number = 0.9) => {
     if (!speechSynthRef.current) {
       console.error('Speech synthesis not supported');
       return;
@@ -43,7 +43,7 @@ export function useTextToSpeech(): TextToSpeechHook {
       utteranceRef.current = utterance;
       
       // Set utterance properties
-      utterance.rate = 0.9; // Slightly slower than default for better comprehension
+      utterance.rate = rate; // Use the provided rate
       utterance.pitch = 1;
       utterance.volume = 1;
       

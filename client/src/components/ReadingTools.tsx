@@ -105,6 +105,7 @@ export default function ReadingTools({
 }: ReadingToolsProps) {
   const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
   const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
+  const [speechRate, setSpeechRate] = useState<number>(0.9);
   const { toast } = useToast();
   const { 
     isRecording, 
@@ -189,7 +190,7 @@ export default function ReadingTools({
     } else {
       speak(selectedSummary, (wordIndex: number) => {
         setHighlightedWordIndex(wordIndex);
-      });
+      }, speechRate);
     }
   };
   
@@ -227,6 +228,29 @@ export default function ReadingTools({
               <span className="material-icons mr-1">mic</span>
               Record Me
             </button>
+          </div>
+          
+          {/* Reading Speed Slider */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Reading Speed: {speechRate.toFixed(1)}x
+            </label>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-500">0.5x</span>
+              <input
+                type="range"
+                min="0.5"
+                max="2.0"
+                step="0.1"
+                value={speechRate}
+                onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${((speechRate - 0.5) / 1.5) * 100}%, #e5e7eb ${((speechRate - 0.5) / 1.5) * 100}%, #e5e7eb 100%)`
+                }}
+              />
+              <span className="text-xs text-gray-500">2.0x</span>
+            </div>
           </div>
         </div>
         
