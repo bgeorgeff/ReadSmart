@@ -188,6 +188,7 @@ export default function ReadingTools({
       stopSpeaking();
       setHighlightedWordIndex(-1); // Clear highlighting when stopped
     } else {
+      console.log('Using speech rate:', speechRate);
       speak(selectedSummary, (wordIndex: number) => {
         setHighlightedWordIndex(wordIndex);
       }, speechRate);
