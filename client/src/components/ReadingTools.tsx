@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import { useTextToSpeech } from '@/hooks/use-text-to-speech';
 import { RecordingState } from '@/types';
@@ -8,10 +8,9 @@ import { useToast } from '@/hooks/use-toast';
 interface DisplayTextWithFixesProps {
   text: string;
   onWordClick: (word: string) => void;
-  highlightedWordIndex?: number;
 }
 
-function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: DisplayTextWithFixesProps) {
+function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) {
   const processedText = text;
   
   // Simple tokenization that preserves quotes and parentheses properly
@@ -55,15 +54,10 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
 
         
         if (cleanWord) {
-          const isHighlighted = index === highlightedWordIndex;
           return (
             <span key={index} className="word-container">
               <span 
-                className={`word-highlight px-0.5 py-0.5 cursor-pointer transition-all duration-200 ${
-                  isHighlighted 
-                    ? 'bg-[#4285F4] text-white rounded' 
-                    : 'hover:bg-[#FBBC05]/20 hover:rounded'
-                }`}
+                className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
                 onClick={() => onWordClick(cleanWord)}
               >
                 {cleanWord}
@@ -102,7 +96,6 @@ export default function ReadingTools({
   onBackToSummary 
 }: ReadingToolsProps) {
   const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
-  const [highlightedWordIndex, setHighlightedWordIndex] = useState(-1);
   const { toast } = useToast();
   const { 
     isRecording, 
@@ -116,7 +109,7 @@ export default function ReadingTools({
     playbackProgress,
     playbackDuration
   } = useAudioRecorder();
-  const { speak, isSpeaking, stopSpeaking, currentWordIndex } = useTextToSpeech();
+  const { speak, isSpeaking, stopSpeaking } = useTextToSpeech();
   
   if (!isVisible) return null;
   
@@ -183,11 +176,8 @@ export default function ReadingTools({
   const handleListen = () => {
     if (isSpeaking) {
       stopSpeaking();
-      setHighlightedWordIndex(-1);
     } else {
-      speak(selectedSummary, (wordIndex: number) => {
-        setHighlightedWordIndex(wordIndex);
-      });
+      speak(selectedSummary);
     }
   };
   
@@ -202,7 +192,6 @@ export default function ReadingTools({
               <DisplayTextWithFixes 
                 text={selectedSummary}
                 onWordClick={onWordClick}
-                highlightedWordIndex={highlightedWordIndex}
               />
             ) : (
               <p>No text available for reading practice.</p>
