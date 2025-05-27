@@ -36,42 +36,74 @@ export function useTextToSpeech(): TextToSpeechHook {
     // Cancel any ongoing speech
     stopSpeaking();
     
-    // Create a new utterance
-    const utterance = new SpeechSynthesisUtterance(text);
-    utteranceRef.current = utterance;
-    
-    // Set utterance properties
-    utterance.rate = 0.9; // Slightly slower than default for better comprehension
-    utterance.pitch = 1;
-    
-    // Try to use a natural-sounding voice if available
-    const voices = speechSynthRef.current.getVoices();
-    const englishVoices = voices.filter(voice => 
-      voice.lang.startsWith('en-') && voice.localService === true
-    );
-    
-    if (englishVoices.length > 0) {
-      utterance.voice = englishVoices[0];
-    }
-    
-    // Set up event handlers
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-    };
-    
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      setIsPaused(false);
-    };
-    
-    utterance.onerror = (event) => {
-      console.error('Speech synthesis error:', event);
-      setIsSpeaking(false);
-      setIsPaused(false);
-    };
-    
-    // Start speaking
-    speechSynthRef.current.speak(utterance);
+    // Wait a moment for the cancel to take effect
+    setTimeout(() => {
+      // Create a new utterance
+      const utterance = new SpeechSynthesisUtterance(text);
+      utteranceRef.current = utterance;
+      
+      // Set utterance properties
+      utterance.rate = 0.9; // Slightly slower than default for better comprehension
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      
+      // Wait for voices to load if they haven't already
+      const setVoiceAndSpeak = () => {
+        const voices = speechSynthRef.current!.getVoices();
+        if (voices.length > 0) {
+          // Try to use a natural-sounding English voice
+          const englishVoices = voices.filter(voice => 
+            voice.lang.startsWith('en-') && !voice.name.includes('Google')
+          );
+          
+          if (englishVoices.length > 0) {
+            utterance.voice = englishVoices[0];
+          }
+        }
+        
+        // Set up event handlers
+        utterance.onstart = () => {
+          setIsSpeaking(true);
+        };
+        
+        utterance.onend = () => {
+          setIsSpeaking(false);
+          setIsPaused(false);
+        };
+        
+        utterance.onerror = (event) => {
+          console.error('Speech synthesis error:', event);
+          setIsSpeaking(false);
+          setIsPaused(false);
+          
+          // Try again with default voice
+          if (utterance.voice) {
+            utterance.voice = null;
+            speechSynthRef.current!.speak(utterance);
+          }
+        };
+        
+        // Start speaking
+        try {
+          speechSynthRef.current!.speak(utterance);
+        } catch (error) {
+          console.error('Failed to start speech synthesis:', error);
+          setIsSpeaking(false);
+          setIsPaused(false);
+        }
+      };
+      
+      // Check if voices are loaded
+      const voices = speechSynthRef.current.getVoices();
+      if (voices.length === 0) {
+        // Wait for voices to load
+        speechSynthRef.current.addEventListener('voiceschanged', setVoiceAndSpeak, { once: true });
+        // Fallback timeout in case voiceschanged doesn't fire
+        setTimeout(setVoiceAndSpeak, 100);
+      } else {
+        setVoiceAndSpeak();
+      }
+    }, 100);
   };
   
   // Function to stop speaking
