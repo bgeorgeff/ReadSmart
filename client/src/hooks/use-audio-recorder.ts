@@ -59,8 +59,15 @@ export function useAudioRecorder() {
         });
         console.log('Got media stream:', stream);
 
-        // Create recorder with basic options
-        mediaRecorder.current = new MediaRecorder(stream);
+        // Create recorder with compatible format
+        let options = {};
+        if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          options = { mimeType: 'audio/mp4' };
+        } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          options = { mimeType: 'audio/webm;codecs=opus' };
+        }
+        
+        mediaRecorder.current = new MediaRecorder(stream, options);
         console.log('Created MediaRecorder with options:', { mimeType: mediaRecorder.current.mimeType });
 
         // Setup data collection
@@ -213,9 +220,13 @@ export function useAudioRecorder() {
         }
         
         console.log('Attempting to play audio with src:', audioElement.current.src);
+        console.log('Audio element volume:', audioElement.current.volume);
+        console.log('Audio element muted:', audioElement.current.muted);
+        
         audioElement.current.play()
           .then(() => {
             console.log('Audio playback started successfully');
+            console.log('Audio duration:', audioElement.current?.duration);
             setIsPlaying(true);
             setPlaybackDuration(audioElement.current?.duration || 3);
           })
