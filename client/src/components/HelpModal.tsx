@@ -139,7 +139,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
                 The water cycle is the continuous movement of water on, above, and below the surface of the Earth. Water evaporates from oceans, lakes, and rivers, forming water vapor that rises into the atmosphere. As the water vapor cools, it condenses into tiny droplets that form clouds. When the droplets become heavy enough, they fall as precipitation in the form of rain, snow, or hail, completing the cycle.
               </p>
             </div>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-gray-500 mt-2 text-center">
               Copy this text to try out all the features!
             </p>
           </section>
