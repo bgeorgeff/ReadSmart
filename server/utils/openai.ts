@@ -24,9 +24,11 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       For middle grades (4-8), gradually introduce more complex vocabulary and sentence structures, while still maintaining clarity.
       For higher grades (9-12), include more abstract concepts, sophisticated vocabulary, and nuanced explanations.
       
-      IMPORTANT: Preserve technical terms, code values, and specific terminology exactly as they appear in the original text. 
-      Do not convert technical terms like "null", "true", "false", variable names, or code snippets into quoted explanatory text.
-      Keep technical terms in their original format and context.
+      IMPORTANT: When handling technical terms (like "null", "undefined", "true", "false", HTTP codes, etc.):
+      - Keep the technical term exactly as written in the original text (same case, no quotes)
+      - For lower grades, you may add simple explanations AFTER the term, but never duplicate or modify the term itself
+      - Never wrap technical terms in quotes unless they were already quoted in the original
+      - Example: "undefined" should stay "undefined", not become "'undefined'" or "undefined undefined"
       
       Ensure each summary is accurate, educational, and tailored appropriately for the cognitive and reading abilities of students at that grade level.
       Respond with a JSON object where the keys are grade level numbers (1-12) and the values are the corresponding summaries.
