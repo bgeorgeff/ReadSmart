@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import { useTextToSpeech } from '@/hooks/use-text-to-speech';
 import { RecordingState } from '@/types';
@@ -106,6 +106,7 @@ export default function ReadingTools({
   const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
   const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
   const [speechRate, setSpeechRate] = useState<number>(0.9);
+  const speedChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const { 
     isRecording, 
@@ -247,17 +248,25 @@ export default function ReadingTools({
                   const newRate = parseFloat(e.target.value);
                   setSpeechRate(newRate);
                   
-                  // If currently speaking, restart with new rate
+                  // If currently speaking, use debounced restart
                   if (isSpeaking) {
-                    stopSpeaking();
-                    setHighlightedWordIndex(-1);
+                    // Clear any existing timeout
+                    if (speedChangeTimeoutRef.current) {
+                      clearTimeout(speedChangeTimeoutRef.current);
+                    }
                     
-                    // Small delay to ensure stop takes effect, then restart
-                    setTimeout(() => {
-                      speak(selectedSummary, (wordIndex: number) => {
-                        setHighlightedWordIndex(wordIndex);
-                      }, newRate);
-                    }, 100);
+                    // Set new timeout to restart speech after user stops sliding
+                    speedChangeTimeoutRef.current = setTimeout(() => {
+                      stopSpeaking();
+                      setHighlightedWordIndex(-1);
+                      
+                      // Small delay to ensure stop takes effect, then restart
+                      setTimeout(() => {
+                        speak(selectedSummary, (wordIndex: number) => {
+                          setHighlightedWordIndex(wordIndex);
+                        }, newRate);
+                      }, 100);
+                    }, 300); // Wait 300ms after user stops moving slider
                   }
                 }}
                 className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
