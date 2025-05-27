@@ -6,8 +6,22 @@ import { breakWordIntoSyllables } from "./utils/syllable";
 import { processTextSchema, gradeLevelSummarySchema, wordDetailSchema, saveRecordingSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import OpenAI from "openai";
+import fs from "fs";
+import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve the audio test page
+  app.get("/audio-test.html", (req, res) => {
+    try {
+      const testFilePath = path.join(process.cwd(), "audio-test.html");
+      const html = fs.readFileSync(testFilePath, 'utf8');
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+    } catch (error) {
+      res.status(404).send('Test file not found');
+    }
+  });
+
   // Debug route to test API connectivity
   app.get("/api/debug/test-api", async (req, res) => {
     try {
