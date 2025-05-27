@@ -243,6 +243,11 @@ export function useAudioRecorder() {
     // If no audioUrl is set, use default
     const src = audioUrl || DEFAULT_AUDIO_URL;
     
+    // Stop any ongoing speech synthesis that might interfere
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    
     if (audioElement.current) {
       if (isPlaying) {
         audioElement.current.pause();
