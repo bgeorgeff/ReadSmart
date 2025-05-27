@@ -87,10 +87,10 @@ export function useTextToSpeech(): TextToSpeechHook {
       };
       
       // Check if voices are loaded
-      const voices = speechSynthRef.current.getVoices();
+      const voices = speechSynthRef.current!.getVoices();
       if (voices.length === 0) {
         // Wait for voices to load
-        speechSynthRef.current.addEventListener('voiceschanged', setVoiceAndSpeak, { once: true });
+        speechSynthRef.current!.addEventListener('voiceschanged', setVoiceAndSpeak, { once: true });
         // Fallback timeout in case voiceschanged doesn't fire
         setTimeout(setVoiceAndSpeak, 100);
       } else {

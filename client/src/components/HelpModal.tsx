@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Volume2, X } from "lucide-react";
+import { BookOpen, Volume2, VolumeX, X } from "lucide-react";
 import { useTextToSpeech } from "@/hooks/use-text-to-speech";
 
 interface HelpModalProps {
@@ -9,10 +9,14 @@ interface HelpModalProps {
 }
 
 export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
-  const { speak } = useTextToSpeech();
+  const { speak, stopSpeaking, isSpeaking } = useTextToSpeech();
 
-  const speakSection = (sectionText: string) => {
-    speak(sectionText);
+  const handleSpeakerClick = (sectionText: string) => {
+    if (isSpeaking) {
+      stopSpeaking();
+    } else {
+      speak(sectionText);
+    }
   };
 
   return (
@@ -43,11 +47,11 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={() => speakSection("Getting Started. 1. Paste or type your text in the input box on the main page. 2. Click Process Text to generate summaries at different reading levels. 3. Choose your grade level to see a summary that matches your reading ability. 4. Click Continue to Reading Tools for interactive features.")}
+                onClick={() => handleSpeakerClick("Getting Started. 1. Paste or type your text in the input box on the main page. 2. Click Process Text to generate summaries at different reading levels. 3. Choose your grade level to see a summary that matches your reading ability. 4. Click Continue to Reading Tools for interactive features.")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
-                aria-label="Listen to Getting Started section"
+                aria-label={isSpeaking ? "Stop reading" : "Listen to Getting Started section"}
               >
-                <Volume2 className="h-5 w-5" />
+                {isSpeaking ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
               </button>
               Getting Started
             </h3>
@@ -63,11 +67,11 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={() => speakSection("Understanding Grade Levels. Grades 1-2: Very simple language, short sentences. Grades 3-5: Elementary level with basic vocabulary. Grades 6-8: Middle school level with more complex ideas. Grades 9-12: High school level with advanced concepts.")}
+                onClick={() => handleSpeakerClick("Understanding Grade Levels. Grades 1-2: Very simple language, short sentences. Grades 3-5: Elementary level with basic vocabulary. Grades 6-8: Middle school level with more complex ideas. Grades 9-12: High school level with advanced concepts.")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
-                aria-label="Listen to Understanding Grade Levels section"
+                aria-label={isSpeaking ? "Stop reading" : "Listen to Understanding Grade Levels section"}
               >
-                <Volume2 className="h-5 w-5" />
+                {isSpeaking ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
               </button>
               Understanding Grade Levels
             </h3>
@@ -83,11 +87,11 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={() => speakSection("Interactive Features. Click any word to see its definition, pronunciation, and example sentence. Use the audio button to hear words or text read aloud. Navigate back and forth between summary and reading tools.")}
+                onClick={() => handleSpeakerClick("Interactive Features. Click any word to see its definition, pronunciation, and example sentence. Use the audio button to hear words or text read aloud. Navigate back and forth between summary and reading tools.")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
-                aria-label="Listen to Interactive Features section"
+                aria-label={isSpeaking ? "Stop reading" : "Listen to Interactive Features section"}
               >
-                <Volume2 className="h-5 w-5" />
+                {isSpeaking ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
               </button>
               Interactive Features
             </h3>
@@ -102,11 +106,11 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={() => speakSection("Tips for Success. Start with a grade level that feels comfortable, then try higher levels. Use the word lookup feature to build your vocabulary. Listen to pronunciation to improve speaking skills. Try different types of text: news articles, stories, or educational content.")}
+                onClick={() => handleSpeakerClick("Tips for Success. Start with a grade level that feels comfortable, then try higher levels. Use the word lookup feature to build your vocabulary. Listen to pronunciation to improve speaking skills. Try different types of text: news articles, stories, or educational content.")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
-                aria-label="Listen to Tips for Success section"
+                aria-label={isSpeaking ? "Stop reading" : "Listen to Tips for Success section"}
               >
-                <Volume2 className="h-5 w-5" />
+                {isSpeaking ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
               </button>
               Tips for Success
             </h3>
@@ -122,11 +126,11 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={() => speakSection("Try This Sample Text")}
+                onClick={() => handleSpeakerClick("Try This Sample Text")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
-                aria-label="Listen to section heading"
+                aria-label={isSpeaking ? "Stop reading" : "Listen to section heading"}
               >
-                <Volume2 className="h-5 w-5" />
+                {isSpeaking ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
               </button>
               Copy this Sample Text to Paste into the App
             </h3>
