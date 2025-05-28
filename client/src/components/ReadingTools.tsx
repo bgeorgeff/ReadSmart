@@ -244,25 +244,41 @@ export default function ReadingTools({
             </button>
             <button 
               className={`flex-1 ${isRecording ? 'bg-[#EA4335]' : 'bg-[#FBBC05]'} hover:bg-opacity-80 text-white py-2 px-4 rounded-lg font-['Google_Sans'] flex items-center justify-center`}
-              onClick={handleRecordToggle}
-              disabled={isRecording}
+              onClick={isRecording ? handleStopRecording : handleRecordToggle}
             >
-              <span className="material-icons mr-1">mic</span>
-              Record Me
+              <span className="material-icons mr-1">{isRecording ? 'stop' : 'mic'}</span>
+              {isRecording ? 'Stop Recording' : 'Record Me'}
             </button>
           </div>
+
+          {/* Recording State - Wave lines and timer below buttons */}
+          {recordingState === RecordingState.RECORDING && (
+            <div className="flex flex-col items-center mb-4">
+              <div className="recording-wave mb-2">
+                {/* 10 bars that will animate via CSS */}
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <p className="text-center text-gray-400 text-sm font-['Roboto']">
+                {formatTime(recordingTime)}
+              </p>
+            </div>
+          )}
         </div>
         
         <div>
           <div className="border border-gray-200 rounded-lg p-4 h-full">
             {/* Default State */}
-            {recordingState === RecordingState.INACTIVE && (
+            {(recordingState === RecordingState.INACTIVE || recordingState === RecordingState.RECORDING) && (
               <div className="flex flex-col items-center justify-center h-full">
                 <div className="bg-gray-200 rounded-full p-4 mb-4">
                   <span className="material-icons text-4xl text-gray-500">mic</span>
                 </div>
                 <p className="text-center text-gray-500 font-['Roboto']">
-                  Click "Record Me" to start recording yourself reading the passage
+                  {recordingState === RecordingState.RECORDING 
+                    ? "Recording in progress..." 
+                    : "Click \"Record Me\" to start recording yourself reading the passage"
+                  }
                 </p>
                 {permissionError && (
                   <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -270,28 +286,6 @@ export default function ReadingTools({
                     <p className="text-red-600 text-sm mt-1">{permissionError}</p>
                   </div>
                 )}
-              </div>
-            )}
-            
-            {/* Recording State */}
-            {recordingState === RecordingState.RECORDING && (
-              <div className="flex flex-col items-center justify-center h-full">
-                <div className="recording-wave mb-4">
-                  {/* 10 bars that will animate via CSS */}
-                  <span></span><span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span><span></span>
-                </div>
-                <p className="text-center text-gray-800 font-['Google_Sans'] mb-2">Recording...</p>
-                <p className="text-center text-gray-400 text-sm font-['Roboto'] mb-4">
-                  {formatTime(recordingTime)}
-                </p>
-                <button 
-                  className="bg-[#EA4335] text-white py-2 px-6 rounded-full font-['Google_Sans'] flex items-center"
-                  onClick={handleStopRecording}
-                >
-                  <span className="material-icons mr-1">stop</span>
-                  Stop Recording
-                </button>
               </div>
             )}
             
@@ -350,25 +344,13 @@ export default function ReadingTools({
         </div>
       </div>
       
-      <div className="mt-6 border-t border-gray-200 pt-4 flex justify-between">
+      <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center">
         <button 
-          className="text-[#4285F4] hover:bg-[#4285F4]/10 py-2 px-4 rounded-lg font-['Google_Sans'] flex items-center"
+          className="bg-[#34A853] hover:bg-[#34A853]/90 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
           onClick={onBackToSummary}
         >
           <span className="material-icons mr-1">arrow_back</span>
           Back to Text
-        </button>
-        <button 
-          className="bg-[#34A853] text-white py-2 px-6 rounded-full font-['Google_Sans'] flex items-center"
-          onClick={() => {
-            toast({
-              title: "Practice completed",
-              description: "Great job! You've completed your reading practice."
-            });
-          }}
-        >
-          <span className="material-icons mr-1">check_circle</span>
-          Finish Practice
         </button>
       </div>
     </div>
