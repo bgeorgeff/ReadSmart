@@ -7,6 +7,7 @@ export function useAudioRecorder() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackProgress, setPlaybackProgress] = useState(0);
   const [playbackDuration, setPlaybackDuration] = useState(0);
+  const [permissionError, setPermissionError] = useState<string | null>(null);
 
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
@@ -16,8 +17,21 @@ export function useAudioRecorder() {
     try {
       setRecordingTime(0);
       setAudioUrl(null);
+      setPermissionError(null);
       
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Your browser doesn\'t support audio recording. Please try using a different browser.');
+      }
+
+      // Request microphone permission with better error handling
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
       
       mediaRecorder.current = new MediaRecorder(stream);
       audioChunks.current = [];
@@ -42,9 +56,25 @@ export function useAudioRecorder() {
       recordingTimer.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error starting recording:', error);
       setIsRecording(false);
+      
+      // Provide specific error messages based on the type of error
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        setPermissionError('Microphone access was denied. Please check your browser settings and allow microphone access for this website.');
+      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+        setPermissionError('No microphone found. Please make sure a microphone is connected and try again.');
+      } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+        setPermissionError('Microphone is being used by another application. Please close other apps using the microphone and try again.');
+      } else if (error.name === 'OverconstrainedError' || error.name === 'ConstraintNotSatisfiedError') {
+        setPermissionError('Microphone settings are not supported. Please try again.');
+      } else if (error.name === 'NotSupportedError') {
+        setPermissionError('Audio recording is not supported in this browser. Please try using Chrome, Firefox, or Safari.');
+      } else {
+        setPermissionError('Recording failed. Please check your microphone permissions and try again.');
+      }
+      
       throw error;
     }
   };
@@ -122,6 +152,7 @@ export function useAudioRecorder() {
     playRecording,
     isPlaying,
     playbackProgress,
-    playbackDuration
+    playbackDuration,
+    permissionError
   };
 }

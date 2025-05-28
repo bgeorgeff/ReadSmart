@@ -115,7 +115,8 @@ export default function ReadingTools({
     playRecording,
     isPlaying,
     playbackProgress,
-    playbackDuration
+    playbackDuration,
+    permissionError
   } = useAudioRecorder();
   const { speak, isSpeaking, stopSpeaking } = useTextToSpeech();
   
@@ -138,7 +139,7 @@ export default function ReadingTools({
         console.error('Recording start failed:', error);
         toast({
           title: "Recording failed",
-          description: "Please check microphone permissions and try again",
+          description: permissionError || "Please check microphone permissions and try again",
           variant: "destructive"
         });
       }
@@ -263,6 +264,12 @@ export default function ReadingTools({
                 <p className="text-center text-gray-500 font-['Roboto']">
                   Click "Record Me" to start recording yourself reading the passage
                 </p>
+                {permissionError && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-700 text-sm font-medium">Microphone Error:</p>
+                    <p className="text-red-600 text-sm mt-1">{permissionError}</p>
+                  </div>
+                )}
               </div>
             )}
             
