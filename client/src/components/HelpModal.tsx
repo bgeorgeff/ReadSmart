@@ -46,10 +46,10 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
               Getting Started
             </h3>
             <div className="space-y-2 text-gray-600">
-              <p>1. <strong>Paste or type your text</strong> in the input box on the main page</p>
-              <p>2. <strong>Click "Process Text"</strong> to generate summaries at different reading levels</p>
-              <p>3. <strong>Choose your grade level</strong> to see a summary that matches your reading ability</p>
-              <p>4. <strong>Click "Continue to Reading Tools"</strong> for interactive features</p>
+              <p>1. <strong>Paste or type your text</strong> in the input box on the main page.</p>
+              <p>2. <strong>Click "Process Text"</strong> to generate summaries at different reading levels.</p>
+              <p>3. <strong>Choose your grade level</strong> to see a summary that matches your reading ability.</p>
+              <p>4. <strong>Click "Continue to Reading Tools"</strong> for interactive features.</p>
             </div>
           </section>
 
@@ -66,10 +66,10 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
               Understanding Grade Levels
             </h3>
             <div className="bg-blue-50 p-4 rounded-lg space-y-2 text-sm">
-              <p><strong>Grades 1-2:</strong> Very simple language, short sentences</p>
-              <p><strong>Grades 3-5:</strong> Elementary level with basic vocabulary</p>
-              <p><strong>Grades 6-8:</strong> Middle school level with more complex ideas</p>
-              <p><strong>Grades 9-12:</strong> High school level with advanced concepts</p>
+              <p><strong>Grades 1-2:</strong> Very simple language, short sentences.</p>
+              <p><strong>Grades 3-5:</strong> Elementary level with basic vocabulary.</p>
+              <p><strong>Grades 6-8:</strong> Middle school level with more complex ideas.</p>
+              <p><strong>Grades 9-12:</strong> High school level with advanced concepts.</p>
             </div>
           </section>
 
@@ -86,9 +86,9 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
               Interactive Features
             </h3>
             <div className="space-y-2 text-gray-600">
-              <p><strong>Click any word</strong> to see its definition, pronunciation, and example sentence</p>
-              <p><strong>Use the audio button</strong> to hear words or text read aloud</p>
-              <p><strong>Navigate back and forth</strong> between summary and reading tools</p>
+              <p><strong>Click any word</strong> to see its definition, pronunciation, and example sentence.</p>
+              <p><strong>Use the audio button</strong> to hear words or text read aloud.</p>
+              <p><strong>Navigate back and forth</strong> between summary and reading tools.</p>
             </div>
           </section>
 
@@ -105,10 +105,10 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
               Tips for Success
             </h3>
             <div className="space-y-2 text-gray-600">
-              <p>• Start with a grade level that feels comfortable, then try higher levels</p>
-              <p>• Use the word lookup feature to build your vocabulary</p>
-              <p>• Listen to pronunciation to improve speaking skills</p>
-              <p>• Try different types of text: news articles, stories, or educational content</p>
+              <p>• Start with a grade level that feels comfortable, then try higher levels.</p>
+              <p>• Use the word lookup feature to build your vocabulary.</p>
+              <p>• Listen to pronunciation to improve speaking skills.</p>
+              <p>• Try different types of text: news articles, stories, or educational content.</p>
             </div>
           </section>
 
