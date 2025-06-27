@@ -234,20 +234,44 @@ export default function ReadingTools({
             </div>
           </div>
           
-          <div className="flex flex-wrap gap-3 mb-4">
+          {/* Responsive button grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+            {/* Listen Button */}
             <button 
-              className={`flex-1 ${isSpeaking ? 'bg-[#EA4335] text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'} py-2 px-4 rounded-lg font-['Google_Sans'] flex items-center justify-center`}
+              className={`${isSpeaking ? 'bg-[#EA4335] text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'} py-2 px-3 rounded-lg font-['Google_Sans'] flex items-center justify-center text-sm`}
               onClick={handleListen}
             >
-              <span className="material-icons mr-1">{isSpeaking ? 'stop' : 'volume_up'}</span>
-              {isSpeaking ? 'Stop' : 'Listen'}
+              <span className="material-icons text-sm mr-1">{isSpeaking ? 'stop' : 'volume_up'}</span>
+              <span className="hidden sm:inline">{isSpeaking ? 'Stop' : 'Listen'}</span>
             </button>
+            
+            {/* Record Me Button */}
             <button 
-              className={`flex-1 ${isRecording ? 'bg-[#EA4335]' : 'bg-[#FBBC05]'} hover:bg-opacity-80 text-white py-2 px-4 rounded-lg font-['Google_Sans'] flex items-center justify-center`}
+              className={`${isRecording ? 'bg-[#EA4335]' : 'bg-[#FBBC05]'} hover:bg-opacity-80 text-white py-2 px-3 rounded-lg font-['Google_Sans'] flex items-center justify-center text-sm`}
               onClick={isRecording ? handleStopRecording : handleRecordToggle}
             >
-              <span className="material-icons mr-1">{isRecording ? 'stop' : 'mic'}</span>
-              {isRecording ? 'Stop Recording' : 'Record Me'}
+              <span className="material-icons text-sm mr-1">{isRecording ? 'stop' : 'mic'}</span>
+              <span className="hidden sm:inline">{isRecording ? 'Stop' : 'Record'}</span>
+            </button>
+            
+            {/* Play Back Button */}
+            <button 
+              className="bg-[#34A853] hover:bg-[#34A853]/90 text-white py-2 px-3 rounded-lg font-['Google_Sans'] flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handlePlayPauseToggle}
+              disabled={recordingState === RecordingState.INACTIVE || recordingState === RecordingState.RECORDING}
+            >
+              <span className="material-icons text-sm mr-1">{isPlaying ? 'pause' : 'play_arrow'}</span>
+              <span className="hidden sm:inline">{isPlaying ? 'Pause' : 'Play'}</span>
+            </button>
+            
+            {/* Redo Button */}
+            <button 
+              className="bg-[#4285F4] hover:bg-[#4285F4]/90 text-white py-2 px-3 rounded-lg font-['Google_Sans'] flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleRestartPlayback}
+              disabled={recordingState === RecordingState.INACTIVE || recordingState === RecordingState.RECORDING}
+            >
+              <span className="material-icons text-sm mr-1">replay</span>
+              <span className="hidden sm:inline">Redo</span>
             </button>
           </div>
 
@@ -315,25 +339,10 @@ export default function ReadingTools({
                   </div>
                 </div>
                 
-                <div className="flex gap-3 mb-2">
-                  <button 
-                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-full"
-                    onClick={handleRestartPlayback}
-                  >
-                    <span className="material-icons">replay</span>
-                  </button>
-                  <button 
-                    className="bg-[#4285F4] text-white p-3 rounded-full"
-                    onClick={handlePlayPauseToggle}
-                  >
-                    <span className="material-icons">{isPlaying ? 'pause' : 'play_arrow'}</span>
-                  </button>
-                  <button 
-                    className="bg-gray-100 hover:bg-gray-200 text-[#EA4335] p-3 rounded-full"
-                    onClick={handleDeleteRecording}
-                  >
-                    <span className="material-icons">delete</span>
-                  </button>
+                <div className="flex justify-center mb-2">
+                  <div className="text-center text-gray-500 text-sm font-['Roboto']">
+                    Use the buttons above to control playback
+                  </div>
                 </div>
                 <p className="text-center text-gray-500 text-sm font-['Roboto']">
                   Record again to replace this recording
