@@ -167,11 +167,6 @@ export default function ReadingTools({
       // For restart, we need to set the audio to the beginning and play again
       resetRecording();
       setRecordingState(RecordingState.INACTIVE);
-      // Give a notification that restart isn't implemented yet
-      toast({
-        title: "Recording restarted",
-        description: "Please click Record Me again to create a new recording",
-      });
     }
   };
   
@@ -353,15 +348,17 @@ export default function ReadingTools({
         </div>
       </div>
       
-      <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center">
-        <button 
-          className="bg-[#34A853] hover:bg-[#34A853]/90 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
-          onClick={onBackToSummary}
-        >
-          <span className="material-icons mr-1">arrow_back</span>
-          Back to Text
-        </button>
-      </div>
+      {recordingState !== RecordingState.RECORDING && (
+        <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center">
+          <button 
+            className="bg-[#34A853] hover:bg-[#34A853]/90 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
+            onClick={onBackToSummary}
+          >
+            <span className="material-icons mr-1">arrow_back</span>
+            Back to Text
+          </button>
+        </div>
+      )}
     </div>
   );
 }
