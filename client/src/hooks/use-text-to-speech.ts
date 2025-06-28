@@ -72,6 +72,8 @@ export function useTextToSpeech(): TextToSpeechHook {
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const highlightingTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
   const currentHighlightCallbackRef = useRef<((wordIndex: number) => void) | null>(null);
+  const speechStartTimeRef = useRef<number>(0);
+  const highlightIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Initialize speech synthesis only when needed (not on component mount)
   const initializeSpeechSynthesis = () => {
@@ -84,6 +86,10 @@ export function useTextToSpeech(): TextToSpeechHook {
   const clearHighlightingTimeouts = () => {
     highlightingTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
     highlightingTimeoutsRef.current = [];
+    if (highlightIntervalRef.current) {
+      clearInterval(highlightIntervalRef.current);
+      highlightIntervalRef.current = null;
+    }
   };
   
   // Function to speak text with optional word highlighting and custom rate
@@ -133,44 +139,49 @@ export function useTextToSpeech(): TextToSpeechHook {
         // Set up event handlers
         utterance.onstart = () => {
           setIsSpeaking(true);
+          speechStartTimeRef.current = Date.now();
           
-          // Start timing-based word highlighting if callback provided
+          // Start interval-based word highlighting if callback provided
           if (onWordHighlight && words.length > 0) {
-            // Reduce initial delay and make it more aggressive
-            let cumulativeDelay = 50; // Much shorter startup delay
+            let currentWordIndex = 0;
             
-            // Start with the first word immediately
-            const firstTimeout = setTimeout(() => {
-              if (currentHighlightCallbackRef.current) {
-                currentHighlightCallbackRef.current(0);
-              }
-            }, cumulativeDelay);
-            highlightingTimeoutsRef.current.push(firstTimeout);
-            
-            // Schedule highlighting for remaining words
-            for (let index = 1; index < words.length; index++) {
-              const word = words[index - 1]; // Previous word determines timing
-              cumulativeDelay += estimateWordDuration(word, rate) * 0.8; // Use 80% of estimated time to stay ahead
-              
-              const timeout = setTimeout(() => {
-                // Only highlight if we're still speaking and callback is still valid
-                if (currentHighlightCallbackRef.current) {
-                  currentHighlightCallbackRef.current(index);
-                }
-              }, cumulativeDelay);
-              
-              highlightingTimeoutsRef.current.push(timeout);
+            // Start immediately with first word
+            if (currentHighlightCallbackRef.current) {
+              currentHighlightCallbackRef.current(0);
             }
             
-            // Schedule clearing the highlight after the last word
-            const lastWordDuration = estimateWordDuration(words[words.length - 1], rate);
-            const finalTimeout = setTimeout(() => {
-              if (currentHighlightCallbackRef.current) {
-                currentHighlightCallbackRef.current(-1);
+            // Use interval to check timing regularly
+            highlightIntervalRef.current = setInterval(() => {
+              if (!currentHighlightCallbackRef.current) return;
+              
+              const elapsedTime = Date.now() - speechStartTimeRef.current;
+              
+              // Calculate expected word position based on elapsed time
+              let expectedWordIndex = 0;
+              let cumulativeTime = 100; // Small startup buffer
+              
+              for (let i = 0; i < words.length; i++) {
+                const wordDuration = estimateWordDuration(words[i], rate);
+                if (elapsedTime >= cumulativeTime) {
+                  expectedWordIndex = i;
+                }
+                cumulativeTime += wordDuration;
               }
-            }, cumulativeDelay + lastWordDuration);
-            
-            highlightingTimeoutsRef.current.push(finalTimeout);
+              
+              // Only update if we need to move to next word
+              if (expectedWordIndex > currentWordIndex && expectedWordIndex < words.length) {
+                currentWordIndex = expectedWordIndex;
+                currentHighlightCallbackRef.current(currentWordIndex);
+              }
+              
+              // Stop if we've reached the end
+              if (expectedWordIndex >= words.length - 1) {
+                if (highlightIntervalRef.current) {
+                  clearInterval(highlightIntervalRef.current);
+                  highlightIntervalRef.current = null;
+                }
+              }
+            }, 150); // Check every 150ms for smooth updates
           }
         };
         
