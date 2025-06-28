@@ -44,7 +44,6 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
                   : 'bg-gray-200 text-gray-400'
               }`}
               onClick={() => onStepClick?.(AppStep.SUMMARY)}
-              disabled={!isPastStep(AppStep.SUMMARY, currentStep) && !isStep2Active}
             >2</button>
             <p className={`mr-4 font-['Google_Sans'] ${
               isStep2Active || isPastStep(AppStep.SUMMARY, currentStep) 
@@ -60,7 +59,6 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
                   : 'bg-gray-200 text-gray-400'
               }`}
               onClick={() => onStepClick?.(AppStep.READING)}
-              disabled={!isStep3Active && currentStep !== AppStep.SUMMARY}
             >3</button>
             <p className={`mr-4 font-['Google_Sans'] ${
               isStep3Active 

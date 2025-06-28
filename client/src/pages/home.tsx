@@ -30,6 +30,8 @@ export default function Home() {
       setSelectedSummary(newSummaries[currentGradeLevel]);
     }
 
+    // Check if we should go directly to reading (if user clicked step 3)
+    // Otherwise go to summary step
     setAppStep(AppStep.SUMMARY);
   };
 
@@ -84,6 +86,39 @@ export default function Home() {
     }
   };
 
+  // Function to handle step navigation with processing logic
+  const handleStepNavigation = (step: AppStep) => {
+    if (step === AppStep.TEXT_INPUT) {
+      setAppStep(AppStep.TEXT_INPUT);
+      // Reset state when going back to text input
+      setSummaryId(null);
+      setSummaries(null);
+      setSelectedSummary('');
+    } else if (step === AppStep.SUMMARY) {
+      // If we have text but no summaries, trigger processing
+      if (inputText.trim() && !summaries) {
+        setAppStep(AppStep.PROCESSING);
+      } else if (summaries) {
+        // If we already have summaries, just navigate
+        setAppStep(AppStep.SUMMARY);
+      } else {
+        // If no text, go to text input
+        setAppStep(AppStep.TEXT_INPUT);
+      }
+    } else if (step === AppStep.READING) {
+      // Can only go to reading if we have summaries
+      if (summaries) {
+        setAppStep(AppStep.READING);
+      } else if (inputText.trim()) {
+        // If we have text but no summaries, process first
+        setAppStep(AppStep.PROCESSING);
+      } else {
+        // If no text, go to text input
+        setAppStep(AppStep.TEXT_INPUT);
+      }
+    }
+  };
+
   return (
     <div className="bg-neutral-100 min-h-screen">
       <AppHeader />
@@ -91,7 +126,7 @@ export default function Home() {
       <main className="container mx-auto px-4 py-8">
         <ProcessSteps 
           currentStep={appStep}
-          onStepClick={setAppStep}
+          onStepClick={handleStepNavigation}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
