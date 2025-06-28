@@ -158,10 +158,10 @@ export function useTextToSpeech(): TextToSpeechHook {
               
               // Calculate expected word position based on elapsed time
               let expectedWordIndex = 0;
-              let cumulativeTime = 100; // Small startup buffer
+              let cumulativeTime = 50; // Reduced startup buffer
               
               for (let i = 0; i < words.length; i++) {
-                const wordDuration = estimateWordDuration(words[i], rate);
+                const wordDuration = estimateWordDuration(words[i], rate) * 0.75; // Use 75% of duration to stay ahead
                 if (elapsedTime >= cumulativeTime) {
                   expectedWordIndex = i;
                 }
