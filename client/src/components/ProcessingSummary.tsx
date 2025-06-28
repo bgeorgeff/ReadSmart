@@ -112,7 +112,7 @@ export default function ProcessingSummary({
 
   // Determine if we should show processing state
   const isProcessing = isVisible && !summaries && !summaryId;
-  
+
   // Get the selected summary based on current grade level
   const selectedSummary = summaries ? (currentGradeLevel === 0 ? inputText : summaries[currentGradeLevel]) : null;
 
@@ -244,15 +244,13 @@ export default function ProcessingSummary({
       <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">2. AI Simplification</h3>
 
       {/* Processing State */}
-      {isPending && (
-        <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#4285F4] mb-4"></div>
-          <p className="font-['Roboto'] text-gray-500">Simplifying your text for all reading levels...</p>
-          <div className="mt-6 w-full bg-gray-100 rounded-full h-2.5">
-            <div 
-              className="bg-[#4285F4] h-2.5 rounded-full transition-all duration-500" 
-              style={{ width: `${progressWidth}%` }}
-            ></div>
+      {isProcessing && (
+        <div>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4 font-['Google_Sans']">2. AI Summary</h2>
+          <div className="flex flex-col items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4285F4] mb-4"></div>
+            <p className="text-gray-600 mb-2 font-['Google_Sans']">Summarizing</p>
+            <p className="text-gray-500 text-sm font-['Google_Sans']">Summarizing your text for all reading levels...</p>
           </div>
         </div>
       )}
