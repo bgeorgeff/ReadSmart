@@ -65,6 +65,24 @@ export default function Home() {
   const handleBackToSummary = () => {
     setAppStep(AppStep.SUMMARY);
   };
+  
+  // Function to handle reading tools navigation
+  const handleReadingToolsNavigation = () => {
+    setAppStep(AppStep.READING);
+  };
+
+  // Function to handle back navigation
+  const handleBackNavigation = () => {
+    if (appStep === AppStep.READING) {
+      setAppStep(AppStep.SUMMARY);
+    } else if (appStep === AppStep.SUMMARY) {
+      setAppStep(AppStep.TEXT_INPUT);
+      // Reset state when going back to text input
+      setSummaryId(null);
+      setSummaries(null);
+      setSelectedSummary('');
+    }
+  };
 
   return (
     <div className="bg-neutral-100 min-h-screen">
@@ -86,17 +104,16 @@ export default function Home() {
 
           {/* Summary Component */}
           <ProcessingSummary 
-            isProcessing={appStep === AppStep.PROCESSING}
-            isVisible={appStep === AppStep.PROCESSING || appStep === AppStep.SUMMARY}
+            isVisible={appStep === AppStep.SUMMARY}
             summaryId={summaryId}
             summaries={summaries}
             currentGradeLevel={currentGradeLevel}
-            selectedSummary={selectedSummary}
+            inputText={inputText}
             onGradeLevelChange={handleGradeLevelChange}
             onWordClick={handleWordClick}
-            onComplete={handleProcessingComplete}
-            onContinueToReading={handleContinueToReading}
-            inputText={inputText}
+            onContinueToReading={handleReadingToolsNavigation}
+            onNavigateBack={handleBackNavigation}
+            showBackButton={appStep !== AppStep.TEXT_INPUT}
           />
         </div>
 
@@ -107,6 +124,8 @@ export default function Home() {
           selectedSummary={selectedSummary}
           onWordClick={handleWordClick}
           onBackToSummary={() => setAppStep(AppStep.SUMMARY)}
+          onNavigateBack={handleBackNavigation}
+          showBackButton={appStep !== AppStep.TEXT_INPUT}
         />
 
         {/* Word Detail Modal */}

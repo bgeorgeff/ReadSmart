@@ -12,26 +12,26 @@ interface DisplayTextWithFixesProps {
 
 function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) {
   const processedText = text;
-  
+
   // Simple tokenization that preserves quotes and parentheses properly
   const tokenize = (text: string): string[] => {
     // Split by spaces and filter empty tokens
     return text.split(/\s+/).filter(token => token.trim() !== '');
   };
-  
+
   const tokens = tokenize(processedText);
-  
+
   return (
     <div className="word-interaction-container">
       {tokens.map((token, index) => {
         // Check if this is a quoted phrase (starts and ends with ")
         const isQuotedPhrase = token.startsWith('"') && token.endsWith('"');
-        
+
         // For quoted phrases, preserve the entire token
         if (isQuotedPhrase) {
           // Remove quotes for clicking, but preserve in display
           const cleanToken = token.substring(1, token.length - 1);
-          
+
           return (
             <span key={index} className="word-container">
               <span className="quote-highlight">"</span>
@@ -46,13 +46,13 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
             </span>
           );
         }
-        
+
         // For regular tokens, separate the word from punctuation but keep them together visually
         let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
         let punctuation = token.replace(cleanWord, "");
-        
 
-        
+
+
         if (cleanWord) {
           return (
             <span key={index} className="word-container">
@@ -81,37 +81,35 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
 }
 
 interface ProcessingSummaryProps {
-  isProcessing: boolean;
   isVisible: boolean;
   summaryId: number | null;
   summaries: Summaries | null;
   currentGradeLevel: GradeLevel;
-  selectedSummary: string;
-  onGradeLevelChange: (gradeLevel: GradeLevel) => void;
-  onWordClick: (word: string) => void;
-  onComplete: (summaryId: number, summaries: Summaries) => void;
-  onContinueToReading: () => void;
   inputText: string;
+  onGradeLevelChange: (level: GradeLevel) => void;
+  onWordClick: (word: string) => void;
+  onContinueToReading: () => void;
+  onNavigateBack: () => void;
+  showBackButton?: boolean;
 }
 
 
 
-export default function ProcessingSummary({
-  isProcessing,
-  isVisible,
-  summaryId,
-  summaries,
-  currentGradeLevel,
-  selectedSummary,
-  onGradeLevelChange,
-  onWordClick,
-  onComplete,
+export default function ProcessingSummary({ 
+  isVisible, 
+  summaryId, 
+  summaries, 
+  currentGradeLevel, 
+  inputText,
+  onGradeLevelChange, 
+  onWordClick, 
   onContinueToReading,
-  inputText
+  onNavigateBack,
+  showBackButton = true
 }: ProcessingSummaryProps) {
   const [progressWidth, setProgressWidth] = useState(0);
   const { toast } = useToast();
-  
+
   // Process text mutation
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
@@ -137,20 +135,20 @@ export default function ProcessingSummary({
       });
     }
   });
-  
+
   // Trigger the API call when isProcessing becomes true
   useEffect(() => {
     if (isProcessing && !summaryId) {
       mutate();
     }
   }, [isProcessing, mutate, summaryId]);
-  
+
   // Animation for the progress bar with more realistic pacing
   useEffect(() => {
     if (isPending) {
       // Reset progress when starting
       setProgressWidth(0);
-      
+
       // Create a more realistic progress simulation with slower increments as we approach completion
       const simulateProgress = () => {
         // Fast initial progress (0-30%)
@@ -163,7 +161,7 @@ export default function ProcessingSummary({
             return prev + 2;
           });
         }, 100);
-        
+
         // Medium speed progress (30-60%)
         setTimeout(() => {
           const mediumProgress = setInterval(() => {
@@ -176,7 +174,7 @@ export default function ProcessingSummary({
             });
           }, 150);
         }, 2000);
-        
+
         // Slow progress (60-85%)
         setTimeout(() => {
           const slowProgress = setInterval(() => {
@@ -190,9 +188,9 @@ export default function ProcessingSummary({
           }, 200);
         }, 5000);
       };
-      
+
       simulateProgress();
-      
+
       return () => {
         // Clear any lingering intervals on cleanup
         const highId = window.setTimeout(() => {}, 0);
@@ -205,13 +203,13 @@ export default function ProcessingSummary({
       setProgressWidth(100);
     }
   }, [isPending, isProcessing]);
-  
+
   // Function to handle grade level change
   const handleGradeLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const gradeLevel = parseInt(e.target.value) as GradeLevel;
     onGradeLevelChange(gradeLevel);
   };
-  
+
   // Function to copy result to clipboard
   const handleCopyResult = () => {
     if (selectedSummary) {
@@ -232,13 +230,13 @@ export default function ProcessingSummary({
       );
     }
   };
-  
+
   if (!isVisible) return null;
-  
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">2. AI Simplification</h3>
-      
+
       {/* Processing State */}
       {isPending && (
         <div className="text-center py-8">
@@ -252,7 +250,7 @@ export default function ProcessingSummary({
           </div>
         </div>
       )}
-      
+
       {/* Result State */}
       {!isPending && summaries && (
         <div>
@@ -284,7 +282,7 @@ export default function ProcessingSummary({
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center">
               <span className="material-icons text-[#4285F4] mr-2">info</span>
@@ -298,7 +296,7 @@ export default function ProcessingSummary({
               Copy
             </button>
           </div>
-          
+
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary && currentGradeLevel === 0 && inputText ? (
               // For Original Paste, show user's original text with simple word splitting
@@ -326,7 +324,7 @@ export default function ProcessingSummary({
               <p>No summary available for this grade level.</p>
             )}
           </div>
-          
+
           <div className="mt-4 flex justify-end">
             <button 
               className="bg-[#4285F4] text-white py-2 px-6 rounded-full font-['Google_Sans'] flex items-center"
@@ -338,6 +336,19 @@ export default function ProcessingSummary({
           </div>
         </div>
       )}
+
+        {showBackButton && (
+          <div className="mt-4 border-t border-gray-200 pt-4 flex justify-center">
+            <button 
+              className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
+              onClick={onNavigateBack}
+            >
+              <span className="material-icons mr-1">arrow_back</span>
+              Back
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

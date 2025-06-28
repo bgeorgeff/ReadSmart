@@ -92,6 +92,7 @@ interface ReadingToolsProps {
   onWordClick: (word: string) => void;
   onBackToSummary: () => void;
   onNavigateBack: () => void;
+  showBackButton?: boolean;
 }
 
 export default function ReadingTools({ 
@@ -100,7 +101,8 @@ export default function ReadingTools({
   selectedSummary, 
   onWordClick, 
   onBackToSummary,
-  onNavigateBack 
+  onNavigateBack,
+  showBackButton = true
 }: ReadingToolsProps) {
   const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
   const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
@@ -286,15 +288,17 @@ export default function ReadingTools({
             </div>
           )}
           
-          <div className="mt-4 border-t border-gray-200 pt-4 flex justify-center">
-            <button 
-              className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
-              onClick={onNavigateBack}
-            >
-              <span className="material-icons mr-1">arrow_back</span>
-              Back
-            </button>
-          </div>
+          {showBackButton && (
+            <div className="mt-4 border-t border-gray-200 pt-4 flex justify-center">
+              <button 
+                className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
+                onClick={onNavigateBack}
+              >
+                <span className="material-icons mr-1">arrow_back</span>
+                Back
+              </button>
+            </div>
+          )}
         </div>
         
         
