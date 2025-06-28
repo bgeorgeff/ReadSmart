@@ -49,7 +49,7 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
               isStep2Active || isPastStep(AppStep.SUMMARY, currentStep) 
                 ? 'text-gray-800' 
                 : 'text-gray-400'
-            }`}>Simplify</p>
+            }`}>Summarize</p>
           </div>
           <div className="flex items-center">
             <button 
