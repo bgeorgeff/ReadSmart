@@ -109,16 +109,14 @@ export default function ReadingTools({
 
   const [speechRate, setSpeechRate] = useState<number>(1.65); // Default to 135 WPM
   
-  // WPM to speech rate mapping - calibrated based on actual timing tests
+  // WPM to speech rate mapping - realistic range with true 15 WPM increments
   const wpmToSpeechRate = {
-    75: 0.5,   // 83 seconds = 108.43 WPM actual (needs slower rate)
-    90: 0.75,  // Target 90 WPM (100 seconds)
-    105: 1.05, // Target 105 WPM (85.7 seconds)
-    120: 1.35, // Target 120 WPM (75 seconds)
-    135: 1.65, // Target 135 WPM (66.7 seconds)
-    150: 1.95, // 61 seconds = 147.54 WPM actual (close to target)
-    165: 2.25, // Target 165 WPM (54.5 seconds)
-    180: 2.6   // 48 seconds = 187.50 WPM actual (close to target)
+    105: 0.5,  // Minimum achievable speed (tested at 108 WPM actual)
+    120: 1.35, // Target 120 WPM (75 seconds for 150 words)
+    135: 1.65, // Target 135 WPM (66.7 seconds for 150 words)
+    150: 1.95, // Target 150 WPM (tested at 147.54 WPM actual)
+    165: 2.25, // Target 165 WPM (54.5 seconds for 150 words)
+    180: 2.6   // Target 180 WPM (tested at 187.50 WPM actual)
   };
   
   // Convert speech rate to WPM using the mapping
@@ -249,11 +247,11 @@ export default function ReadingTools({
               Choose Reading Speed: {speechRateToWPM(speechRate)} WPM
             </label>
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs text-gray-500">75 WPM</span>
+              <span className="text-xs text-gray-500">105 WPM</span>
               <input
                 type="range"
                 min="0"
-                max="7"
+                max="5"
                 step="1"
                 value={Object.values(wpmToSpeechRate).indexOf(speechRate)}
                 onChange={(e) => {
@@ -263,7 +261,7 @@ export default function ReadingTools({
                 }}
                 className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${(Object.values(wpmToSpeechRate).indexOf(speechRate) / 7) * 100}%, #e5e7eb ${(Object.values(wpmToSpeechRate).indexOf(speechRate) / 7) * 100}%, #e5e7eb 100%)`
+                  background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${(Object.values(wpmToSpeechRate).indexOf(speechRate) / 5) * 100}%, #e5e7eb ${(Object.values(wpmToSpeechRate).indexOf(speechRate) / 5) * 100}%, #e5e7eb 100%)`
                 }}
               />
               <span className="text-xs text-gray-500">180 WPM</span>
