@@ -14,8 +14,8 @@ const tokenizeText = (text: string): string[] => {
 
 // Estimate word timing based on speech rate and word complexity
 const estimateWordDuration = (word: string, rate: number): number => {
-  // Base duration per character (in milliseconds) - more conservative estimate
-  const baseCharDuration = 90; // milliseconds per character at 1x speed
+  // More aggressive base duration per character (reduced for better sync)
+  const baseCharDuration = 60; // milliseconds per character at 1x speed
   
   // Adjust for speech rate
   const adjustedCharDuration = baseCharDuration / rate;
@@ -23,43 +23,43 @@ const estimateWordDuration = (word: string, rate: number): number => {
   // Clean word for analysis (remove punctuation)
   const cleanWord = word.replace(/[.,!?;:"'()]/g, '');
   
-  // Calculate base duration based on word length with minimum
-  const wordDuration = Math.max(300, cleanWord.length * adjustedCharDuration);
+  // Calculate base duration based on word length with reduced minimum
+  const wordDuration = Math.max(180, cleanWord.length * adjustedCharDuration);
   
-  // Add extra time for punctuation and complex words
+  // Add extra time for punctuation and complex words (reduced amounts)
   let extraTime = 0;
   
-  // Punctuation pauses
+  // Punctuation pauses (reduced)
   if (word.includes('.') || word.includes('!') || word.includes('?')) {
-    extraTime += 300; // Longer pause for sentence endings
+    extraTime += 150; // Shorter pause for sentence endings
   } else if (word.includes(',') || word.includes(';') || word.includes(':')) {
-    extraTime += 200; // Medium pause for commas and semicolons
+    extraTime += 100; // Shorter pause for commas and semicolons
   }
   
-  // Complex word adjustments
+  // Complex word adjustments (reduced)
   if (cleanWord.length > 8) {
-    extraTime += 150; // Extra time for longer words
+    extraTime += 80; // Less extra time for longer words
   }
   
-  // Syllable-based adjustment (rough estimate)
+  // Syllable-based adjustment (reduced)
   const syllableCount = Math.max(1, Math.ceil(cleanWord.length / 3));
-  const syllableAdjustment = syllableCount * 50;
+  const syllableAdjustment = syllableCount * 30;
   
-  // Device-specific timing adjustments
+  // Device-specific timing adjustments (more conservative)
   const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   let deviceMultiplier = 1.0;
   
   // Android devices tend to have slightly different timing
   if (userAgent.includes('Android')) {
-    deviceMultiplier = 1.15;
+    deviceMultiplier = 1.0; // Reduced from 1.15
   }
   // Windows devices may need slight adjustment
   else if (userAgent.includes('Windows')) {
-    deviceMultiplier = 1.05;
+    deviceMultiplier = 0.95; // Reduced from 1.05
   }
   // iOS Safari tends to be more consistent
   else if (userAgent.includes('iPhone') || userAgent.includes('iPad')) {
-    deviceMultiplier = 0.95;
+    deviceMultiplier = 0.9; // Reduced from 0.95
   }
   
   return Math.round((wordDuration + extraTime + syllableAdjustment) * deviceMultiplier);
@@ -136,11 +136,22 @@ export function useTextToSpeech(): TextToSpeechHook {
           
           // Start timing-based word highlighting if callback provided
           if (onWordHighlight && words.length > 0) {
-            // Small initial delay to account for speech startup
-            let cumulativeDelay = 250;
+            // Reduce initial delay and make it more aggressive
+            let cumulativeDelay = 50; // Much shorter startup delay
             
-            // Schedule highlighting for each word
-            words.forEach((word, index) => {
+            // Start with the first word immediately
+            const firstTimeout = setTimeout(() => {
+              if (currentHighlightCallbackRef.current) {
+                currentHighlightCallbackRef.current(0);
+              }
+            }, cumulativeDelay);
+            highlightingTimeoutsRef.current.push(firstTimeout);
+            
+            // Schedule highlighting for remaining words
+            for (let index = 1; index < words.length; index++) {
+              const word = words[index - 1]; // Previous word determines timing
+              cumulativeDelay += estimateWordDuration(word, rate) * 0.8; // Use 80% of estimated time to stay ahead
+              
               const timeout = setTimeout(() => {
                 // Only highlight if we're still speaking and callback is still valid
                 if (currentHighlightCallbackRef.current) {
@@ -149,17 +160,15 @@ export function useTextToSpeech(): TextToSpeechHook {
               }, cumulativeDelay);
               
               highlightingTimeoutsRef.current.push(timeout);
-              
-              // Add this word's estimated duration to the cumulative delay
-              cumulativeDelay += estimateWordDuration(word, rate);
-            });
+            }
             
             // Schedule clearing the highlight after the last word
+            const lastWordDuration = estimateWordDuration(words[words.length - 1], rate);
             const finalTimeout = setTimeout(() => {
               if (currentHighlightCallbackRef.current) {
                 currentHighlightCallbackRef.current(-1);
               }
-            }, cumulativeDelay + 200);
+            }, cumulativeDelay + lastWordDuration);
             
             highlightingTimeoutsRef.current.push(finalTimeout);
           }
