@@ -107,16 +107,17 @@ export default function ReadingTools({
   const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
   const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
 
-  const [speechRate, setSpeechRate] = useState<number>(1.65); // Default to 135 WPM
+  const [speechRate, setSpeechRate] = useState<number>(0.8); // Default to 135 WPM
   
-  // WPM to speech rate mapping - realistic range with true 15 WPM increments
+  // WPM to speech rate mapping - incremental calibration approach
+  // Starting with known good values and conservative estimates for testing
   const wpmToSpeechRate = {
-    105: 0.5,  // Minimum achievable speed (tested at 108 WPM actual)
-    120: 1.35, // Target 120 WPM (75 seconds for 150 words)
-    135: 1.65, // Target 135 WPM (66.7 seconds for 150 words)
-    150: 1.95, // Target 150 WPM (tested at 147.54 WPM actual)
-    165: 2.25, // Target 165 WPM (54.5 seconds for 150 words)
-    180: 2.6   // Target 180 WPM (tested at 187.50 WPM actual)
+    105: 0.5,  // TESTED: Gives ~108 WPM actual (close enough)
+    120: 0.65, // TESTING: Much lower than before (was 1.35, gave 170 WPM)
+    135: 0.8,  // TESTING: Conservative estimate
+    150: 1.0,  // TESTING: Back to normal rate as baseline
+    165: 1.3,  // TESTING: Moderate increase
+    180: 2.6   // TESTED: Gives ~187 WPM actual (close enough)
   };
   
   // Convert speech rate to WPM using the mapping
