@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useTextToSpeech } from '@/hooks/use-text-to-speech';
 import { GradeLevel, Summaries, ProcessTextResponse } from '@/types';
 
 // Component to display text with fixes for duplications
@@ -107,6 +108,7 @@ export default function ProcessingSummary({
 }: ProcessingSummaryProps) {
   const [progressWidth, setProgressWidth] = useState(0);
   const { toast } = useToast();
+  const { speak } = useTextToSpeech();
 
   // Determine if we should show processing state
   const isProcessing = isVisible && !summaries && !summaryId;
@@ -289,7 +291,13 @@ export default function ProcessingSummary({
 
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center">
-              <span className="material-icons text-[#4285F4] mr-2">info</span>
+              <button
+                onClick={() => speak("Click any word for definition and pronunciation")}
+                className="text-[#4285F4] hover:bg-[#4285F4]/10 p-1 rounded mr-2"
+                aria-label="Listen to instructions"
+              >
+                <span className="material-icons">volume_up</span>
+              </button>
               <p className="text-sm text-gray-500 font-['Roboto']">Click any word for definition & pronunciation</p>
             </div>
             <button 
