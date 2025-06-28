@@ -113,7 +113,7 @@ export default function ReadingTools({
   // Starting with known good values and conservative estimates for testing
   const wpmToSpeechRate = {
     105: 0.5,  // TESTED: Gives ~108 WPM actual (close enough)
-    120: 0.65, // TESTING: Much lower than before (was 1.35, gave 170 WPM)
+    120: 0.58, // TESTING: Reduced from 0.65 (gave 134 WPM, need slower)
     135: 0.8,  // TESTING: Conservative estimate
     150: 1.0,  // TESTING: Back to normal rate as baseline
     165: 1.3,  // TESTING: Moderate increase
