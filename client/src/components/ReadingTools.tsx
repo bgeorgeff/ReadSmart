@@ -235,7 +235,7 @@ export default function ReadingTools({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
             {/* Listen Button */}
             <button 
-              className={`${isSpeaking ? 'bg-[#EA4335] text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'} py-2 px-3 rounded-lg font-['Google_Sans'] flex items-center justify-center text-sm`}
+              className={`${isSpeaking ? 'bg-[#EA4335] text-white' : 'bg-[#F57C00] hover:bg-[#F57C00]/80 text-white'} py-2 px-3 rounded-lg font-['Google_Sans'] flex items-center justify-center text-sm`}
               onClick={handleListen}
             >
               <span className="material-icons text-sm mr-1">{isSpeaking ? 'stop' : 'volume_up'}</span>
