@@ -126,7 +126,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             </h3>
             <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-700">
               <p className="italic">
-                The water cycle is the continuous movement of water on, above, and below the surface of the Earth. Water evaporates from oceans, lakes, and rivers, forming water vapor that rises into the atmosphere. As the water vapor cools, it condenses into tiny droplets that form clouds. When the droplets become heavy enough, they fall as precipitation in the form of rain, snow, or hail, completing the cycle.
+                In addition to being the first president of the US, George Washington was a true agricultural innovator and pioneer. Throughout his life, he exhibited a keen interest and eye for useful technologies. He established himself as an innovative farmer, who switched from tobacco to wheat as his main cash crop in the 1760s. In an effort to improve his farming operation, he diligently experimented with new crops, fertilizers, crop rotation, tools, and livestock breeding. Leveraging a fine donkey sent to him as a gift from the King of Spain, Washington became one of the foremost breeders and promoters of the American mule. As president, Washington signed the patent for a new automated mill technology. Intrigued by the design, Washington had Oliver Evans' automated mill technology installed in his gristmill. He also found time to design a 16-sided, two-story threshing barn that greatly improved the process of separating wheat from chaff.
               </p>
             </div>
             <p className="text-sm text-gray-500 mt-2 text-center">
