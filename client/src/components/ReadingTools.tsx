@@ -91,6 +91,7 @@ interface ReadingToolsProps {
   selectedSummary: string;
   onWordClick: (word: string) => void;
   onBackToSummary: () => void;
+  onNavigateBack: () => void;
 }
 
 export default function ReadingTools({ 
@@ -98,7 +99,8 @@ export default function ReadingTools({
   summaryId, 
   selectedSummary, 
   onWordClick, 
-  onBackToSummary 
+  onBackToSummary,
+  onNavigateBack 
 }: ReadingToolsProps) {
   const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
   const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
@@ -287,17 +289,11 @@ export default function ReadingTools({
         
         <div>
           <div className="border border-gray-200 rounded-lg p-4 h-full">
-            {/* Default State */}
-            {(recordingState === RecordingState.INACTIVE || recordingState === RecordingState.RECORDING) && (
+            {/* Recording State */}
+            {recordingState === RecordingState.RECORDING && (
               <div className="flex flex-col items-center justify-center h-full">
-                <div className="bg-gray-200 rounded-full p-4 mb-4">
-                  <span className="material-icons text-4xl text-gray-500">mic</span>
-                </div>
                 <p className="text-center text-gray-500 font-['Roboto']">
-                  {recordingState === RecordingState.RECORDING 
-                    ? "Recording in progress..." 
-                    : "Click \"Record Me\" to start recording yourself reading the passage"
-                  }
+                  Recording in progress...
                 </p>
                 {permissionError && (
                   <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -344,21 +340,28 @@ export default function ReadingTools({
                 </p>
               </div>
             )}
+
+            {/* Inactive State - Empty space */}
+            {recordingState === RecordingState.INACTIVE && (
+              <div className="flex flex-col items-center justify-center h-full">
+                <p className="text-center text-gray-500 text-sm font-['Roboto']">
+                  Click "Record" to start recording yourself reading the passage
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
       
-      {recordingState !== RecordingState.RECORDING && (
-        <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center">
-          <button 
-            className="bg-[#34A853] hover:bg-[#34A853]/90 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
-            onClick={onBackToSummary}
-          >
-            <span className="material-icons mr-1">arrow_back</span>
-            Back to Text
-          </button>
-        </div>
-      )}
+      <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center">
+        <button 
+          className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
+          onClick={onNavigateBack}
+        >
+          <span className="material-icons mr-1">arrow_back</span>
+          Back
+        </button>
+      </div>
     </div>
   );
 }

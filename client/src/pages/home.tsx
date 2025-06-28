@@ -17,22 +17,22 @@ export default function Home() {
   const [selectedSummary, setSelectedSummary] = useState<string>('');
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [isWordDetailOpen, setIsWordDetailOpen] = useState(false);
-  
+
   // Function to handle text processing completion
   const handleProcessingComplete = (newSummaryId: number, newSummaries: Summaries) => {
     setSummaryId(newSummaryId);
     setSummaries(newSummaries);
-    
+
     // If current grade level is 0, show original text
     if (currentGradeLevel === 0) {
       setSelectedSummary(inputText);
     } else {
       setSelectedSummary(newSummaries[currentGradeLevel]);
     }
-    
+
     setAppStep(AppStep.SUMMARY);
   };
-  
+
   // Function to handle grade level change
   const handleGradeLevelChange = (gradeLevel: GradeLevel) => {
     setCurrentGradeLevel(gradeLevel);
@@ -44,37 +44,37 @@ export default function Home() {
       setSelectedSummary(summaries[gradeLevel]);
     }
   };
-  
+
   // Function to handle word click
   const handleWordClick = (word: string) => {
     setSelectedWord(word);
     setIsWordDetailOpen(true);
   };
-  
+
   // Function to close word detail modal
   const handleCloseWordDetail = () => {
     setIsWordDetailOpen(false);
   };
-  
+
   // Function to continue to reading step
   const handleContinueToReading = () => {
     setAppStep(AppStep.READING);
   };
-  
+
   // Function to go back to summary
   const handleBackToSummary = () => {
     setAppStep(AppStep.SUMMARY);
   };
-  
+
   return (
     <div className="bg-neutral-100 min-h-screen">
       <AppHeader />
-      
+
       <main className="container mx-auto px-4 py-8">
         <ProcessSteps 
           currentStep={appStep} 
         />
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Text Input Component */}
           <TextInput 
@@ -83,7 +83,7 @@ export default function Home() {
             setAppStep={setAppStep}
             isVisible={appStep === AppStep.TEXT_INPUT}
           />
-          
+
           {/* Summary Component */}
           <ProcessingSummary 
             isProcessing={appStep === AppStep.PROCESSING}
@@ -99,16 +99,16 @@ export default function Home() {
             inputText={inputText}
           />
         </div>
-        
+
         {/* Reading Tools */}
         <ReadingTools 
           isVisible={appStep === AppStep.READING}
           summaryId={summaryId}
           selectedSummary={selectedSummary}
           onWordClick={handleWordClick}
-          onBackToSummary={handleBackToSummary}
+          onBackToSummary={() => setAppStep(AppStep.SUMMARY)}
         />
-        
+
         {/* Word Detail Modal */}
         <SimpleWordModal 
           isOpen={isWordDetailOpen}
