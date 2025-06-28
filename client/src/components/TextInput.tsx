@@ -103,7 +103,7 @@ export default function TextInput({ inputText, setInputText, setAppStep, isVisib
           disabled={characterCount === 0}
         >
           <span className="material-icons mr-1">auto_fix_high</span>
-          Simplify Text
+          Summarize Text
         </button>
       </div>
     </div>
