@@ -108,6 +108,11 @@ export default function ReadingTools({
   const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
 
   const [speechRate, setSpeechRate] = useState<number>(0.9);
+  
+  // Convert speech rate to WPM (Words Per Minute)
+  const speechRateToWPM = (rate: number): number => {
+    return Math.round(rate * 150); // 1.0x = 150 WPM baseline
+  };
   const { toast } = useToast();
   const { 
     isRecording, 
@@ -213,23 +218,23 @@ export default function ReadingTools({
           {/* Reading Speed Slider */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Choose Reading Speed: {speechRate.toFixed(1)}x
+              Choose Reading Speed: {speechRateToWPM(speechRate)} WPM
             </label>
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs text-gray-500">Slow</span>
+              <span className="text-xs text-gray-500">75 WPM</span>
               <input
                 type="range"
                 min="0.5"
-                max="2.0"
+                max="1.2"
                 step="0.1"
                 value={speechRate}
                 onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
                 className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${((speechRate - 0.5) / 1.5) * 100}%, #e5e7eb ${((speechRate - 0.5) / 1.5) * 100}%, #e5e7eb 100%)`
+                  background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${((speechRate - 0.5) / 0.7) * 100}%, #e5e7eb ${((speechRate - 0.5) / 0.7) * 100}%, #e5e7eb 100%)`
                 }}
               />
-              <span className="text-xs text-gray-500">Fast</span>
+              <span className="text-xs text-gray-500">180 WPM</span>
             </div>
           </div>
           
