@@ -194,7 +194,7 @@ export default function ReadingTools({
     <div className="col-span-1 lg:col-span-2 bg-white rounded-lg shadow-md p-6">
       <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">3. Reading Practice</h3>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <div>
           <div className="bg-gray-100 p-4 rounded-lg mb-4 max-h-72 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary ? (
@@ -287,36 +287,7 @@ export default function ReadingTools({
           )}
         </div>
         
-        <div>
-          <div className="border border-gray-200 rounded-lg p-4 h-full">
-            {/* Recording State */}
-            {recordingState === RecordingState.RECORDING && (
-              <div className="flex flex-col items-center justify-center h-full">
-                <p className="text-center text-gray-500 font-['Roboto']">
-                  Recording in progress...
-                </p>
-                {permissionError && (
-                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-700 text-sm font-medium">Microphone Error:</p>
-                    <p className="text-red-600 text-sm mt-1">{permissionError}</p>
-                  </div>
-                )}
-              </div>
-            )}
-            
-            {/* Playback State */}
-            {recordingState === RecordingState.PLAYBACK && (
-              <div className="flex flex-col items-center justify-center h-full">
-              </div>
-            )}
-
-            {/* Inactive State - Empty space */}
-            {recordingState === RecordingState.INACTIVE && (
-              <div className="flex flex-col items-center justify-center h-full">
-              </div>
-            )}
-          </div>
-        </div>
+        
       </div>
       
       <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center">
