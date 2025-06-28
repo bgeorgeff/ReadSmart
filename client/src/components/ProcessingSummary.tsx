@@ -241,7 +241,7 @@ export default function ProcessingSummary({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">2. AI Summary</h3>
+      <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">2. AI Summaries</h3>
 
       {/* Processing State */}
       {isProcessing && (
