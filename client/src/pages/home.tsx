@@ -104,7 +104,7 @@ export default function Home() {
 
           {/* Summary Component */}
           <ProcessingSummary 
-            isVisible={appStep === AppStep.SUMMARY}
+            isVisible={appStep === AppStep.SUMMARY || appStep === AppStep.PROCESSING}
             summaryId={summaryId}
             summaries={summaries}
             currentGradeLevel={currentGradeLevel}
@@ -113,6 +113,7 @@ export default function Home() {
             onWordClick={handleWordClick}
             onContinueToReading={handleReadingToolsNavigation}
             onNavigateBack={handleBackNavigation}
+            onProcessingComplete={handleProcessingComplete}
             showBackButton={appStep !== AppStep.TEXT_INPUT}
           />
         </div>

@@ -51,8 +51,6 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
         let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
         let punctuation = token.replace(cleanWord, "");
 
-
-
         if (cleanWord) {
           return (
             <span key={index} className="word-container">
@@ -90,10 +88,9 @@ interface ProcessingSummaryProps {
   onWordClick: (word: string) => void;
   onContinueToReading: () => void;
   onNavigateBack: () => void;
+  onProcessingComplete: (summaryId: number, summaries: Summaries) => void;
   showBackButton?: boolean;
 }
-
-
 
 export default function ProcessingSummary({ 
   isVisible, 
@@ -105,10 +102,17 @@ export default function ProcessingSummary({
   onWordClick, 
   onContinueToReading,
   onNavigateBack,
+  onProcessingComplete,
   showBackButton = true
 }: ProcessingSummaryProps) {
   const [progressWidth, setProgressWidth] = useState(0);
   const { toast } = useToast();
+
+  // Determine if we should show processing state
+  const isProcessing = isVisible && !summaries && !summaryId;
+  
+  // Get the selected summary based on current grade level
+  const selectedSummary = summaries ? (currentGradeLevel === 0 ? inputText : summaries[currentGradeLevel]) : null;
 
   // Process text mutation
   const { mutate, isPending } = useMutation({
@@ -118,7 +122,7 @@ export default function ProcessingSummary({
     },
     onSuccess: (data) => {
       if (data.success) {
-        onComplete(data.summaryId, data.summaries);
+        onProcessingComplete(data.summaryId, data.summaries);
       } else {
         toast({
           title: 'Error',
@@ -337,18 +341,17 @@ export default function ProcessingSummary({
         </div>
       )}
 
-        {showBackButton && (
-          <div className="mt-4 border-t border-gray-200 pt-4 flex justify-center">
-            <button 
-              className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
-              onClick={onNavigateBack}
-            >
-              <span className="material-icons mr-1">arrow_back</span>
-              Back
-            </button>
-          </div>
-        )}
-      </div>
+      {showBackButton && (
+        <div className="mt-4 border-t border-gray-200 pt-4 flex justify-center">
+          <button 
+            className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
+            onClick={onNavigateBack}
+          >
+            <span className="material-icons mr-1">arrow_back</span>
+            Back
+          </button>
+        </div>
+      )}
     </div>
   );
 }
