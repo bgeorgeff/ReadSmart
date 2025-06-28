@@ -344,9 +344,6 @@ export default function ReadingTools({
             {/* Inactive State - Empty space */}
             {recordingState === RecordingState.INACTIVE && (
               <div className="flex flex-col items-center justify-center h-full">
-                <p className="text-center text-gray-500 text-sm font-['Roboto']">
-                  Click "Record" to start recording yourself reading the passage
-                </p>
               </div>
             )}
           </div>
