@@ -87,7 +87,7 @@ ReadSmart is a comprehensive reading comprehension tool that simplifies complex 
 
 - June 28, 2025. Initial setup
 - June 28, 2025. Fixed critical syntax errors in ProcessingSummary component that were preventing app startup. Resolved missing function parameters, corrected component structure, and updated parent component props. Application now fully functional with text processing, grade-level summaries, word definitions, and audio features working correctly.
-- June 28, 2025. Resolved text-to-speech word highlighting synchronization issues. Replaced complex timing calculations with standard `onboundary` event approach. Word highlighting now works perfectly on Windows 10 devices and properly synchronizes with speech playback across different reading speeds.
+- June 28, 2025. Resolved text-to-speech word highlighting synchronization issues. Replaced complex timing calculations with standard `onboundary` event approach. Word highlighting now works perfectly on Windows 10 and iPhone devices with proper synchronization. Android devices (Samsung Galaxy S24) play speech without highlighting, which provides a clean user experience across all platforms.
 
 ## User Preferences
 
