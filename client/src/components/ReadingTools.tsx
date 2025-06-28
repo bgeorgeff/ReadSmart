@@ -117,7 +117,7 @@ export default function ReadingTools({
     135: 0.65, // CALIBRATED: Should give ~134 WPM (close to 135 target)
     150: 1.0,  // CALIBRATED: Gives 148 WPM actual ✓
     165: 1.3,  // CALIBRATED: Gives 167 WPM actual ✓
-    180: 1.6   // TESTING: Increase from 1.5 (gave 168 WPM, need closer to 180)
+    180: 2.58  // TESTING: User suggested value (1.6 gave 167 WPM)
   };
   
   // Convert speech rate to WPM using the mapping
