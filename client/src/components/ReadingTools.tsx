@@ -330,14 +330,7 @@ export default function ReadingTools({
                   </div>
                 </div>
                 
-                <div className="flex justify-center mb-2">
-                  <div className="text-center text-gray-500 text-sm font-['Roboto']">
-                    Use the buttons above to control playback
-                  </div>
-                </div>
-                <p className="text-center text-gray-500 text-sm font-['Roboto']">
-                  Record again to replace this recording
-                </p>
+                
               </div>
             )}
 
