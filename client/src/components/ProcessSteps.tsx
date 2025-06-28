@@ -2,9 +2,10 @@ import { AppStep } from '@/types';
 
 interface ProcessStepsProps {
   currentStep: AppStep;
+  onStepClick?: (step: AppStep) => void;
 }
 
-export default function ProcessSteps({ currentStep }: ProcessStepsProps) {
+export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsProps) {
   const isActiveStep = (step: AppStep) => currentStep === step;
   const isPastStep = (step: AppStep, current: AppStep) => {
     const steps = [AppStep.TEXT_INPUT, AppStep.PROCESSING, AppStep.SUMMARY, AppStep.READING];
@@ -21,11 +22,14 @@ export default function ProcessSteps({ currentStep }: ProcessStepsProps) {
         <h2 className="font-['Google_Sans'] text-2xl font-bold text-gray-800">Text Simplification & Reading Aid</h2>
         <div className="flex mt-2 md:mt-0">
           <div className="flex items-center">
-            <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold mr-2 ${
-              isActiveStep(AppStep.TEXT_INPUT) || isPastStep(AppStep.TEXT_INPUT, currentStep) 
-                ? 'bg-[#4285F4] text-white' 
-                : 'bg-gray-200 text-gray-400'
-            }`}>1</div>
+            <button 
+              className={`h-8 w-8 rounded-full flex items-center justify-center font-bold mr-2 transition-colors hover:opacity-80 ${
+                isActiveStep(AppStep.TEXT_INPUT) || isPastStep(AppStep.TEXT_INPUT, currentStep) 
+                  ? 'bg-[#4285F4] text-white' 
+                  : 'bg-gray-200 text-gray-400'
+              }`}
+              onClick={() => onStepClick?.(AppStep.TEXT_INPUT)}
+            >1</button>
             <p className={`mr-4 font-['Google_Sans'] ${
               isActiveStep(AppStep.TEXT_INPUT) || isPastStep(AppStep.TEXT_INPUT, currentStep) 
                 ? 'text-gray-800' 
@@ -33,11 +37,15 @@ export default function ProcessSteps({ currentStep }: ProcessStepsProps) {
             }`}>Paste</p>
           </div>
           <div className="flex items-center">
-            <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold mr-2 ${
-              isStep2Active || isPastStep(AppStep.SUMMARY, currentStep) 
-                ? 'bg-[#4285F4] text-white' 
-                : 'bg-gray-200 text-gray-400'
-            }`}>2</div>
+            <button 
+              className={`h-8 w-8 rounded-full flex items-center justify-center font-bold mr-2 transition-colors hover:opacity-80 ${
+                isStep2Active || isPastStep(AppStep.SUMMARY, currentStep) 
+                  ? 'bg-[#4285F4] text-white' 
+                  : 'bg-gray-200 text-gray-400'
+              }`}
+              onClick={() => onStepClick?.(AppStep.SUMMARY)}
+              disabled={!isPastStep(AppStep.SUMMARY, currentStep) && !isStep2Active}
+            >2</button>
             <p className={`mr-4 font-['Google_Sans'] ${
               isStep2Active || isPastStep(AppStep.SUMMARY, currentStep) 
                 ? 'text-gray-800' 
@@ -45,11 +53,15 @@ export default function ProcessSteps({ currentStep }: ProcessStepsProps) {
             }`}>Simplify</p>
           </div>
           <div className="flex items-center">
-            <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold mr-2 ${
-              isStep3Active 
-                ? 'bg-[#4285F4] text-white' 
-                : 'bg-gray-200 text-gray-400'
-            }`}>3</div>
+            <button 
+              className={`h-8 w-8 rounded-full flex items-center justify-center font-bold mr-2 transition-colors hover:opacity-80 ${
+                isStep3Active 
+                  ? 'bg-[#4285F4] text-white' 
+                  : 'bg-gray-200 text-gray-400'
+              }`}
+              onClick={() => onStepClick?.(AppStep.READING)}
+              disabled={!isStep3Active && currentStep !== AppStep.SUMMARY}
+            >3</button>
             <p className={`mr-4 font-['Google_Sans'] ${
               isStep3Active 
                 ? 'text-gray-800' 
