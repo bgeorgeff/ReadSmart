@@ -241,17 +241,14 @@ export default function ProcessingSummary({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">2. AI Simplification</h3>
+      <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">2. AI Summary</h3>
 
       {/* Processing State */}
       {isProcessing && (
-        <div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 font-['Google_Sans']">2. AI Summary</h2>
-          <div className="flex flex-col items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4285F4] mb-4"></div>
-            <p className="text-gray-600 mb-2 font-['Google_Sans']">Summarizing</p>
-            <p className="text-gray-500 text-sm font-['Google_Sans']">Summarizing your text for all reading levels...</p>
-          </div>
+        <div className="flex flex-col items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4285F4] mb-4"></div>
+          <p className="text-gray-600 mb-2 font-['Google_Sans']">Summarizing</p>
+          <p className="text-gray-500 text-sm font-['Google_Sans']">Summarizing your text for all reading levels...</p>
         </div>
       )}
 
