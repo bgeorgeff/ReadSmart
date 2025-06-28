@@ -116,7 +116,7 @@ export default function ReadingTools({
     120: 0.58, // CALIBRATED: Gives 121.6 WPM actual ✓
     135: 0.65, // CALIBRATED: Should give ~134 WPM (close to 135 target)
     150: 1.0,  // CALIBRATED: Gives 148 WPM actual ✓
-    165: 1.3,  // TESTING: Moderate increase
+    165: 1.3,  // CALIBRATED: Gives 167 WPM actual ✓
     180: 2.6   // TESTED: Gives ~187 WPM actual (close enough)
   };
   
