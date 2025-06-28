@@ -307,30 +307,6 @@ export default function ReadingTools({
             {/* Playback State */}
             {recordingState === RecordingState.PLAYBACK && (
               <div className="flex flex-col items-center justify-center h-full">
-                <div className="w-full mb-4">
-                  <div className="relative pt-1">
-                    <div className="flex mb-2 items-center justify-between">
-                      <div>
-                        <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-[#4285F4] bg-[#4285F4]/10">
-                          Your Recording
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xs text-gray-500">
-                          {formatTime(playbackProgress)} / {formatTime(playbackDuration)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-gray-100 rounded-full h-2">
-                      <div 
-                        className="bg-[#4285F4] h-2 rounded-full transition-all" 
-                        style={{ width: `${(playbackProgress / playbackDuration) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-                
-                
               </div>
             )}
 
