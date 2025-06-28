@@ -285,19 +285,19 @@ export default function ReadingTools({
               </p>
             </div>
           )}
+          
+          <div className="mt-4 border-t border-gray-200 pt-4 flex justify-center">
+            <button 
+              className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
+              onClick={onNavigateBack}
+            >
+              <span className="material-icons mr-1">arrow_back</span>
+              Back
+            </button>
+          </div>
         </div>
         
         
-      </div>
-      
-      <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center">
-        <button 
-          className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-['Google_Sans'] flex items-center"
-          onClick={onNavigateBack}
-        >
-          <span className="material-icons mr-1">arrow_back</span>
-          Back
-        </button>
       </div>
     </div>
   );
