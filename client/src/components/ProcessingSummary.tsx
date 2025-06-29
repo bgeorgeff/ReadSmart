@@ -281,7 +281,7 @@ export default function ProcessingSummary({
             <div className="relative">
               <select 
                 id="grade-level" 
-                className="appearance-none block w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4285F4] font-['Roboto']"
+                className="appearance-none block w-full px-4 py-2 border-2 border-[#4285F4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4285F4] font-['Roboto']"
                 onChange={handleGradeLevelChange}
                 value={currentGradeLevel}
               >
