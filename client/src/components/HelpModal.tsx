@@ -131,7 +131,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             </div>
             </section>
 
-          <div className="pt-4 border-t flex justify-center">
+          <div className="flex justify-center">
             <Button 
               onClick={onClose}
               className="bg-[#4285F4] hover:bg-[#3367D6] text-white px-8 py-2"
