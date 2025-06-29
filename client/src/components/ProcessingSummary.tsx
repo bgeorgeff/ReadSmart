@@ -277,7 +277,7 @@ export default function ProcessingSummary({
       {!isPending && summaries && (
         <div>
           <div className="mb-4">
-            <label htmlFor="grade-level" className="block text-sm font-medium text-gray-500 mb-1">Select grade level:</label>
+            <label htmlFor="grade-level" className="block text-base font-medium text-[#4285F4] mb-1">Select grade level:</label>
             <div className="relative">
               <select 
                 id="grade-level" 
