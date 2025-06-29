@@ -149,50 +149,63 @@ export default function ProcessingSummary({
     }
   }, [isProcessing, mutate, summaryId]);
 
-  // Animation for the progress bar with more realistic pacing
+  // Animation for the progress bar with slower, more accurate pacing
   useEffect(() => {
     if (isPending) {
       // Reset progress when starting
       setProgressWidth(0);
 
-      // Create a more realistic progress simulation with slower increments as we approach completion
+      // Create a slower, more realistic progress simulation
       const simulateProgress = () => {
-        // Fast initial progress (0-30%)
-        const fastProgress = setInterval(() => {
+        // Very slow initial progress (0-20%)
+        const initialProgress = setInterval(() => {
           setProgressWidth(prev => {
-            if (prev >= 30) {
-              clearInterval(fastProgress);
-              return 30;
+            if (prev >= 20) {
+              clearInterval(initialProgress);
+              return 20;
             }
-            return prev + 2;
+            return prev + 1;
           });
-        }, 100);
+        }, 300);
 
-        // Medium speed progress (30-60%)
-        setTimeout(() => {
-          const mediumProgress = setInterval(() => {
-            setProgressWidth(prev => {
-              if (prev >= 60) {
-                clearInterval(mediumProgress);
-                return 60;
-              }
-              return prev + 1;
-            });
-          }, 150);
-        }, 2000);
-
-        // Slow progress (60-85%)
+        // Slow progress (20-45%)
         setTimeout(() => {
           const slowProgress = setInterval(() => {
             setProgressWidth(prev => {
-              if (prev >= 85) {
+              if (prev >= 45) {
                 clearInterval(slowProgress);
-                return 85;
+                return 45;
               }
               return prev + 0.5;
             });
-          }, 200);
-        }, 5000);
+          }, 400);
+        }, 6000);
+
+        // Very slow progress (45-70%)
+        setTimeout(() => {
+          const verySlowProgress = setInterval(() => {
+            setProgressWidth(prev => {
+              if (prev >= 70) {
+                clearInterval(verySlowProgress);
+                return 70;
+              }
+              return prev + 0.3;
+            });
+          }, 500);
+        }, 16000);
+
+        // Extremely slow final progress (70-75%)
+        setTimeout(() => {
+          const finalProgress = setInterval(() => {
+            setProgressWidth(prev => {
+              if (prev >= 75) {
+                clearInterval(finalProgress);
+                return 75;
+              }
+              return prev + 0.1;
+            });
+          }, 800);
+        }, 33000);
       };
 
       simulateProgress();
@@ -247,7 +260,15 @@ export default function ProcessingSummary({
       {isProcessing && (
         <div className="flex flex-col items-center justify-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4285F4] mb-4"></div>
-          <p className="text-gray-600 mb-2 font-['Google_Sans']">Summarizing</p>
+          
+          {/* Progress Bar */}
+          <div className="w-64 bg-gray-200 rounded-full h-2 mb-4">
+            <div 
+              className="bg-[#4285F4] h-2 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${progressWidth}%` }}
+            ></div>
+          </div>
+          
           <p className="text-gray-500 text-sm font-['Google_Sans']">Summarizing your text for all reading levels...</p>
         </div>
       )}
