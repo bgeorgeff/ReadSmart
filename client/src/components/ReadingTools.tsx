@@ -284,7 +284,7 @@ export default function ReadingTools({
               onClick={isRecording ? handleStopRecording : handleRecordToggle}
             >
               <span className="material-icons text-sm mr-1">{isRecording ? 'stop' : 'mic'}</span>
-              <span className="hidden sm:inline">{isRecording ? 'Stop' : 'Record'}</span>
+              <span className="hidden sm:inline">{isRecording ? 'Stop' : 'Record Me'}</span>
             </button>
             
             {/* Play Back Button */}
