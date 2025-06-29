@@ -129,17 +129,14 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
                 In addition to being the first president of the United States, George Washington was an agricultural innovator and pioneer. Throughout his life, he exhibited a keen interest and eye for useful technologies. He established himself as an innovative farmer, who switched from tobacco to wheat as his main cash crop in the 1760s. In an effort to improve his farming operation, he diligently experimented with new crops, fertilizers, crop rotation, tools, and livestock breeding. Leveraging a fine donkey sent to him as a gift from the King of Spain, Washington became one of the foremost breeders and promoters of the American mule. As president, Washington signed the patent for a new automated mill technology. Intrigued by the design, Washington had Oliver Evans' automated mill technology installed in his gristmill. He also found time to design a 16-sided, two-story threshing barn that greatly improved the process of separating wheat from chaff.
               </p>
             </div>
-            <p className="text-sm text-gray-500 mt-2 text-center">
-              Copy this text to try out all the features!
-            </p>
-          </section>
+            </section>
 
           <div className="pt-4 border-t flex justify-center">
             <Button 
               onClick={onClose}
               className="bg-[#4285F4] hover:bg-[#3367D6] text-white px-8 py-2"
             >
-              Got it! Let's get started
+              Got it! Let's get started!
             </Button>
           </div>
         </div>
