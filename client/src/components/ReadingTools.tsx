@@ -109,15 +109,13 @@ export default function ReadingTools({
 
   const [speechRate, setSpeechRate] = useState<number>(0.65); // Default to 135 WPM
   
-  // WPM to speech rate mapping - incremental calibration approach
-  // Starting with known good values and conservative estimates for testing
+  // WPM to speech rate mapping - final calibrated range (105-165 WPM)
   const wpmToSpeechRate = {
-    105: 0.5,  // TESTED: Gives ~108 WPM actual (close enough)
+    105: 0.5,  // CALIBRATED: Gives ~108 WPM actual ✓
     120: 0.58, // CALIBRATED: Gives 121.6 WPM actual ✓
-    135: 0.65, // CALIBRATED: Should give ~134 WPM (close to 135 target)
+    135: 0.65, // CALIBRATED: Gives ~134 WPM actual ✓
     150: 1.0,  // CALIBRATED: Gives 148 WPM actual ✓
-    165: 1.3,  // CALIBRATED: Gives 167 WPM actual ✓
-    180: 1.55  // CALIBRATED: Gives 186.18 WPM actual (close to 180 target) ✓
+    165: 1.3   // CALIBRATED: Gives 167 WPM actual ✓
   };
   
   // Convert speech rate to WPM using the mapping
@@ -252,7 +250,7 @@ export default function ReadingTools({
               <input
                 type="range"
                 min="0"
-                max="5"
+                max="4"
                 step="1"
                 value={Object.values(wpmToSpeechRate).indexOf(speechRate)}
                 onChange={(e) => {
@@ -262,10 +260,10 @@ export default function ReadingTools({
                 }}
                 className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${(Object.values(wpmToSpeechRate).indexOf(speechRate) / 5) * 100}%, #e5e7eb ${(Object.values(wpmToSpeechRate).indexOf(speechRate) / 5) * 100}%, #e5e7eb 100%)`
+                  background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${(Object.values(wpmToSpeechRate).indexOf(speechRate) / 4) * 100}%, #e5e7eb ${(Object.values(wpmToSpeechRate).indexOf(speechRate) / 4) * 100}%, #e5e7eb 100%)`
                 }}
               />
-              <span className="text-xs text-gray-500">180 WPM</span>
+              <span className="text-xs text-gray-500">165 WPM</span>
             </div>
           </div>
           
