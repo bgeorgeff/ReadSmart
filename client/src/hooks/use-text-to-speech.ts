@@ -59,6 +59,10 @@ export function useTextToSpeech(): TextToSpeechHook {
         // Set up event handlers
         utterance.onstart = () => {
           setIsSpeaking(true);
+          // Immediately highlight the first word when speech begins
+          if (onWordHighlight) {
+            onWordHighlight(0);
+          }
         };
         
         utterance.onend = () => {
