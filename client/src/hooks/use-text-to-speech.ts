@@ -77,13 +77,58 @@ export function useTextToSpeech(): TextToSpeechHook {
           }
         };
         
-        // Use the standard boundary event for word highlighting
+        // Use the industry-standard boundary event approach with character-position mapping
         if (onWordHighlight) {
-          let wordIndex = 0;
+          // Pre-tokenize the text exactly as the display component does
+          const tokens = text.split(/\s+/).filter(token => token.trim() !== '');
+          const tokenMap: { start: number; end: number; index: number }[] = [];
+          
+          // Build a precise character-to-token mapping
+          let searchStart = 0;
+          for (let i = 0; i < tokens.length; i++) {
+            const tokenStart = text.indexOf(tokens[i], searchStart);
+            if (tokenStart !== -1) {
+              tokenMap.push({
+                start: tokenStart,
+                end: tokenStart + tokens[i].length,
+                index: i
+              });
+              searchStart = tokenStart + tokens[i].length;
+            }
+          }
+          
           utterance.onboundary = (event) => {
-            if (event.name === 'word') {
-              onWordHighlight(wordIndex);
-              wordIndex++;
+            // Handle both 'word' and 'sentence' boundaries for better cross-browser compatibility
+            if ((event.name === 'word' || event.name === 'sentence') && event.charIndex !== undefined) {
+              const charIndex = event.charIndex;
+              
+              // Find the token that contains or is closest to this character position
+              let bestMatch = -1;
+              let bestDistance = Infinity;
+              
+              for (const token of tokenMap) {
+                // Check if character index falls within token bounds
+                if (charIndex >= token.start && charIndex < token.end) {
+                  bestMatch = token.index;
+                  break;
+                }
+                
+                // Find closest token if no exact match
+                const distance = Math.min(
+                  Math.abs(charIndex - token.start),
+                  Math.abs(charIndex - token.end)
+                );
+                
+                if (distance < bestDistance) {
+                  bestDistance = distance;
+                  bestMatch = token.index;
+                }
+              }
+              
+              // Only highlight if we found a reasonable match
+              if (bestMatch >= 0 && bestDistance < 50) { // Tolerance for speech engine variations
+                onWordHighlight(bestMatch);
+              }
             }
           };
         }
