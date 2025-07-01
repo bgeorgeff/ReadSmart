@@ -126,8 +126,9 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       4. Ensuring the shortened text flows naturally and coherently
       5. Maintaining any technical terms, proper nouns, or specialized language exactly as written
       
-      The shortened text must be no more than ${maxWords} words and ${maxChars} characters (including spaces and punctuation).
+      The shortened text should be close to but not exceed ${maxWords} words and ${maxChars} characters (including spaces and punctuation).
       
+      Aim for approximately ${Math.floor(maxWords * 0.9)}-${maxWords} words to retain maximum detail while staying within limits.
       Focus on removing redundant phrases, overly descriptive language, and less critical supporting details while keeping all essential information intact.
       
       Return only the shortened text without any explanation or commentary.
@@ -157,10 +158,11 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
     if (shortWordCount <= maxWords && shortCharCount <= maxChars) {
       return shortenedText;
     } else {
-      // If still too long, do a more aggressive shortening
+      // If still too long, do a more precise shortening
       const aggressivePrompt = `
-        The previous shortening was still too long. Please shorten this text more aggressively to exactly ${Math.floor(maxWords * 0.9)} words or fewer and ${Math.floor(maxChars * 0.9)} characters or fewer.
-        Keep only the most essential information while maintaining readability.
+        The previous shortening was still too long. Please shorten this text to exactly ${maxWords} words or fewer and ${maxChars} characters or fewer.
+        Aim for ${Math.floor(maxWords * 0.95)}-${maxWords} words to maximize detail retention while meeting the requirements.
+        Keep as much essential information as possible while staying within limits.
         
         Text to shorten further: ${shortenedText}
       `;
