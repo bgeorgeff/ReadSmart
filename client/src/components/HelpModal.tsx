@@ -86,7 +86,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
               Interactive Features
             </h3>
             <div className="space-y-2 text-gray-600">
-              <p><strong>Click any word</strong> to see its definition, pronunciation, and example sentence.</p>
+              <p><strong>Click any word</strong> to hear its pronunciation and definition.</p>
               <p><strong>Use the audio button</strong> to hear words or text read aloud.</p>
               <p><strong>Navigate back and forth</strong> between summary and reading tools.</p>
             </div>
