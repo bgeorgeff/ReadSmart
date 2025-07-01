@@ -31,7 +31,11 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       - Example: "undefined" should stay "undefined", not become "'undefined'" or "undefined undefined"
       
       Ensure each summary is accurate, educational, and tailored appropriately for the cognitive and reading abilities of students at that grade level.
-      Respond with a JSON object where the keys are grade level numbers (1-12) and the values are the corresponding summaries.
+      
+      CRITICAL: You must provide complete summaries for ALL 12 grade levels (1 through 12). Do not truncate or leave any summaries incomplete.
+      Each summary should be 2-4 sentences long to ensure they fit within token limits while being complete.
+      
+      Respond with a valid JSON object where the keys are grade level numbers (1-12) and the values are the corresponding complete summaries.
     `;
 
     // Define the model to use based on available API keys
@@ -45,7 +49,7 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
         { role: "user", content: text }
       ],
       temperature: 0.7,
-      max_tokens: 2500,
+      max_tokens: 4000, // Increased to accommodate all 12 summaries
       response_format: { type: "json_object" } // Explicitly request JSON formatting
     });
 
@@ -58,8 +62,24 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
     // Try to extract JSON from the response, handling potential issues
     try {
       // Clean up the response to ensure valid JSON
+      let jsonContent = content;
+      
+      // Extract JSON object if wrapped in other text
       const jsonMatch = content.match(/\{[\s\S]*\}/);
-      const jsonContent = jsonMatch ? jsonMatch[0] : content;
+      if (jsonMatch) {
+        jsonContent = jsonMatch[0];
+      }
+      
+      // Handle incomplete JSON by trying to fix common truncation issues
+      if (!jsonContent.endsWith('}')) {
+        // Find the last complete entry and close the JSON
+        const lastCompleteQuote = jsonContent.lastIndexOf('"');
+        if (lastCompleteQuote > 0) {
+          jsonContent = jsonContent.substring(0, lastCompleteQuote + 1) + '}';
+        } else {
+          jsonContent += '}';
+        }
+      }
       
       // Parse the JSON response
       const summaries = JSON.parse(jsonContent);
