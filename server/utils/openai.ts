@@ -107,6 +107,83 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
   }
 }
 
+// Function to intelligently shorten text while maintaining reading level and key information
+export async function shortenText(text: string, maxWords: number = 650, maxChars: number = 3772): Promise<string> {
+  try {
+    const wordCount = text.split(/\s+/).length;
+    const charCount = text.length;
+    
+    // If text is within limits, return as-is
+    if (wordCount <= maxWords && charCount <= maxChars) {
+      return text;
+    }
+    
+    const systemPrompt = `
+      You are an expert text editor. Your task is to shorten the provided text while:
+      1. Maintaining the original reading level and writing style
+      2. Preserving all key information, main points, and important details
+      3. Keeping the same tone, voice, and technical vocabulary
+      4. Ensuring the shortened text flows naturally and coherently
+      5. Maintaining any technical terms, proper nouns, or specialized language exactly as written
+      
+      The shortened text must be no more than ${maxWords} words and ${maxChars} characters (including spaces and punctuation).
+      
+      Focus on removing redundant phrases, overly descriptive language, and less critical supporting details while keeping all essential information intact.
+      
+      Return only the shortened text without any explanation or commentary.
+    `;
+
+    const model = process.env.OPENROUTER_API_KEY ? "openai/gpt-4-turbo" : "gpt-4o"; // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+
+    const response = await openai.chat.completions.create({
+      model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: text }
+      ],
+      temperature: 0.3, // Lower temperature for more consistent editing
+      max_tokens: Math.min(2000, maxWords * 2) // Ensure we don't exceed reasonable token limits
+    });
+
+    const shortenedText = response.choices[0].message.content?.trim();
+    if (!shortenedText) {
+      throw new Error("Empty response from text shortening API");
+    }
+
+    // Verify the shortened text meets our requirements
+    const shortWordCount = shortenedText.split(/\s+/).length;
+    const shortCharCount = shortenedText.length;
+    
+    if (shortWordCount <= maxWords && shortCharCount <= maxChars) {
+      return shortenedText;
+    } else {
+      // If still too long, do a more aggressive shortening
+      const aggressivePrompt = `
+        The previous shortening was still too long. Please shorten this text more aggressively to exactly ${Math.floor(maxWords * 0.9)} words or fewer and ${Math.floor(maxChars * 0.9)} characters or fewer.
+        Keep only the most essential information while maintaining readability.
+        
+        Text to shorten further: ${shortenedText}
+      `;
+      
+      const aggressiveResponse = await openai.chat.completions.create({
+        model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: aggressivePrompt }
+        ],
+        temperature: 0.3,
+        max_tokens: Math.min(1500, maxWords * 1.5)
+      });
+      
+      return aggressiveResponse.choices[0].message.content?.trim() || shortenedText;
+    }
+  } catch (error) {
+    console.error("Error shortening text:", error);
+    // If shortening fails, truncate to character limit as fallback
+    return text.substring(0, maxChars).trim();
+  }
+}
+
 // Function to test the API connection
 export async function testApiConnection() {
   try {

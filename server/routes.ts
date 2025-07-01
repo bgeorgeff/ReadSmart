@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateGradeLevelSummaries, testApiConnection } from "./utils/openai";
+import { generateGradeLevelSummaries, testApiConnection, shortenText } from "./utils/openai";
 import { breakWordIntoSyllables } from "./utils/syllable";
 import { processTextSchema, gradeLevelSummarySchema, wordDetailSchema, saveRecordingSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
@@ -238,12 +238,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { text } = processTextSchema.parse(req.body);
       
-      // Generate summaries for all grade levels
-      const summaries = await generateGradeLevelSummaries(text);
+      // Check text length and automatically shorten if needed
+      const wordCount = text.split(/\s+/).length;
+      const charCount = text.length;
+      const maxWords = 650;
+      const maxChars = 3772;
       
-      // Save the summaries with the original text
+      let processedText = text;
+      
+      // If text exceeds limits, shorten it transparently
+      if (wordCount > maxWords || charCount > maxChars) {
+        console.log(`Text exceeds limits (${wordCount} words, ${charCount} chars). Shortening automatically...`);
+        processedText = await shortenText(text, maxWords, maxChars);
+        
+        const newWordCount = processedText.split(/\s+/).length;
+        const newCharCount = processedText.length;
+        console.log(`Text shortened to ${newWordCount} words, ${newCharCount} chars`);
+      }
+      
+      // Generate summaries for all grade levels using the processed text
+      const summaries = await generateGradeLevelSummaries(processedText);
+      
+      // Save the summaries with the processed text (not the original if it was shortened)
       const textSummary = await storage.saveTextSummary({
-        originalText: text,
+        originalText: processedText,
         summaries: summaries,
         createdAt: new Date().toISOString()
       });
