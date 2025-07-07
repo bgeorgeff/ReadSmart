@@ -22,7 +22,11 @@ export async function breakWordIntoSyllables(word: string): Promise<string[]> {
     'technology': ['tech', 'nol', 'o', 'gy'],         // common word
     'adaptability': ['a', 'dap', 'ta', 'bil', 'i', 'ty'], // hypher gives: adapt-abil-i-ty (wrong)
     'mathematicians': ['math', 'e', 'ma', 'ti', 'cians'],   // hypher gives: math-e-mati-cians (wrong)
-    'initiative': ['i', 'ni', 'tia', 'tive']              // hypher gives: ini-tia-tive (wrong)
+    'participants': ['par', 'ti', 'ci', 'pants'],          // hypher gives: par-tic-i-pants (wrong)
+    'collaborated': ['co', 'lab', 'o', 'ra', 'ted'],       // hypher gives: col-lab-o-rated (wrong)
+    'awareness': ['a', 'ware', 'ness'],                    // hypher gives: aware-ness (wrong)
+    'strategies': ['stra', 'te', 'gies'],                  // hypher gives: strate-gies (wrong)
+    'bureaucratic': ['bur', 'eau', 'cra', 'tic']           // hypher gives: bu-reau-cratic (wrong)
   };
 
   // First check manual overrides
@@ -158,6 +162,60 @@ function applyPatternFixes(syllables: string[]): string[] {
     if (fixed[i] === 'at' && fixed[i + 1] === 'i') {
       fixed.splice(i, 2, 'a', 'ti');
       break;
+    }
+  }
+  
+  // Pattern 10: Break "c" + "i" into "ci" (when c makes /s/ sound)
+  for (let i = 0; i < fixed.length - 1; i++) {
+    if (fixed[i].endsWith('c') && fixed[i + 1].startsWith('i')) {
+      const base = fixed[i].slice(0, -1);
+      const rest = fixed[i + 1].slice(1);
+      if (base.length > 0) {
+        fixed.splice(i, 2, base, 'ci' + rest);
+        break;
+      }
+    }
+  }
+  
+  // Pattern 11: Break "g" + "i" into "gi" (when g makes /j/ sound)  
+  for (let i = 0; i < fixed.length - 1; i++) {
+    if (fixed[i].endsWith('g') && fixed[i + 1].startsWith('i')) {
+      const base = fixed[i].slice(0, -1);
+      const rest = fixed[i + 1].slice(1);
+      if (base.length > 0) {
+        fixed.splice(i, 2, base, 'gi' + rest);
+        break;
+      }
+    }
+  }
+  
+  // Pattern 12: Break "nious" into "ni-ous"
+  for (let i = 0; i < fixed.length; i++) {
+    if (fixed[i].includes('nious')) {
+      const parts = fixed[i].split('nious');
+      if (parts.length === 2) {
+        const newSyllables = [];
+        if (parts[0]) newSyllables.push(parts[0]);
+        newSyllables.push('ni', 'ous');
+        if (parts[1]) newSyllables.push(parts[1]);
+        fixed.splice(i, 1, ...newSyllables);
+        break;
+      }
+    }
+  }
+  
+  // Pattern 13: Break "agree" into "a-gree"
+  for (let i = 0; i < fixed.length; i++) {
+    if (fixed[i].includes('agree')) {
+      const parts = fixed[i].split('agree');
+      if (parts.length === 2) {
+        const newSyllables = [];
+        if (parts[0]) newSyllables.push(parts[0]);
+        newSyllables.push('a', 'gree');
+        if (parts[1]) newSyllables.push(parts[1]);
+        fixed.splice(i, 1, ...newSyllables);
+        break;
+      }
     }
   }
   
