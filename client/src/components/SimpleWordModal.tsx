@@ -92,25 +92,23 @@ export default function SimpleWordModal({ isOpen, word, onClose }: SimpleWordMod
             <div>
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">{data.word}</h2>
-                <p className="text-gray-600 italic">/{data.pronunciation}/</p>
+                
+                {/* Pronounce button moved up */}
                 <button
                   onClick={() => speak(data.word)}
-                  className="mt-2 text-blue-500 hover:text-blue-700 flex items-center justify-center mx-auto"
+                  className="mt-3 text-blue-500 hover:text-blue-700 flex items-center justify-center mx-auto text-sm"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
                     <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                   Pronounce
                 </button>
                 
-                {/* Syllables Display */}
+                {/* Syllables Display - just the syllables without label */}
                 {data.syllables && data.syllables.length > 0 && (
-                  <div className="mt-4">
-                    <p className="text-gray-500 text-xs uppercase mb-1">Syllables</p>
-                    <div className="text-blue-600 font-semibold text-lg">
-                      {data.syllables.join(' • ')}
-                    </div>
+                  <div className="mt-3 text-blue-600 font-semibold text-xl">
+                    {data.syllables.join(' • ')}
                   </div>
                 )}
               </div>
