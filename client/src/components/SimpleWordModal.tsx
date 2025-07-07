@@ -103,6 +103,16 @@ export default function SimpleWordModal({ isOpen, word, onClose }: SimpleWordMod
                   </svg>
                   Pronounce
                 </button>
+                
+                {/* Syllables Display */}
+                {data.syllables && data.syllables.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Syllables</p>
+                    <div className="text-blue-600 font-semibold text-lg">
+                      {data.syllables.join(' • ')}
+                    </div>
+                  </div>
+                )}
               </div>
               
               <div className="mt-4">
