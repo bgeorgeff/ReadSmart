@@ -363,12 +363,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         exampleSentence = `This is an example sentence using the word "${word}".`;
       }
       
+      // Generate syllables using our phonetic syllabification algorithm
+      const syllables = breakWordIntoSyllables(word);
+      
       res.json({
         success: true,
         word,
         pronunciation: word, // In a production env, we'd use a proper pronunciation API
         definition,
-        exampleSentence
+        exampleSentence,
+        syllables
       });
     } catch (error) {
       if (error.name === "ZodError") {

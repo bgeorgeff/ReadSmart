@@ -25,6 +25,7 @@ export interface WordDetailResponse {
   pronunciation: string;
   exampleSentence: string;
   definition: string;
+  syllables: string[];
   message?: string;
 }
 
