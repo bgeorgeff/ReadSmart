@@ -7,10 +7,19 @@ export async function breakWordIntoSyllables(word: string): Promise<string[]> {
     return [cleanWord];
   }
   
-  // Optional: Keep a small override dictionary for any words that still need manual correction
+  // Manual override dictionary for words that hypher library doesn't handle accurately
   const manualOverrides: Record<string, string[]> = {
-    // Add any words here that the hypher library doesn't handle correctly
-    // Example: 'specialword': ['spe', 'cial', 'word']
+    // Words where hypher misses syllable breaks
+    'community': ['com', 'mu', 'ni', 'ty'],           // hypher gives: com-mu-nity (wrong)
+    'university': ['u', 'ni', 'ver', 'si', 'ty'],     // hypher gives: uni-ver-sity (wrong)
+    'individual': ['in', 'di', 'vid', 'u', 'al'],     // common word that needs accuracy
+    'opportunity': ['op', 'por', 'tu', 'ni', 'ty'],   // common word that needs accuracy
+    'organization': ['or', 'ga', 'ni', 'za', 'tion'], // common word that needs accuracy
+    'responsibility': ['re', 'spon', 'si', 'bil', 'i', 'ty'], // complex word
+    'understanding': ['un', 'der', 'stand', 'ing'],   // compound-like word
+    'environment': ['en', 'vi', 'ron', 'ment'],       // common word
+    'development': ['de', 'vel', 'op', 'ment'],       // common word
+    'technology': ['tech', 'nol', 'o', 'gy']          // common word
   };
 
   // First check manual overrides
