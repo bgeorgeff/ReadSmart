@@ -364,7 +364,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Generate syllables using our phonetic syllabification algorithm
-      const syllables = breakWordIntoSyllables(word);
+      const syllables = await breakWordIntoSyllables(word);
       
       res.json({
         success: true,
