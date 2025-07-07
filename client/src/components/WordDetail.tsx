@@ -16,7 +16,7 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
   
   // Word detail query
   const { data, isLoading, error } = useQuery({
-    queryKey: ['/api/word', word],
+    queryKey: ['/api/word', word, 'v2'], // Add version to force cache refresh
     queryFn: async () => {
       if (!word) return null;
       
