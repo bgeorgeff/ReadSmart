@@ -21,7 +21,8 @@ export async function breakWordIntoSyllables(word: string): Promise<string[]> {
     'development': ['de', 'vel', 'op', 'ment'],       // common word
     'technology': ['tech', 'nol', 'o', 'gy'],         // common word
     'adaptability': ['a', 'dap', 'ta', 'bil', 'i', 'ty'], // hypher gives: adapt-abil-i-ty (wrong)
-    'mathematicians': ['math', 'e', 'ma', 'ti', 'cians']   // hypher gives: math-e-mati-cians (wrong)
+    'mathematicians': ['math', 'e', 'ma', 'ti', 'cians'],   // hypher gives: math-e-mati-cians (wrong)
+    'initiative': ['i', 'ni', 'tia', 'tive']              // hypher gives: ini-tia-tive (wrong)
   };
 
   // First check manual overrides
