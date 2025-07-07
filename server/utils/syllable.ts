@@ -134,5 +134,13 @@ function applyPatternFixes(syllables: string[]): string[] {
     }
   }
   
+  // Pattern 7: Break "mati" into "ma-ti" (as in "mathematicians")
+  for (let i = 0; i < fixed.length; i++) {
+    if (fixed[i] === 'mati') {
+      fixed.splice(i, 1, 'ma', 'ti');
+      break;
+    }
+  }
+  
   return fixed;
 }
