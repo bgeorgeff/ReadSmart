@@ -144,6 +144,22 @@ function applyPatternFixes(syllables: string[]): string[] {
     }
   }
   
+  // Pattern 8: Break "mat" + "i" into "ma" + "ti" (when "mat" is followed by "i")
+  for (let i = 0; i < fixed.length - 1; i++) {
+    if (fixed[i] === 'mat' && fixed[i + 1] === 'i') {
+      fixed.splice(i, 2, 'ma', 'ti');
+      break;
+    }
+  }
+  
+  // Pattern 9: Break "at" + "i" into "a" + "ti" (when "at" is followed by "i", like in "systematically")
+  for (let i = 0; i < fixed.length - 1; i++) {
+    if (fixed[i] === 'at' && fixed[i + 1] === 'i') {
+      fixed.splice(i, 2, 'a', 'ti');
+      break;
+    }
+  }
+  
 
   
   return fixed;
