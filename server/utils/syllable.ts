@@ -27,6 +27,7 @@ export async function breakWordIntoSyllables(word: string): Promise<string[]> {
     'awareness': ['a', 'ware', 'ness'],                    // hypher gives: aware-ness (wrong)
     'strategies': ['stra', 'te', 'gies'],                  // hypher gives: strate-gies (wrong)
     'bureaucratic': ['bur', 'eau', 'cra', 'tic']           // hypher gives: bu-reau-cratic (wrong)
+    // Note: phonological and related ph- words now handled by pattern rules
   };
 
   // First check manual overrides
@@ -212,6 +213,66 @@ function applyPatternFixes(syllables: string[]): string[] {
         const newSyllables = [];
         if (parts[0]) newSyllables.push(parts[0]);
         newSyllables.push('a', 'gree');
+        if (parts[1]) newSyllables.push(parts[1]);
+        fixed.splice(i, 1, ...newSyllables);
+        break;
+      }
+    }
+  }
+  
+  // Pattern 14: Break "phono" into "pho-no" (phonograph, phonological, etc.)
+  for (let i = 0; i < fixed.length; i++) {
+    if (fixed[i].includes('phono')) {
+      const parts = fixed[i].split('phono');
+      if (parts.length === 2) {
+        const newSyllables = [];
+        if (parts[0]) newSyllables.push(parts[0]);
+        newSyllables.push('pho', 'no');
+        if (parts[1]) newSyllables.push(parts[1]);
+        fixed.splice(i, 1, ...newSyllables);
+        break;
+      }
+    }
+  }
+  
+  // Pattern 15: Break "photo" into "pho-to" (photograph, photography, etc.)
+  for (let i = 0; i < fixed.length; i++) {
+    if (fixed[i].includes('photo')) {
+      const parts = fixed[i].split('photo');
+      if (parts.length === 2) {
+        const newSyllables = [];
+        if (parts[0]) newSyllables.push(parts[0]);
+        newSyllables.push('pho', 'to');
+        if (parts[1]) newSyllables.push(parts[1]);
+        fixed.splice(i, 1, ...newSyllables);
+        break;
+      }
+    }
+  }
+  
+  // Pattern 16: Break "phospho" into "phos-pho" (phosphorus, phosphate, etc.)
+  for (let i = 0; i < fixed.length; i++) {
+    if (fixed[i].includes('phospho')) {
+      const parts = fixed[i].split('phospho');
+      if (parts.length === 2) {
+        const newSyllables = [];
+        if (parts[0]) newSyllables.push(parts[0]);
+        newSyllables.push('phos', 'pho');
+        if (parts[1]) newSyllables.push(parts[1]);
+        fixed.splice(i, 1, ...newSyllables);
+        break;
+      }
+    }
+  }
+  
+  // Pattern 17: Break "philos" into "phi-los" (philosophy, philosopher, etc.)
+  for (let i = 0; i < fixed.length; i++) {
+    if (fixed[i].includes('philos')) {
+      const parts = fixed[i].split('philos');
+      if (parts.length === 2) {
+        const newSyllables = [];
+        if (parts[0]) newSyllables.push(parts[0]);
+        newSyllables.push('phi', 'los');
         if (parts[1]) newSyllables.push(parts[1]);
         fixed.splice(i, 1, ...newSyllables);
         break;
