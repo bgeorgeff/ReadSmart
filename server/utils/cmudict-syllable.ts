@@ -1,5 +1,5 @@
 
-import cmudict from 'cmudict';
+const cmudict = require('cmudict');
 
 export async function breakWordIntoSyllablesCMU(word: string): Promise<string[]> {
   // Clean the word from punctuation
@@ -12,7 +12,7 @@ export async function breakWordIntoSyllablesCMU(word: string): Promise<string[]>
 
   try {
     // Get phonetic pronunciation from CMUdict
-    const phonemes = cmudict.get(cleanWord);
+    const phonemes = cmudict(cleanWord);
     
     if (!phonemes || phonemes.length === 0) {
       console.log(`CMUdict: No pronunciation found for "${cleanWord}"`);
@@ -113,7 +113,7 @@ export async function compareSyllableMethods(word: string): Promise<{
   let cmudictSyllableCount;
   
   try {
-    const phonemes = cmudict.get(cleanWord);
+    const phonemes = cmudict(cleanWord);
     if (phonemes && phonemes.length > 0) {
       cmudictSyllableCount = phonemes[0].filter((phoneme: string) => /[012]$/.test(phoneme)).length;
     }
