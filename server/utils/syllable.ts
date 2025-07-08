@@ -67,13 +67,19 @@ function applyPatternFixes(syllables: string[]): string[] {
 
   let fixed = [...syllables];
 
-  // Pattern 1: Break off "ly" suffix as separate syllable
+  // Pattern 1: Break off consonant+y suffixes as separate syllable (ly, ty, ry, ny, my, dy, gy, fy, py, by, vy, sy, zy)
   const lastSyllable = fixed[fixed.length - 1];
-  if (lastSyllable.endsWith('ly') && lastSyllable.length > 2) {
-    const base = lastSyllable.slice(0, -2);
-    if (base.length > 0) {
-      fixed[fixed.length - 1] = base;
-      fixed.push('ly');
+  if (lastSyllable.length > 2 && lastSyllable.endsWith('y')) {
+    const beforeY = lastSyllable.slice(-2, -1);
+    // Check if it's a consonant before y
+    const consonantsBeforeY = ['l', 't', 'r', 'n', 'm', 'd', 'g', 'f', 'p', 'b', 'v', 's', 'z'];
+    
+    if (consonantsBeforeY.includes(beforeY)) {
+      const base = lastSyllable.slice(0, -2);
+      if (base.length > 0) {
+        fixed[fixed.length - 1] = base;
+        fixed.push(beforeY + 'y');
+      }
     }
   }
 
