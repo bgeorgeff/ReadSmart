@@ -26,7 +26,8 @@ export async function breakWordIntoSyllables(word: string): Promise<string[]> {
     'collaborated': ['co', 'lab', 'o', 'ra', 'ted'],       // hypher gives: col-lab-o-rated (wrong)
     'awareness': ['a', 'ware', 'ness'],                    // hypher gives: aware-ness (wrong)
     'strategies': ['stra', 'te', 'gies'],                  // hypher gives: strate-gies (wrong)
-    'bureaucratic': ['bur', 'eau', 'cra', 'tic']           // hypher gives: bu-reau-cratic (wrong)
+    'bureaucratic': ['bur', 'eau', 'cra', 'tic'],          // hypher gives: bu-reau-cratic (wrong)
+    'initiative': ['i', 'ni', 'tia', 'tive']                   // hypher gives: ini-tia-tive (wrong)
     // Note: phonological and related ph- words now handled by pattern rules
   };
 
