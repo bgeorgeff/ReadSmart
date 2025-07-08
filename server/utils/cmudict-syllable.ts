@@ -1,5 +1,5 @@
 
-const cmudict = require('cmudict');
+import cmudict from 'cmudict';
 
 export async function breakWordIntoSyllablesCMU(word: string): Promise<string[]> {
   // Clean the word from punctuation
