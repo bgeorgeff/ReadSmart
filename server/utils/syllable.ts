@@ -281,6 +281,20 @@ function applyPatternFixes(syllables: string[]): string[] {
     }
   }
   
+  // Pattern 18: Break "astro" into "a-stro" (astronomy, astronomer, etc.)
+  for (let i = 0; i < fixed.length; i++) {
+    if (fixed[i].includes('astro')) {
+      const parts = fixed[i].split('astro');
+      if (parts.length === 2) {
+        const newSyllables = [];
+        if (parts[0]) newSyllables.push(parts[0]);
+        newSyllables.push('a', 'stro');
+        if (parts[1]) newSyllables.push(parts[1]);
+        fixed.splice(i, 1, ...newSyllables);
+        break;
+      }
+    }
+  }
 
   
   return fixed;
