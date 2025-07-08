@@ -1,12 +1,12 @@
 export async function breakWordIntoSyllables(word: string): Promise<string[]> {
   // Clean the word from punctuation
   const cleanWord = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-  
+
   // Handle empty or very short words
   if (!cleanWord || cleanWord.length <= 2) {
     return [cleanWord];
   }
-  
+
   // Manual override dictionary for words that hypher library doesn't handle accurately
   const manualOverrides: Record<string, string[]> = {
     // Words where hypher misses syllable breaks
@@ -35,24 +35,24 @@ export async function breakWordIntoSyllables(word: string): Promise<string[]> {
   if (manualOverrides[cleanWord]) {
     return manualOverrides[cleanWord];
   }
-  
+
   try {
     // Use hypher library with Franklin M. Liang's algorithm (89% accuracy)
     const Hypher = (await import('hypher')).default;
     const english = await import('hyphenation.en-us');
     const h = new Hypher(english.default);
-    
+
     // Get syllable array directly
     let syllables = h.hyphenate(cleanWord);
-    
+
     // Return the original word if no syllables found or only one
     if (syllables.length <= 1) {
       return [cleanWord];
     }
-    
+
     // Apply pattern-based post-processing rules to fix systematic errors
     syllables = applyPatternFixes(syllables);
-    
+
     return syllables;
   } catch (error) {
     // Fallback to simple splitting if hypher fails
@@ -64,9 +64,9 @@ export async function breakWordIntoSyllables(word: string): Promise<string[]> {
 // Apply systematic pattern fixes for common hyphenation errors
 function applyPatternFixes(syllables: string[]): string[] {
   if (syllables.length === 0) return syllables;
-  
+
   let fixed = [...syllables];
-  
+
   // Pattern 1: Break off "ly" suffix as separate syllable
   const lastSyllable = fixed[fixed.length - 1];
   if (lastSyllable.endsWith('ly') && lastSyllable.length > 2) {
@@ -76,7 +76,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       fixed.push('ly');
     }
   }
-  
+
   // Pattern 2: Break "tional" into "tion-al" 
   for (let i = 0; i < fixed.length; i++) {
     if (fixed[i].includes('tional')) {
@@ -91,7 +91,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       }
     }
   }
-  
+
   // Pattern 3: Break "unan" prefix into "u-na-ni"
   if (fixed.length > 0 && fixed[0] === 'unan') {
     // Check if next syllable is just "i" (common in "unanimously")
@@ -104,7 +104,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       fixed.splice(1, 0, 'na', 'ni');
     }
   }
-  
+
   // Pattern 4: Break "ary" suffix into "ar-y"
   let lastIdx = fixed.length - 1;
   if (fixed[lastIdx] === 'ary') {
@@ -118,7 +118,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       fixed.push('y');
     }
   }
-  
+
   // Pattern 5: Break "ity" suffix into "i-ty" 
   // Update lastIdx in case it changed from previous patterns
   lastIdx = fixed.length - 1;
@@ -133,7 +133,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       fixed.push('ty');
     }
   }
-  
+
   // Pattern 6: Break "ally" suffix into "al-ly"
   if (fixed[lastIdx].endsWith('ally') && fixed[lastIdx].length > 4) {
     const base = fixed[lastIdx].slice(0, -4);
@@ -142,7 +142,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       fixed.push('ly');
     }
   }
-  
+
   // Pattern 7: Break "mati" into "ma-ti" (as in "mathematicians")
   for (let i = 0; i < fixed.length; i++) {
     if (fixed[i] === 'mati') {
@@ -150,7 +150,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       break;
     }
   }
-  
+
   // Pattern 8: Break "mat" + "i" into "ma" + "ti" (when "mat" is followed by "i")
   for (let i = 0; i < fixed.length - 1; i++) {
     if (fixed[i] === 'mat' && fixed[i + 1] === 'i') {
@@ -158,7 +158,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       break;
     }
   }
-  
+
   // Pattern 9: Break "at" + "i" into "a" + "ti" (when "at" is followed by "i", like in "systematically")
   for (let i = 0; i < fixed.length - 1; i++) {
     if (fixed[i] === 'at' && fixed[i + 1] === 'i') {
@@ -166,7 +166,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       break;
     }
   }
-  
+
   // Pattern 10: Break "c" + "i" into "ci" (when c makes /s/ sound)
   for (let i = 0; i < fixed.length - 1; i++) {
     if (fixed[i].endsWith('c') && fixed[i + 1].startsWith('i')) {
@@ -178,7 +178,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       }
     }
   }
-  
+
   // Pattern 11: Break "g" + "i" into "gi" (when g makes /j/ sound)  
   for (let i = 0; i < fixed.length - 1; i++) {
     if (fixed[i].endsWith('g') && fixed[i + 1].startsWith('i')) {
@@ -190,7 +190,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       }
     }
   }
-  
+
   // Pattern 12: Break "nious" into "ni-ous"
   for (let i = 0; i < fixed.length; i++) {
     if (fixed[i].includes('nious')) {
@@ -205,7 +205,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       }
     }
   }
-  
+
   // Pattern 13: Break "agree" into "a-gree"
   for (let i = 0; i < fixed.length; i++) {
     if (fixed[i].includes('agree')) {
@@ -220,7 +220,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       }
     }
   }
-  
+
   // Pattern 14: Break "phono" into "pho-no" (phonograph, phonological, etc.)
   for (let i = 0; i < fixed.length; i++) {
     if (fixed[i].includes('phono')) {
@@ -235,7 +235,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       }
     }
   }
-  
+
   // Pattern 15: Break "photo" into "pho-to" (photograph, photography, etc.)
   for (let i = 0; i < fixed.length; i++) {
     if (fixed[i].includes('photo')) {
@@ -250,7 +250,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       }
     }
   }
-  
+
   // Pattern 16: Break "phospho" into "phos-pho" (phosphorus, phosphate, etc.)
   for (let i = 0; i < fixed.length; i++) {
     if (fixed[i].includes('phospho')) {
@@ -265,7 +265,7 @@ function applyPatternFixes(syllables: string[]): string[] {
       }
     }
   }
-  
+
   // Pattern 17: Break "philos" into "phi-los" (philosophy, philosopher, etc.)
   for (let i = 0; i < fixed.length; i++) {
     if (fixed[i].includes('philos')) {
@@ -280,22 +280,22 @@ function applyPatternFixes(syllables: string[]): string[] {
       }
     }
   }
-  
-  // Pattern 18: Break "astro" into "a-stro" (astronomy, astronomer, etc.)
-  for (let i = 0; i < fixed.length; i++) {
-    if (fixed[i].includes('astro')) {
-      const parts = fixed[i].split('astro');
-      if (parts.length === 2) {
-        const newSyllables = [];
-        if (parts[0]) newSyllables.push(parts[0]);
-        newSyllables.push('a', 'stro');
-        if (parts[1]) newSyllables.push(parts[1]);
-        fixed.splice(i, 1, ...newSyllables);
-        break;
+
+  // Pattern 18: Fix "as" + "tro..." to "a" + "stro..." (astronomy, astronomer, etc.)
+  for (let i = 0; i < fixed.length - 1; i++) {
+    if (fixed[i] === 'as' && fixed[i + 1].startsWith('tro')) {
+      const troSyllable = fixed[i + 1];
+      // Replace "as" + "tronomers" with "a" + "stro" + "no" + "mers"
+      if (troSyllable === 'tronomers') {
+        fixed.splice(i, 2, 'a', 'stro', 'no', 'mers');
+      } else if (troSyllable.startsWith('tro')) {
+        // For other astro- words, combine "stro" with remainder
+        fixed.splice(i, 2, 'a', 'stro' + troSyllable.slice(3));
       }
+      break;
     }
   }
 
-  
+
   return fixed;
 }
