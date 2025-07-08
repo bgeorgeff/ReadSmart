@@ -77,10 +77,17 @@ function applyPatternFixes(syllables: string[]): string[] {
     if (consonantsBeforeY.includes(beforeY)) {
       const base = lastSyllable.slice(0, -2);
       if (base.length > 0) {
+        console.log(`DEBUG: Splitting "${lastSyllable}" into "${base}" + "${beforeY}y" for word: ${cleanWord}`);
         fixed[fixed.length - 1] = base;
         fixed.push(beforeY + 'y');
+      } else {
+        console.log(`DEBUG: Cannot split "${lastSyllable}" - base would be empty for word: ${cleanWord}`);
       }
+    } else {
+      console.log(`DEBUG: "${beforeY}" not found in consonants for syllable "${lastSyllable}" in word: ${cleanWord}`);
     }
+  } else {
+    console.log(`DEBUG: Syllable "${lastSyllable}" doesn't meet criteria (length: ${lastSyllable.length}, ends with y: ${lastSyllable.endsWith('y')}) for word: ${cleanWord}`);
   }
 
   // Pattern 2: Break "tional" into "tion-al" 
