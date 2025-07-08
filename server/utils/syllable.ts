@@ -47,11 +47,12 @@ export async function breakWordIntoSyllables(word: string): Promise<string[]> {
 
     // Return the original word if no syllables found or only one
     if (syllables.length <= 1) {
-      return [cleanWord];
+      // Apply systematic syllable detection for words that should have multiple syllables
+      return detectBasicSyllables(cleanWord);
     }
 
     // Apply pattern-based post-processing rules to fix systematic errors
-    syllables = applyPatternFixes(syllables);
+    syllables = applyPatternFixes(syllables, cleanWord);
 
     return syllables;
   } catch (error) {
@@ -61,8 +62,84 @@ export async function breakWordIntoSyllables(word: string): Promise<string[]> {
   }
 }
 
+// Detect basic syllables for words that hypher treats as single syllables
+function detectBasicSyllables(word: string): string[] {
+  // For very short words, return as single syllable
+  if (word.length <= 3) {
+    return [word];
+  }
+
+  // Basic vowel pattern detection for syllable breaks
+  const vowels = 'aeiou';
+  const consonants = 'bcdfghjklmnpqrstvwxyz';
+  
+  // Common patterns for words ending in consonant + y
+  if (word.endsWith('y') && word.length > 2) {
+    const beforeY = word.slice(-2, -1);
+    if (consonants.includes(beforeY)) {
+      const base = word.slice(0, -2);
+      if (base.length > 1) {
+        // Check if base has vowels (making it pronounceable)
+        if (base.split('').some(char => vowels.includes(char))) {
+          return [base, beforeY + 'y'];
+        }
+      }
+    }
+  }
+
+  // Pattern for words ending in consonant + vowel + consonant (like "any", "ready")
+  if (word.length >= 4) {
+    const ending = word.slice(-3);
+    const endingChars = ending.split('');
+    
+    // Check pattern: consonant + vowel + consonant/consonants
+    if (consonants.includes(endingChars[0]) && vowels.includes(endingChars[1])) {
+      const base = word.slice(0, -3);
+      if (base.length > 1 && base.split('').some(char => vowels.includes(char))) {
+        return [base, ending];
+      }
+    }
+  }
+
+  // Pattern for words with clear vowel clusters that suggest syllable breaks
+  const syllables: string[] = [];
+  let currentSyllable = '';
+  let lastWasVowel = false;
+
+  for (let i = 0; i < word.length; i++) {
+    const char = word[i];
+    const isVowel = vowels.includes(char);
+    
+    currentSyllable += char;
+    
+    // Look ahead to see if we should break
+    const nextChar = word[i + 1];
+    const nextIsVowel = nextChar ? vowels.includes(nextChar) : false;
+    
+    // Break on vowel-to-vowel transitions (like "a-ny", "ea-sy")
+    if (isVowel && nextIsVowel && i > 0) {
+      syllables.push(currentSyllable);
+      currentSyllable = '';
+    }
+    // Break when we have vowel + consonant + vowel pattern
+    else if (lastWasVowel && !isVowel && nextIsVowel && currentSyllable.length >= 2) {
+      syllables.push(currentSyllable);
+      currentSyllable = '';
+    }
+    
+    lastWasVowel = isVowel;
+  }
+  
+  if (currentSyllable) {
+    syllables.push(currentSyllable);
+  }
+
+  // If we found multiple syllables, return them; otherwise return original word
+  return syllables.length > 1 ? syllables : [word];
+}
+
 // Apply systematic pattern fixes for common hyphenation errors
-function applyPatternFixes(syllables: string[]): string[] {
+function applyPatternFixes(syllables: string[], cleanWord: string): string[] {
   if (syllables.length === 0) return syllables;
 
   let fixed = [...syllables];
