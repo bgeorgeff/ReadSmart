@@ -61,6 +61,11 @@ class CMUSyllabifier {
     ['educational', ['ed', 'u', 'ca', 'tion', 'al']],
     ['exceptional', ['ex', 'cep', 'tion', 'al']],
     ['unanimously', ['u', 'na', 'ni', 'mous', 'ly']],
+    // -ed past tense words with root word preservation
+    ['wanted', ['want', 'ed']],
+    ['started', ['start', 'ed']],
+    ['tested', ['test', 'ed']],
+    ['needed', ['need', 'ed']],
 
   ]);
 
@@ -557,6 +562,12 @@ class CMUSyllabifier {
       return [cleanWord];
     }
 
+    // Check for morphological overrides first (these take precedence over dictionary)
+    const morphOverride = this.MORPHOLOGICAL_OVERRIDES.get(cleanWord);
+    if (morphOverride) {
+      return morphOverride;
+    }
+
     // Look up in CMU dictionary
     const syllables = this.dictionary.get(cleanWord);
     if (syllables) {
@@ -656,7 +667,6 @@ class CMUSyllabifier {
     // Handle -ed endings (past tense)
     if (word.endsWith('ed') && word.length > 3) {
       const root = word.slice(0, -2);
-      const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
       
       // Check if -ed creates a new syllable or not
       // -ed creates new syllable (/ɪd/ sound) only when preceded by 't' or 'd' sounds
@@ -665,9 +675,11 @@ class CMUSyllabifier {
       // Check last character of root for 't' or 'd' sound
       if (lastChar === 't' || lastChar === 'd') {
         // -ed makes /ɪd/ sound and creates new syllable
-        return [...rootSyllables, 'ed'];
+        // BUT preserve root word structure (morphological rule trumps phonetic)
+        return [root, 'ed'];
       } else {
         // -ed makes /t/ or /d/ sound and joins with previous syllable
+        const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
         if (rootSyllables.length > 0) {
           const lastSyllable = rootSyllables[rootSyllables.length - 1];
           const modifiedSyllables = [...rootSyllables.slice(0, -1), lastSyllable + 'ed'];
