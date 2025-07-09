@@ -11,6 +11,12 @@ import fs from "fs";
 import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve the syllable test page
+  app.get("/syllable-test.html", (req, res) => {
+    const filePath = path.join(__dirname, "..", "syllable-test.html");
+    res.sendFile(filePath);
+  });
+
   // Serve the audio test page
   app.get("/audio-test.html", (req, res) => {
     res.setHeader('Content-Type', 'text/html');
