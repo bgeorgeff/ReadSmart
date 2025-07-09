@@ -149,15 +149,15 @@ export default function ProcessingSummary({
     }
   }, [isProcessing, mutate, summaryId]);
 
-  // Animation for the progress bar with slower, more accurate pacing
+  // Animation for the progress bar with faster, more responsive pacing
   useEffect(() => {
     if (isPending) {
       // Reset progress when starting
       setProgressWidth(0);
 
-      // Create a slower, more realistic progress simulation
+      // Create a faster, more responsive progress simulation
       const simulateProgress = () => {
-        // Very slow initial progress (0-20%)
+        // Initial progress (0-20%)
         const initialProgress = setInterval(() => {
           setProgressWidth(prev => {
             if (prev >= 20) {
@@ -166,9 +166,9 @@ export default function ProcessingSummary({
             }
             return prev + 1;
           });
-        }, 300);
+        }, 150);
 
-        // Slow progress (20-45%)
+        // Progress (20-45%)
         setTimeout(() => {
           const slowProgress = setInterval(() => {
             setProgressWidth(prev => {
@@ -178,10 +178,10 @@ export default function ProcessingSummary({
               }
               return prev + 0.5;
             });
-          }, 400);
-        }, 6000);
+          }, 200);
+        }, 3000);
 
-        // Very slow progress (45-70%)
+        // Progress (45-70%)
         setTimeout(() => {
           const verySlowProgress = setInterval(() => {
             setProgressWidth(prev => {
@@ -191,10 +191,10 @@ export default function ProcessingSummary({
               }
               return prev + 0.3;
             });
-          }, 500);
-        }, 16000);
+          }, 250);
+        }, 8000);
 
-        // Extremely slow final progress (70-75%)
+        // Final progress (70-75%)
         setTimeout(() => {
           const finalProgress = setInterval(() => {
             setProgressWidth(prev => {
@@ -204,8 +204,8 @@ export default function ProcessingSummary({
               }
               return prev + 0.1;
             });
-          }, 800);
-        }, 33000);
+          }, 400);
+        }, 16000);
       };
 
       simulateProgress();
