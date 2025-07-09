@@ -213,19 +213,19 @@ class CMUSyllabifier {
 
     // Find vowel positions to identify syllable cores using phoneme data
     const vowelPositions: number[] = [];
-    
+
     if (phonemes.length > 0) {
       // Use phoneme data to identify actual vowel sounds
       const vowelPhonemes = phonemes.filter(p => this.VOWEL_PHONEMES.has(p.replace(/[0-2]$/, '')));
-      
+
       // Map phonemes to approximate letter positions
       // This is a rough approximation - we need to find where each vowel sound occurs in the word
       let letterIndex = 0;
       let phonemeIndex = 0;
-      
+
       while (letterIndex < word.length && phonemeIndex < phonemes.length) {
         const phoneme = phonemes[phonemeIndex].replace(/[0-2]$/, '');
-        
+
         if (this.VOWEL_PHONEMES.has(phoneme)) {
           // Find the vowel letter(s) that represent this phoneme
           let vowelFound = false;
@@ -393,12 +393,12 @@ class CMUSyllabifier {
         if (this.VOWEL_NG_PATTERNS.has(pattern)) {
           // Find the start of this vowel+ng pattern (could be multiple letters before 'ng')
           let patternStart = beforeNgInWord;
-          
+
           // For "ing" pattern, we want to keep the entire "ing" together
           if (pattern === 'ing' && beforeNgInWord >= 1 && word[beforeNgInWord - 1].toLowerCase() === 'i') {
             patternStart = beforeNgInWord - 1;
           }
-          
+
           // Keep the entire vowel+ng pattern together as one syllable
           // Split before the pattern starts
           return patternStart;
@@ -667,11 +667,11 @@ class CMUSyllabifier {
     // Handle -ed endings (past tense)
     if (word.endsWith('ed') && word.length > 3) {
       const root = word.slice(0, -2);
-      
+
       // Check if -ed creates a new syllable or not
       // -ed creates new syllable (/ɪd/ sound) only when preceded by 't' or 'd' sounds
       const lastChar = root.slice(-1).toLowerCase();
-      
+
       // Check last character of root for 't' or 'd' sound
       if (lastChar === 't' || lastChar === 'd') {
         // -ed makes /ɪd/ sound and creates new syllable
