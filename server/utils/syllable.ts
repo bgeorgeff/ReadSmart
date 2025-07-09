@@ -43,39 +43,44 @@ class CMUSyllabifier {
     'ng', 'nk', 'nd', 'nt', 'mp', 'mb', 'ld', 'rd', 'st', 'sk', 'sp'
   ]);
 
+  // Common root words (for syllabification)
+  private readonly COMMON_ROOT_WORDS = new Set([
+    'act', 'add', 'air', 'all', 'and', 'art', 'ask', 'bad', 'ball', 'bank', 'bar', 'base', 'bat', 'bear', 'beat', 'bed', 'bell', 'best', 'big', 'bill', 'bit', 'bite', 'black', 'blood', 'blue', 'boat', 'body', 'bone', 'book', 'born', 'both', 'box', 'boy', 'brain', 'bread', 'break', 'bright', 'bring', 'broad', 'brown', 'build', 'burn', 'bus', 'buy', 'call', 'can', 'car', 'card', 'care', 'carry', 'case', 'cat', 'catch', 'cause', 'cell', 'cent', 'chair', 'chance', 'change', 'charge', 'check', 'child', 'city', 'claim', 'class', 'clean', 'clear', 'close', 'cloud', 'club', 'coat', 'cold', 'color', 'come', 'cook', 'cool', 'copy', 'corn', 'cost', 'count', 'court', 'cover', 'cross', 'cry', 'cup', 'dark', 'date', 'day', 'dead', 'deal', 'dear', 'death', 'deep', 'deer', 'degree', 'die', 'dig', 'direct', 'dirt', 'dish', 'dive', 'doctor', 'dog', 'door', 'doubt', 'down', 'draw', 'dream', 'dress', 'drink', 'drive', 'drop', 'dry', 'due', 'east', 'easy', 'eat', 'edge', 'egg', 'eight', 'else', 'end', 'equal', 'even', 'event', 'ever', 'every', 'eye', 'face', 'fact', 'fail', 'fair', 'fall', 'far', 'farm', 'fast', 'fat', 'father', 'fear', 'feed', 'feel', 'feet', 'fell', 'felt', 'few', 'field', 'fight', 'figure', 'fill', 'film', 'final', 'find', 'fine', 'finger', 'fire', 'firm', 'fish', 'fit', 'five', 'fix', 'flag', 'flat', 'floor', 'flow', 'flower', 'fly', 'fold', 'follow', 'food', 'foot', 'for', 'force', 'form', 'found', 'four', 'free', 'fresh', 'friend', 'from', 'front', 'fruit', 'full', 'fun', 'game', 'garden', 'gas', 'gate', 'gather', 'gave', 'gear', 'general', 'get', 'gift', 'girl', 'give', 'glad', 'glass', 'go', 'goal', 'god', 'gold', 'good', 'grass', 'great', 'green', 'ground', 'group', 'grow', 'guess', 'guide', 'gun', 'hair', 'half', 'hall', 'hand', 'hang', 'happen', 'happy', 'hard', 'hat', 'hate', 'have', 'he', 'head', 'hear', 'heart', 'heat', 'heavy', 'held', 'hell', 'help', 'her', 'here', 'high', 'hill', 'him', 'hip', 'hire', 'his', 'hit', 'hold', 'hole', 'home', 'hope', 'horse', 'hospital', 'hot', 'hotel', 'hour', 'house', 'how', 'huge', 'human', 'hunt', 'hurt', 'ice', 'idea', 'if', 'image', 'import', 'inch', 'info', 'inside', 'instead', 'into', 'iron', 'issue', 'item', 'job', 'join', 'joke', 'judge', 'jump', 'just', 'keep', 'key', 'kid', 'kill', 'kind', 'king', 'kiss', 'knee', 'knife', 'knock', 'know', 'lab', 'lack', 'lady', 'lake', 'land', 'large', 'last', 'late', 'laugh', 'law', 'lay', 'lead', 'learn', 'least', 'leave', 'left', 'leg', 'lend', 'less', 'let', 'letter', 'level', 'lie', 'life', 'lift', 'light', 'like', 'line', 'lip', 'list', 'listen', 'little', 'live', 'load', 'local', 'lock', 'long', 'look', 'loose', 'lose', 'loss', 'lot', 'loud', 'love', 'low', 'luck', 'lunch', 'machine', 'main', 'make', 'male', 'man', 'many', 'map', 'mark', 'market', 'marry', 'mass', 'master', 'match', 'matter', 'may', 'meal', 'mean', 'meat', 'meet', 'member', 'memory', 'men', 'metal', 'method', 'mid', 'middle', 'might', 'mile', 'milk', 'mind', 'mine', 'minute', 'mirror', 'miss', 'mix', 'model', 'moment', 'money', 'month', 'moon', 'more', 'morning', 'most', 'mother', 'motion', 'mount', 'mouse', 'mouth', 'move', 'much', 'mud', 'music', 'must', 'my', 'nail', 'name', 'narrow', 'nation', 'near', 'neck', 'need', 'nerve', 'nest', 'net', 'new', 'news', 'next', 'nice', 'night', 'nine', 'no', 'noble', 'nod', 'noise', 'none', 'noon', 'north', 'nose', 'note', 'novel', 'now', 'number', 'nurse', 'nut', 'object', 'ocean', 'offer', 'office', 'often', 'oil', 'old', 'once', 'one', 'only', 'open', 'opera', 'opinion', 'order', 'other', 'our', 'out', 'over', 'own', 'pace', 'pack', 'page', 'pain', 'paint', 'pair', 'palace', 'paper', 'parent', 'park', 'part', 'party', 'pass', 'past', 'path', 'pattern', 'pause', 'pay', 'peace', 'peak', 'pen', 'pencil', 'people', 'perfect', 'period', 'person', 'pet', 'phase', 'phone', 'photo', 'pick', 'pie', 'piece', 'pig', 'pile', 'pill', 'pilot', 'pin', 'pink', 'pipe', 'pitch', 'place', 'plan', 'plane', 'plant', 'plastic', 'plate', 'play', 'please', 'plus', 'pocket', 'poem', 'point', 'poison', 'pole', 'police', 'policy', 'polite', 'pool', 'poor', 'pop', 'popular', 'port', 'pose', 'position', 'possible', 'post', 'pot', 'pound', 'pour', 'power', 'press', 'pretty', 'price', 'pride', 'print', 'prior', 'prison', 'private', 'prize', 'problem', 'process', 'produce', 'product', 'profile', 'program', 'project', 'promise', 'promote', 'proper', 'protect', 'proud', 'prove', 'provide', 'public', 'pull', 'pump', 'punch', 'punish', 'pupil', 'pure', 'purple', 'push', 'put', 'quality', 'quarter', 'queen', 'query', 'quest', 'quick', 'quiet', 'quit', 'quote', 'race', 'radio', 'rail', 'rain', 'raise', 'range', 'rank', 'rapid', 'rare', 'rate', 'ratio', 'raw', 'reach', 'react', 'read', 'ready', 'real', 'reason', 'recall', 'recent', 'recipe', 'record', 'red', 'reduce', 'refer', 'reflect', 'reform', 'refuse', 'regard', 'region', 'regret', 'regular', 'reject', 'relate', 'relax', 'release', 'relief', 'rely', 'remain', 'remark', 'remind', 'remote', 'remove', 'rent', 'repair', 'repeat', 'replace', 'reply', 'report', 'request', 'rescue', 'research', 'resign', 'resist', 'resolve', 'resort', 'resource', 'respect', 'respond', 'rest', 'result', 'resume', 'retail', 'retain', 'retire', 'return', 'reveal', 'review', 'reward', 'rice', 'rich', 'ride', 'right', 'ring', 'rise', 'risk', 'river', 'road', 'rob', 'rock', 'role', 'roll', 'roof', 'room', 'root', 'rope', 'rose', 'rough', 'round', 'route', 'row', 'royal', 'rub', 'rule', 'run', 'rural', 'rush', 'sad', 'safe', 'sail', 'salad', 'salary', 'sale', 'salt', 'same', 'sample', 'sand', 'sat', 'save', 'say', 'scale', 'scan', 'scare', 'scene', 'school', 'science', 'score', 'scratch', 'scream', 'screen', 'screw', 'sea', 'search', 'season', 'seat', 'second', 'secret', 'sector', 'see', 'seed', 'seek', 'seem', 'seize', 'select', 'sell', 'send', 'senior', 'sense', 'sentence', 'separate', 'series', 'serious', 'serve', 'session', 'set', 'settle', 'seven', 'severe', 'sex', 'shade', 'shadow', 'shake', 'shall', 'shape', 'share', 'sharp', 'she', 'sheep', 'sheet', 'shelf', 'shell', 'shift', 'shine', 'ship', 'shirt', 'shock', 'shoe', 'shoot', 'shop', 'shore', 'short', 'shot', 'should', 'shoulder', 'shout', 'show', 'side', 'sigh', 'sight', 'sign', 'silent', 'silk', 'silly', 'silver', 'similar', 'simple', 'since', 'sing', 'single', 'sink', 'sir', 'sister', 'sit', 'site', 'six', 'size', 'skill', 'skin', 'sky', 'slave', 'sleep', 'slice', 'slide', 'slim', 'slip', 'slow', 'small', 'smart', 'smell', 'smile', 'smoke', 'smooth', 'snap', 'snow', 'so', 'soap', 'social', 'sock', 'soft', 'soil', 'soldier', 'solid', 'solution', 'solve', 'some', 'son', 'song', 'soon', 'sorry', 'sort', 'soul', 'sound', 'soup', 'source', 'south', 'space', 'speak', 'speed', 'spell', 'spend', 'spice', 'spider', 'spike', 'spin', 'spirit', 'split', 'spoil', 'spoon', 'sport', 'spot', 'spray', 'spread', 'spring', 'square', 'squeeze', 'stable', 'stack', 'staff', 'stage', 'stain', 'stair', 'stake', 'stamp', 'stand', 'star', 'stare', 'start', 'state', 'station', 'stay', 'steady', 'steal', 'steam', 'steel', 'steep', 'step', 'stick', 'stiff', 'still', 'stock', 'stomach', 'stone', 'stop', 'store', 'storm', 'story', 'straight', 'strange', 'stream', 'street', 'stress', 'stretch', 'strict', 'strike', 'string', 'strip', 'stroke', 'strong', 'structure', 'struggle', 'student', 'studio', 'study', 'stuff', 'style', 'subject', 'subway', 'success', 'such', 'sudden', 'suffer', 'sugar', 'suggest', 'suit', 'summer', 'sun', 'super', 'supply', 'support', 'sure', 'surface', 'surge', 'surprise', 'surround', 'survey', 'sustain', 'swallow', 'swap', 'swear', 'sweat', 'sweet', 'swim', 'swing', 'switch', 'sword', 'symbol', 'system', 'table', 'tackle', 'tail', 'take', 'tale', 'talent', 'talk', 'tall', 'tank', 'tap', 'tape', 'target', 'task', 'taste', 'tax', 'taxi', 'tea', 'teach', 'team', 'tear', 'tech', 'tell', 'temp', 'ten', 'tenant', 'tend', 'tennis', 'tension', 'tent', 'term', 'test', 'text', 'than', 'thank', 'that', 'the', 'their', 'them', 'then', 'theory', 'there', 'these', 'they', 'thick', 'thin', 'thing', 'think', 'third', 'this', 'those', 'though', 'threat', 'three', 'throw', 'tie', 'tiger', 'tight', 'till', 'time', 'tin', 'tiny', 'tip', 'tire', 'tissue', 'title', 'to', 'toast', 'today', 'toe', 'together', 'toilet', 'token', 'tomato', 'tomorrow', 'ton', 'tone', 'tongue', 'tonight', 'tool', 'tooth', 'top', 'topic', 'toss', 'total', 'touch', 'tough', 'tour', 'toward', 'towel', 'tower', 'town', 'toy', 'trace', 'track', 'trade', 'traffic', 'trail', 'train', 'transfer', 'trap', 'trash', 'travel', 'tray', 'treat', 'tree', 'trend', 'trial', 'tribe', 'trick', 'trip', 'troop', 'trouble', 'truck', 'true', 'trunk', 'trust', 'truth', 'try', 'tube', 'tune', 'tunnel', 'turn', 'turtle', 'twelve', 'twenty', 'twice', 'twin', 'twist', 'two', 'type', 'typical', 'ugly', 'umbrella', 'unable', 'uncle', 'under', 'undergo', 'undo', 'unfair', 'unhappy', 'union', 'unique', 'unit', 'unite', 'unity', 'universe', 'unless', 'unlike', 'unload', 'unlock', 'unlucky', 'until', 'unusual', 'up', 'update', 'upon', 'upper', 'upset', 'urban', 'urge', 'urgent', 'us', 'use', 'useful', 'user', 'usual', 'utility', 'vacant', 'vague', 'valid', 'valley', 'value', 'van', 'vanish', 'vapor', 'variable', 'variant', 'vast', 'vault', 'vector', 'vehicle', 'veil', 'vein', 'vendor', 'venture', 'venue', 'verb', 'verify', 'version', 'versus', 'vessel', 'vest', 'veteran', 'via', 'viable', 'vibrant', 'victim', 'victory', 'video', 'view', 'village', 'violate', 'violent', 'violin', 'virtual', 'virtue', 'virus', 'visa', 'visible', 'vision', 'visit', 'visual', 'vital', 'vivid', 'vocal', 'vogue', 'voice', 'void', 'volume', 'voluntary', 'vote', 'vowel', 'voyage', 'wage', 'wagon', 'wait', 'wake', 'walk', 'wall', 'wallet', 'want', 'war', 'ward', 'ware', 'warm', 'warn', 'warp', 'warrior', 'wash', 'waste', 'watch', 'water', 'wave', 'wax', 'way', 'we', 'weak', 'wealth', 'weapon', 'wear', 'weather', 'web', 'wedding', 'week', 'weight', 'weird', 'welcome', 'well', 'went', 'were', 'west', 'wet', 'whale', 'what', 'wheat', 'wheel', 'when', 'where', 'which', 'while', 'whip', 'whisper', 'white', 'who', 'whole', 'why', 'wide', 'wife', 'wild', 'will', 'win', 'wind', 'window', 'wine', 'wing', 'wink', 'winner', 'winter', 'wipe', 'wire', 'wisdom', 'wise', 'wish', 'with', 'withdraw', 'within', 'without', 'witness', 'wolf', 'woman', 'wonder', 'wood', 'word', 'work', 'world', 'worry', 'worth', 'would', 'wound', 'wrap', 'wreck', 'wrist', 'write', 'wrong', 'yard', 'yarn', 'yeah', 'year', 'yell', 'yellow', 'yes', 'yesterday', 'yet', 'yield', 'you', 'young', 'your', 'youth', 'zone'
+  ]);
+
   async initialize() {
     if (this.initialized) return;
-    
+
     try {
       // Fetch CMU dictionary data
       const response = await fetch('https://raw.githubusercontent.com/Alexir/CMUdict/master/cmudict-0.7b');
       const text = await response.text();
-      
+
       // Parse dictionary entries
       const lines = text.split('\n');
       for (const line of lines) {
         // Skip comments and empty lines
         if (line.startsWith(';;;') || line.trim() === '') continue;
-        
+
         // Parse entry format: WORD PHONEME1 PHONEME2 ...
         const parts = line.trim().split(/\s+/);
         if (parts.length < 2) continue;
-        
+
         const word = parts[0].toLowerCase();
         const phonemes = parts.slice(1);
-        
+
         // Handle variant pronunciations like WORD(1), WORD(2) etc.
         const baseWord = word.replace(/\(\d+\)$/, '');
-        
+
         // Convert phonemes to syllables
         const syllables = this.phonemesToSyllables(baseWord, phonemes);
-        
+
         // Store in dictionary (prefer first pronunciation if multiple exist)
         if (!this.dictionary.has(baseWord)) {
           this.dictionary.set(baseWord, syllables);
         }
       }
-      
+
       this.initialized = true;
       console.log(`CMU Dictionary initialized with ${this.dictionary.size} entries`);
     } catch (error) {
@@ -90,18 +95,18 @@ class CMUSyllabifier {
     if (morphOverride) {
       return morphOverride;
     }
-    
+
     // Count syllables by counting vowel phonemes (each vowel = one syllable)
     const vowelCount = phonemes.filter(p => this.VOWEL_PHONEMES.has(p.replace(/[0-2]$/, ''))).length;
-    
+
     if (vowelCount === 0) {
       return [word];
     }
-    
+
     if (vowelCount === 1) {
       return [word];
     }
-    
+
     // Use consonant cluster rules for multi-syllable words, pass phonemes for sound checking
     return this.splitWordWithConsonantClusterRules(word, vowelCount, phonemes);
   }
@@ -110,9 +115,9 @@ class CMUSyllabifier {
     if (syllableCount <= 1) {
       return [word];
     }
-    
+
     const vowels = 'aeiouAEIOU';
-    
+
     // Special case: check for c+i/e/y pattern at the beginning of the word
     // Only apply to specific words where it's clearly beneficial
     if (word.length >= 2 && word[0].toLowerCase() === 'c' && 'iey'.includes(word[1].toLowerCase())) {
@@ -158,7 +163,7 @@ class CMUSyllabifier {
         }
       }
     }
-    
+
     // Find vowel positions to identify syllable cores
     const vowelPositions: number[] = [];
     for (let i = 0; i < word.length; i++) {
@@ -169,35 +174,35 @@ class CMUSyllabifier {
         }
       }
     }
-    
+
     // If we don't have enough vowel clusters, fall back to simple splitting
     if (vowelPositions.length < syllableCount) {
       return this.simpleSyllableSplit(word, syllableCount);
     }
-    
+
     // Apply consonant cluster rules
     const syllables: string[] = [];
     let currentStart = 0;
-    
+
     for (let i = 0; i < vowelPositions.length - 1; i++) {
       const currentVowelPos = vowelPositions[i];
       const nextVowelPos = vowelPositions[i + 1];
-      
+
       // Find consonants between vowels
       let consonantStart = currentVowelPos + 1;
       while (consonantStart < nextVowelPos && vowels.includes(word[consonantStart])) {
         consonantStart++;
       }
-      
+
       let consonantEnd = nextVowelPos - 1;
       while (consonantEnd > consonantStart && vowels.includes(word[consonantEnd])) {
         consonantEnd--;
       }
-      
+
       // Get the consonant cluster
       const consonantCluster = word.slice(consonantStart, consonantEnd + 1);
       let splitPoint: number;
-      
+
       if (consonantCluster.length === 0) {
         // No consonants between vowels - split at vowel boundary
         splitPoint = nextVowelPos;
@@ -208,7 +213,7 @@ class CMUSyllabifier {
         // Multiple consonants: apply cluster rules
         splitPoint = this.applyCVRules(consonantCluster, consonantStart);
       }
-      
+
       // Extract syllable
       const syllable = word.slice(currentStart, splitPoint);
       if (syllable) {
@@ -216,21 +221,21 @@ class CMUSyllabifier {
       }
       currentStart = splitPoint;
     }
-    
+
     // Add the final syllable
     const finalSyllable = word.slice(currentStart);
     if (finalSyllable) {
       syllables.push(finalSyllable);
     }
-    
+
     // Adjust if we have too many or too few syllables
     return this.adjustSyllableCount(syllables, syllableCount);
   }
-  
+
   private applySingleConsonantRules(word: string, consonantStart: number, nextVowelPos: number, phonemes: string[] = []): number {
     const consonant = word[consonantStart];
     const nextVowel = word[nextVowelPos];
-    
+
     // Special rule: "c" + "i/e/y" stays together only at word boundaries or after vowels
     // This prevents breaking up words like "center" which should be "cen-ter" not "ce-nter"
     if (consonant.toLowerCase() === 'c' && 'iey'.includes(nextVowel.toLowerCase())) {
@@ -240,7 +245,7 @@ class CMUSyllabifier {
         return nextVowelPos + 1;
       }
     }
-    
+
     // Special rule: "g" + "i/e/y" stays together only if g makes /j/ sound
     if (consonant.toLowerCase() === 'g' && 'iey'.includes(nextVowel.toLowerCase())) {
       if (this.doesGMakeJSound(word, consonantStart, phonemes)) {
@@ -251,7 +256,7 @@ class CMUSyllabifier {
         }
       }
     }
-    
+
     // Default: split before consonant to create open syllable
     return consonantStart;
   }
@@ -261,17 +266,17 @@ class CMUSyllabifier {
     if (phonemes.length === 0) {
       return false;
     }
-    
+
     // Look for JH phoneme (which represents /j/ sound) in the phonemes
     // The position mapping is approximate since phonemes don't directly map to letter positions
     const hasJHPhoneme = phonemes.some(p => p.replace(/[0-2]$/, '') === 'JH');
-    
+
     // If word contains JH phoneme and has g+i/e/y pattern, likely the g makes /j/ sound
     if (hasJHPhoneme && gPosition < word.length - 1) {
       const nextChar = word[gPosition + 1].toLowerCase();
       return 'iey'.includes(nextChar);
     }
-    
+
     return false;
   }
 
@@ -287,23 +292,40 @@ class CMUSyllabifier {
         }
       }
     }
-    
+
     // Check for special phonetic rules (c + i/e/y pattern)
     if (consonantCluster.length >= 2 && consonantCluster[0].toLowerCase() === 'c') {
       // Look ahead to see if there's a vowel after this cluster that would trigger c+i/e/y rule
       // This is handled elsewhere, so continue with normal cluster rules
     }
-    
+
+    // PRIORITY 1.5: Check if splitting would break apart a root word syllable
+    // If the syllable being formed is NOT a root word, follow normal consonant-to-left rules
+    if (word && consonantCluster.length >= 2) {
+      // Find the start of the current syllable to check if it's a root word
+      const syllableStart = this.findSyllableStart(word, consonantStart);
+      const currentSyllable = word.slice(syllableStart, consonantStart).toLowerCase();
+
+      // If the current syllable is NOT a root word, move consonants to the left
+      if (currentSyllable.length > 0 && !this.COMMON_ROOT_WORDS.has(currentSyllable)) {
+        // Follow normal consonant-to-left rule - split after first consonant
+        return consonantStart + 1;
+      }
+
+      // If it IS a root word, keep it together by checking for valid word-initial clusters
+      // (This preserves words like "test-ing" where "test" is a root word)
+    }
+
     // PRIORITY 2: Check if cluster can begin a word (only if no preserve rules applied)
     if (this.WORD_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
       // Keep entire cluster together - split before it to create open syllable
       return consonantStart;
     }
-    
+
     // PRIORITY 3: Check if suffix of cluster can begin a word or should be preserved
     for (let i = 1; i < consonantCluster.length; i++) {
       const suffix = consonantCluster.slice(i).toLowerCase();
-      
+
       // First check if any part of this suffix should be preserved
       if (suffix.length >= 2) {
         for (let j = 0; j < suffix.length - 1; j++) {
@@ -314,14 +336,14 @@ class CMUSyllabifier {
           }
         }
       }
-      
+
       // Then check if suffix can start a word
       if (this.WORD_INITIAL_CLUSTERS.has(suffix)) {
         // Split before the valid cluster to create open syllable
         return consonantStart + i;
       }
     }
-    
+
     // No valid cluster found - prefer open syllables
     // For single consonant: split before it (creates open syllable)
     // For multiple consonants: split after first consonant (creates open syllable)
@@ -331,11 +353,11 @@ class CMUSyllabifier {
       return consonantStart + 1; // Split after first consonant to create open syllable
     }
   }
-  
+
   private simpleSyllableSplit(word: string, targetCount: number): string[] {
     const syllables: string[] = [];
     const avgLength = Math.ceil(word.length / targetCount);
-    
+
     for (let i = 0; i < targetCount; i++) {
       const start = i * avgLength;
       const end = i === targetCount - 1 ? word.length : (i + 1) * avgLength;
@@ -344,28 +366,28 @@ class CMUSyllabifier {
         syllables.push(syllable);
       }
     }
-    
+
     return syllables;
   }
-  
+
   private adjustSyllableCount(syllables: string[], targetCount: number): string[] {
     if (syllables.length === targetCount) {
       return syllables;
     }
-    
+
     if (syllables.length < targetCount) {
       // Need to split some syllables
       while (syllables.length < targetCount) {
         const longestIndex = syllables.reduce((maxIdx, current, idx, array) => 
           current.length > array[maxIdx].length ? idx : maxIdx, 0);
-        
+
         const longest = syllables[longestIndex];
         if (longest.length <= 2) break; // Can't split further
-        
+
         const midPoint = Math.floor(longest.length / 2);
         const firstPart = longest.slice(0, midPoint);
         const secondPart = longest.slice(midPoint);
-        
+
         syllables[longestIndex] = firstPart;
         syllables.splice(longestIndex + 1, 0, secondPart);
       }
@@ -374,7 +396,7 @@ class CMUSyllabifier {
       while (syllables.length > targetCount) {
         const shortestIndex = syllables.reduce((minIdx, current, idx, array) => 
           current.length < array[minIdx].length ? idx : minIdx, 0);
-        
+
         if (shortestIndex === 0) {
           syllables[0] += syllables[1];
           syllables.splice(1, 1);
@@ -384,15 +406,23 @@ class CMUSyllabifier {
         }
       }
     }
-    
+
     return syllables;
   }
 
-
+  private findSyllableStart(word: string, consonantStart: number): number {
+      // Go backwards from consonantStart until you find a vowel or the beginning of the word
+      let i = consonantStart - 1;
+      const vowels = 'aeiouAEIOU';
+      while (i >= 0 && !vowels.includes(word[i])) {
+          i--;
+      }
+      return i + 1; // Syllable starts after the last vowel (or at the beginning)
+  }
 
   async breakWordIntoSyllables(word: string): Promise<string[]> {
     await this.initialize();
-    
+
     // Clean the word from punctuation
     const cleanWord = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
 
@@ -416,11 +446,11 @@ class CMUSyllabifier {
     const vowels = 'aeiouAEIOU';
     const syllables: string[] = [];
     let currentSyllable = '';
-    
+
     for (let i = 0; i < word.length; i++) {
       const char = word[i];
       currentSyllable += char;
-      
+
       // If this is a vowel and the next character is a consonant (or end of word)
       if (vowels.includes(char)) {
         const nextChar = word[i + 1];
@@ -435,7 +465,7 @@ class CMUSyllabifier {
         }
       }
     }
-    
+
     // Add any remaining characters to the last syllable
     if (currentSyllable) {
       if (syllables.length > 0) {
@@ -444,7 +474,7 @@ class CMUSyllabifier {
         syllables.push(currentSyllable);
       }
     }
-    
+
     return syllables.length > 0 ? syllables : [word];
   }
 }
@@ -455,6 +485,3 @@ const cmuSyllabifier = new CMUSyllabifier();
 export async function breakWordIntoSyllables(word: string): Promise<string[]> {
   return cmuSyllabifier.breakWordIntoSyllables(word);
 }
-
-
-
