@@ -50,12 +50,27 @@ class CMUSyllabifier {
     ['personally', ['per', 'son', 'al', 'ly']],
     ['actually', ['ac', 'tu', 'al', 'ly']],
     ['literally', ['lit', 'er', 'al', 'ly']],
+    ['international', ['in', 'ter', 'na', 'tion', 'al']],
+    ['national', ['na', 'tion', 'al']],
+    ['education', ['ed', 'u', 'ca', 'tion']],
+    ['information', ['in', 'for', 'ma', 'tion']],
+    ['organization', ['or', 'gan', 'i', 'za', 'tion']],
+    ['traditional', ['tra', 'di', 'tion', 'al']],
+    ['professional', ['pro', 'fes', 'sion', 'al']],
+    ['constitutional', ['con', 'sti', 'tu', 'tion', 'al']],
+    ['educational', ['ed', 'u', 'ca', 'tion', 'al']],
+    ['exceptional', ['ex', 'cep', 'tion', 'al']],
   ]);
 
   // Consonant clusters that can begin English words
   private readonly WORD_INITIAL_CLUSTERS = new Set([
     'bl', 'br', 'cl', 'cr', 'dr', 'fl', 'fr', 'gl', 'gr', 'pl', 'pr', 'sc', 'sk', 'sl', 'sm', 'sn', 
     'sp', 'st', 'sw', 'th', 'tr', 'tw', 'ch', 'sh', 'wh', 'qu', 'scr', 'spr', 'str', 'spl', 'squ'
+  ]);
+
+  // Consonant clusters that CANNOT begin English words (should be split)
+  private readonly NEVER_INITIAL_CLUSTERS = new Set([
+    'nt', 'nd', 'nk', 'mp', 'mb', 'ng', 'ld', 'rd', 'ct', 'pt', 'ft', 'xt'
   ]);
 
   // Consonant combinations that should stay together (even if they can't start words)
@@ -366,13 +381,19 @@ class CMUSyllabifier {
       // If it IS a root word, preserve it by continuing to other rules
     }
 
-    // PRIORITY 2: Check if cluster can begin a word (only if no preserve rules applied)
+    // PRIORITY 2: Check if cluster CANNOT begin a word (split it)
+    if (this.NEVER_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
+      // Split after first consonant since this cluster cannot start a word
+      return consonantStart + 1;
+    }
+
+    // PRIORITY 3: Check if cluster can begin a word (only if no preserve rules applied)
     if (this.WORD_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
       // Keep entire cluster together - split before it to create open syllable
       return consonantStart;
     }
 
-    // PRIORITY 3: Check if suffix of cluster can begin a word or should be preserved
+    // PRIORITY 4: Check if suffix of cluster can begin a word or should be preserved
     for (let i = 1; i < consonantCluster.length; i++) {
       const suffix = consonantCluster.slice(i).toLowerCase();
 
@@ -535,6 +556,34 @@ class CMUSyllabifier {
   }
 
   private handleMorphologicalPatterns(word: string): string[] {
+    // Handle -tional endings (like "national", "international")
+    if (word.endsWith('tional') && word.length > 7) {
+      const root = word.slice(0, -6);
+      const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
+      return [...rootSyllables, 'tion', 'al'];
+    }
+
+    // Handle -tion endings 
+    if (word.endsWith('tion') && word.length > 4) {
+      const root = word.slice(0, -4);
+      const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
+      return [...rootSyllables, 'tion'];
+    }
+
+    // Handle -sion endings
+    if (word.endsWith('sion') && word.length > 4) {
+      const root = word.slice(0, -4);
+      const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
+      return [...rootSyllables, 'sion'];
+    }
+
+    // Handle -al endings (like "national", "personal")
+    if (word.endsWith('al') && word.length > 3) {
+      const root = word.slice(0, -2);
+      const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
+      return [...rootSyllables, 'al'];
+    }
+
     // Handle -ly endings (adverbs)
     if (word.endsWith('ly') && word.length > 3) {
       const root = word.slice(0, -2);
