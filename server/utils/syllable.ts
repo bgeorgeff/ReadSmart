@@ -299,21 +299,21 @@ class CMUSyllabifier {
       // This is handled elsewhere, so continue with normal cluster rules
     }
 
-    // PRIORITY 1.5: Check if splitting would break apart a root word syllable
+    // PRIORITY 1.5: Root word preservation rule
     // If the syllable being formed is NOT a root word, follow normal consonant-to-left rules
-    if (word && consonantCluster.length >= 2) {
+    // BUT only for single consonants - let cluster preservation rules handle multiple consonants
+    if (word && consonantCluster.length === 1) {
       // Find the start of the current syllable to check if it's a root word
       const syllableStart = this.findSyllableStart(word, consonantStart);
       const currentSyllable = word.slice(syllableStart, consonantStart).toLowerCase();
 
-      // If the current syllable is NOT a root word, move consonants to the left
+      // If the current syllable is NOT a root word, move consonant to the left
       if (currentSyllable.length > 0 && !this.COMMON_ROOT_WORDS.has(currentSyllable)) {
-        // Follow normal consonant-to-left rule - split after first consonant
+        // Move single consonant left (split after it)
         return consonantStart + 1;
       }
 
-      // If it IS a root word, keep it together by checking for valid word-initial clusters
-      // (This preserves words like "test-ing" where "test" is a root word)
+      // If it IS a root word, preserve it by continuing to other rules
     }
 
     // PRIORITY 2: Check if cluster can begin a word (only if no preserve rules applied)
