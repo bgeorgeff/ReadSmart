@@ -373,134 +373,79 @@ class CMUSyllabifier {
   }
 
   private applyCVRules(consonantCluster: string, consonantStart: number, word: string): number {
-    // PRIORITY 0: Check for consonant + "y" at end of word (y acts as vowel)
-    // Consonants go with the y: "any" → "a-ny", "many" → "ma-ny", "very" → "ve-ry"
-    if (consonantCluster.length === 1 && consonantStart + 1 < word.length && 
-        word[consonantStart + 1].toLowerCase() === 'y' && consonantStart + 2 === word.length) {
-      // Keep consonant with y - split before the consonant
-      return consonantStart;
+    // Step 1: Check for protected morphological units (highest priority)
+    const protectedSplit = this.checkProtectedSuffixes(word, consonantStart, consonantCluster);
+    if (protectedSplit !== -1) {
+      return protectedSplit;
     }
 
-    // PRIORITY 0.1: Protect suffix units that must NEVER be broken apart
+    // Step 2: Handle consonant+y at word end
+    if (this.isConsonantPlusYAtEnd(word, consonantStart, consonantCluster)) {
+      return consonantStart; // Keep consonant with y
+    }
+
+    // Step 3: Apply consonant cluster rules
+    return this.applyConsonantClusterRules(consonantCluster, consonantStart, word);
+  }
+
+  private checkProtectedSuffixes(word: string, consonantStart: number, consonantCluster: string): number {
     const protectedSuffixes = [
       'tion', 'sion', 'cious', 'tious', 'geous',
       'ence', 'tia', 'tian', 'tial', 'tient', 'tience',
       'cia', 'cion', 'cian', 'cial', 'cient', 'cience',
       'sia', 'sian', 'gia', 'gion', 'gian', 'gious', 'ous'
     ];
+
     for (const suffix of protectedSuffixes) {
       const suffixStart = word.toLowerCase().lastIndexOf(suffix);
       if (suffixStart > 0 && suffixStart + suffix.length === word.length) {
-        // If we're trying to split within a protected suffix, don't allow it
+        // If we're trying to split within a protected suffix, move before it
         if (consonantStart >= suffixStart && consonantStart < suffixStart + suffix.length) {
-          // Move split point before the entire suffix
+          return suffixStart;
+        }
+        // Also check if consonant cluster would span across the suffix
+        if (consonantStart + consonantCluster.length > suffixStart && consonantStart < suffixStart + suffix.length) {
           return suffixStart;
         }
       }
     }
 
-    // PRIORITY 0.5: Check for vowel+ng patterns that should stay together
-    // Look for patterns like "ing", "ang", "ong", "ung", "eng" that should be kept as complete syllables
-    if (consonantCluster.includes('ng')) {
-      const ngPos = consonantCluster.indexOf('ng');
-      // Check if there's a vowel before the 'ng' that forms a protected pattern
-      const beforeNgInWord = consonantStart + ngPos - 1;
-      if (beforeNgInWord >= 0) {
-        const vowelChar = word[beforeNgInWord].toLowerCase();
-        const pattern = vowelChar + 'ng';
-        if (this.VOWEL_NG_PATTERNS.has(pattern)) {
-          // Find the start of this vowel+ng pattern (could be multiple letters before 'ng')
-          let patternStart = beforeNgInWord;
+    return -1; // No protected suffix found
+  }
 
-          // For "ing" pattern, we want to keep the entire "ing" together
-          if (pattern === 'ing' && beforeNgInWord >= 1 && word[beforeNgInWord - 1].toLowerCase() === 'i') {
-            patternStart = beforeNgInWord - 1;
-          }
+  private isConsonantPlusYAtEnd(word: string, consonantStart: number, consonantCluster: string): boolean {
+    return consonantCluster.length === 1 && 
+           consonantStart + 1 < word.length && 
+           word[consonantStart + 1].toLowerCase() === 'y' && 
+           consonantStart + 2 === word.length;
+  }
 
-          // Keep the entire vowel+ng pattern together as one syllable
-          // Split before the pattern starts
-          return patternStart;
-        }
-      }
-    }
-
-    // PRIORITY 1: Check for consonant combinations that should be preserved (like ng, nk, etc.)
-    // This MUST come FIRST before any other rules
-    if (consonantCluster.length >= 2) {
-      for (let i = 0; i < consonantCluster.length - 1; i++) {
-        const combo = consonantCluster.slice(i, i + 2).toLowerCase();
-        if (this.CONSONANT_CLUSTERS_TO_PRESERVE.has(combo)) {
-          // Keep this combination together - split before it
-          return consonantStart + i;
-        }
-      }
-    }
-
-    // Check for special phonetic rules (c + i/e/y pattern)
-    if (consonantCluster.length >= 2 && consonantCluster[0].toLowerCase() === 'c') {
-      // Look ahead to see if there's a vowel after this cluster that would trigger c+i/e/y rule
-      // This is handled elsewhere, so continue with normal cluster rules
-    }
-
-    // PRIORITY 1.5: Root word preservation rule
-    // If the syllable being formed is NOT a root word, follow normal consonant-to-left rules
-    // BUT only for single consonants - let cluster preservation rules handle multiple consonants
-    if (word && consonantCluster.length === 1) {
-      // Find the start of the current syllable to check if it's a root word
-      const syllableStart = this.findSyllableStart(word, consonantStart);
-      const currentSyllable = word.slice(syllableStart, consonantStart).toLowerCase();
-
-      // If the current syllable is NOT a root word, move consonant to the left
-      if (currentSyllable.length > 0 && !this.COMMON_ROOT_WORDS.has(currentSyllable)) {
-        // Move single consonant left (split after it)
-        return consonantStart + 1;
-      }
-
-      // If it IS a root word, preserve it by continuing to other rules
-    }
-
-    // PRIORITY 2: Check if cluster CANNOT begin a word (split it)
-    if (this.NEVER_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
-      // Split after first consonant since this cluster cannot start a word
-      return consonantStart + 1;
-    }
-
-    // PRIORITY 3: Check if cluster can begin a word (only if no preserve rules applied)
-    if (this.WORD_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
-      // Keep entire cluster together - split before it to create open syllable
+  private applyConsonantClusterRules(consonantCluster: string, consonantStart: number, word: string): number {
+    // Single consonant: split before it to create open syllable
+    if (consonantCluster.length === 1) {
       return consonantStart;
     }
 
-    // PRIORITY 4: Check if suffix of cluster can begin a word or should be preserved
+    // Multiple consonants: check if cluster can begin a word
+    if (this.WORD_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
+      return consonantStart; // Keep cluster together
+    }
+
+    // Check if cluster cannot begin a word
+    if (this.NEVER_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
+      return consonantStart + 1; // Split after first consonant
+    }
+
+    // For other clusters, check if a suffix can begin a word
     for (let i = 1; i < consonantCluster.length; i++) {
       const suffix = consonantCluster.slice(i).toLowerCase();
-
-      // First check if any part of this suffix should be preserved
-      if (suffix.length >= 2) {
-        for (let j = 0; j < suffix.length - 1; j++) {
-          const combo = suffix.slice(j, j + 2).toLowerCase();
-          if (this.CONSONANT_CLUSTERS_TO_PRESERVE.has(combo)) {
-            // Split before the preserved combination
-            return consonantStart + i + j;
-          }
-        }
-      }
-
-      // Then check if suffix can start a word
       if (this.WORD_INITIAL_CLUSTERS.has(suffix)) {
-        // Split before the valid cluster to create open syllable
-        return consonantStart + i;
+        return consonantStart + i; // Split before the valid cluster
       }
     }
 
-    // No valid cluster found - prefer open syllables
-    // For single consonant: split before it (creates open syllable)
-    // For multiple consonants: split after first consonant (creates open syllable)
-    if (consonantCluster.length === 1) {
-      return consonantStart; // Split before single consonant
-    } else {
-      return consonantStart + 1; // Split after first consonant to create open syllable
-    }
+    // Default: split after first consonant to create open syllable
+    return consonantStart + 1;
   }
 
   private simpleSyllableSplit(word: string, targetCount: number): string[] {
