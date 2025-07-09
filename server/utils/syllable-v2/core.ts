@@ -350,14 +350,34 @@ export class CMUSyllabifierV2 {
       return [originalWord]; // Safety fallback
     }
     
-    // Ensure each syllable has a vowel
-    const validSyllables = syllables.filter(syl => {
-      const hasVowel = /[aeiouAEIOU]/.test(syl) || 
-                      (syl.includes('y') && syl.length > 1);
-      return hasVowel || syl.length === 1; // Single letters ok
-    });
+    // Fix syllables without vowels by merging with adjacent syllables
+    const fixedSyllables: string[] = [];
     
-    return validSyllables.length > 0 ? validSyllables : [originalWord];
+    for (let i = 0; i < syllables.length; i++) {
+      const syllable = syllables[i];
+      const hasVowel = /[aeiouAEIOU]/.test(syllable) || 
+                      (syllable.includes('y') && syllable.length > 1);
+      
+      if (hasVowel) {
+        // This syllable has a vowel, add it
+        fixedSyllables.push(syllable);
+      } else {
+        // This syllable has no vowel, merge it with the next or previous syllable
+        if (i < syllables.length - 1) {
+          // Merge with next syllable
+          syllables[i + 1] = syllable + syllables[i + 1];
+        } else if (fixedSyllables.length > 0) {
+          // Merge with previous syllable
+          fixedSyllables[fixedSyllables.length - 1] += syllable;
+        } else {
+          // Edge case: single consonant word
+          fixedSyllables.push(syllable);
+        }
+      }
+    }
+    
+    // Final validation - ensure we have at least one syllable
+    return fixedSyllables.length > 0 ? fixedSyllables : [originalWord];
   }
 }
 
