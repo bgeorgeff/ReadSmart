@@ -49,7 +49,8 @@ ReadSmart is an educational text processing application that breaks down words i
 - **-ous endings**: "unanimous" → "u-na-ni-mous" (keep "ous" together)
 - **-tion/-sion endings**: Keep these suffixes intact
 - **-ly adverbs**: Separate cleanly from root words
-- **-ing/-ed/-er/-est**: Show as clear suffixes
+- **-ing/-er/-est**: Show as clear suffixes
+- **-ed endings**: SPECIAL RULE - only creates new syllable after 't' or 'd' sounds (see below)
 
 ## Procedures for Common Corrections
 
@@ -127,5 +128,18 @@ curl -s http://localhost:5000/api/word/example
 # View current overrides
 grep -n "MORPHOLOGICAL_OVERRIDES" server/utils/syllable.ts
 ```
+
+## Special Rules
+
+### -ed Past Tense Syllabification (IMPORTANT)
+The system automatically handles "-ed" endings based on phonetic pronunciation:
+
+**Creates NEW syllable** (makes /ɪd/ sound):
+- After 't' or 'd' sounds: "wanted" → "wa-nted", "needed" → "nee-ded", "started" → "star-ted"
+
+**Joins with previous syllable** (makes /t/ or /d/ sound):
+- After all other sounds: "walked" → "walked", "played" → "played", "jumped" → "jumped"
+
+**Implementation**: This is handled automatically in `handleMorphologicalPatterns()` function around line 620. No manual overrides needed for regular "-ed" words.
 
 This system has been refined through extensive testing and follows linguistic principles established for educational pronunciation instruction.

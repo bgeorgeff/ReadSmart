@@ -617,11 +617,29 @@ class CMUSyllabifier {
       return [...rootSyllables, 'ing'];
     }
 
-    // Handle -ed endings
+    // Handle -ed endings (past tense)
     if (word.endsWith('ed') && word.length > 3) {
       const root = word.slice(0, -2);
       const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
-      return [...rootSyllables, 'ed'];
+      
+      // Check if -ed creates a new syllable or not
+      // -ed creates new syllable (/ɪd/ sound) only when preceded by 't' or 'd' sounds
+      const lastChar = root.slice(-1).toLowerCase();
+      
+      // Check last character of root for 't' or 'd' sound
+      if (lastChar === 't' || lastChar === 'd') {
+        // -ed makes /ɪd/ sound and creates new syllable
+        return [...rootSyllables, 'ed'];
+      } else {
+        // -ed makes /t/ or /d/ sound and joins with previous syllable
+        if (rootSyllables.length > 0) {
+          const lastSyllable = rootSyllables[rootSyllables.length - 1];
+          const modifiedSyllables = [...rootSyllables.slice(0, -1), lastSyllable + 'ed'];
+          return modifiedSyllables;
+        } else {
+          return [root + 'ed'];
+        }
+      }
     }
 
     // Handle -er endings
