@@ -285,7 +285,8 @@ class CMUSyllabifier {
     return false;
   }
 
-  // PRIORITY 0.5: Check for vowel+ng patterns that should stay together
+  private applyCVRules(consonantCluster: string, consonantStart: number, word: string): number {
+    // PRIORITY 0.5: Check for vowel+ng patterns that should stay together
     // Look for patterns like "ing", "ang", "ong", "ung", "eng" that should be kept as complete syllables
     if (consonantCluster.includes('ng')) {
       const ngPos = consonantCluster.indexOf('ng');
