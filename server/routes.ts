@@ -390,6 +390,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Test endpoint for syllable V2
+  app.get("/api/test-syllable-v2", async (req, res) => {
+    try {
+      const testWords = [
+        'experience', 'revolutionary', 'international',
+        'patience', 'musician', 'precious', 'special',
+        'wanted', 'walked', 'approved', 'any', 'many'
+      ];
+      
+      const results: any[] = [];
+      
+      // Dynamic import to avoid initialization issues
+      const { breakWordIntoSyllablesV2 } = await import('./utils/syllable-v2/core.js');
+      
+      for (const word of testWords) {
+        const syllables = await breakWordIntoSyllablesV2(word);
+        results.push({
+          word,
+          syllables: syllables.join('-')
+        });
+      }
+      
+      res.json({ success: true, results });
+    } catch (error) {
+      console.error('Syllable V2 test error:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+  
   // Save a recording
   app.post("/api/recordings", async (req, res) => {
     try {
