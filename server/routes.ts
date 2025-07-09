@@ -325,27 +325,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Test CMUdict syllable comparison
-  app.get("/api/test-syllables/:word", async (req, res) => {
-    try {
-      const { word } = req.params;
-      const { compareSyllableMethods } = await import('./utils/cmudict-syllable');
-      
-      const comparison = await compareSyllableMethods(word);
-      
-      res.json({
-        success: true,
-        word,
-        comparison
-      });
-    } catch (error) {
-      console.error("Error testing syllables:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: "Error testing syllables: " + (error instanceof Error ? error.message : String(error))
-      });
-    }
-  });
+
 
   // Get word details
   app.get("/api/word/:word", async (req, res) => {
@@ -385,7 +365,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         exampleSentence = `This is an example sentence using the word "${word}".`;
       }
       
-      // Generate syllables using our phonetic syllabification algorithm
+      // Generate syllables (temporarily returning single syllable until CMU integration)
       const syllables = await breakWordIntoSyllables(word);
       
       res.json({
