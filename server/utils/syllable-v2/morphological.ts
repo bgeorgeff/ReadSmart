@@ -143,6 +143,17 @@ export const CONSONANT_I_SUFFIXES = [
   'ience',   // ex-per-i-ence, au-di-ence
 ];
 
+// R-controlled vowel + ious words that need special handling
+export const R_CONTROLLED_IOUS_WORDS = new Map<string, string[]>([
+  ['spurious', ['spur', 'i', 'ous']],
+  ['curious', ['cur', 'i', 'ous']],
+  ['furious', ['fur', 'i', 'ous']],
+  ['glorious', ['glor', 'i', 'ous']],
+  ['luxurious', ['lux', 'ur', 'i', 'ous']],
+  ['injurious', ['in', 'jur', 'i', 'ous']],
+  ['penurious', ['pe', 'nur', 'i', 'ous']],
+]);
+
 export class MorphologicalAnalyzer {
   /**
    * Check if word ends with consonant+i suffix pattern
@@ -176,7 +187,18 @@ export class MorphologicalAnalyzer {
   analyzeWord(word: string): Morpheme[] {
     const lowerWord = word.toLowerCase();
     
-    // Check for false flag silent-e words first (highest priority)
+    // Check for R-controlled + ious words first (highest priority for these specific cases)
+    if (R_CONTROLLED_IOUS_WORDS.has(lowerWord)) {
+      const syllables = R_CONTROLLED_IOUS_WORDS.get(lowerWord)!;
+      return [{
+        text: word,
+        type: 'root',
+        position: 0,
+        syllables: [...syllables]
+      }];
+    }
+    
+    // Check for false flag silent-e words second (high priority)
     if (FALSE_FLAG_SILENT_E_OVERRIDES.has(lowerWord)) {
       const syllables = FALSE_FLAG_SILENT_E_OVERRIDES.get(lowerWord)!;
       return [{
@@ -263,7 +285,20 @@ export class MorphologicalAnalyzer {
   getMorphologicalHints(word: string): { boundaries: number[], preservedUnits: Array<{start: number, end: number, syllables: string[]}> } {
     const lowerWord = word.toLowerCase();
 
-    // Check for false flag silent-e words first (highest priority complete word overrides)
+    // Check for R-controlled + ious words first (highest priority complete word overrides)
+    if (R_CONTROLLED_IOUS_WORDS.has(lowerWord)) {
+      const syllables = R_CONTROLLED_IOUS_WORDS.get(lowerWord)!;
+      return {
+        boundaries: [], // No boundaries needed for complete overrides
+        preservedUnits: [{
+          start: 0,
+          end: word.length,
+          syllables: [...syllables]
+        }]
+      };
+    }
+
+    // Check for false flag silent-e words second (high priority complete word overrides)
     if (FALSE_FLAG_SILENT_E_OVERRIDES.has(lowerWord)) {
       const syllables = FALSE_FLAG_SILENT_E_OVERRIDES.get(lowerWord)!;
       return {

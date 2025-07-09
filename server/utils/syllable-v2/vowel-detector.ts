@@ -32,12 +32,19 @@ export const VOWEL_CLUSTERS = new Map<string, { sounds: number; priority: number
   ['ui', { sounds: 1, priority: 1 }],  // fruit, suit, build
   ['ew', { sounds: 1, priority: 1 }],  // new, few, grew
 
-  // R-controlled vowels (keep together)
-  ['ar', { sounds: 1, priority: 1 }],  // car, farm, star
-  ['er', { sounds: 1, priority: 1 }],  // her, fern, verb
-  ['ir', { sounds: 1, priority: 1 }],  // bird, first, girl
-  ['or', { sounds: 1, priority: 1 }],  // for, corn, sport
-  ['ur', { sounds: 1, priority: 1 }],  // fur, turn, nurse
+  // R-controlled vowels (keep together) - HIGHEST PRIORITY
+  ['ar', { sounds: 1, priority: 0 }],  // car, farm, star
+  ['er', { sounds: 1, priority: 0 }],  // her, fern, verb
+  ['ir', { sounds: 1, priority: 0 }],  // bird, first, girl
+  ['or', { sounds: 1, priority: 0 }],  // for, corn, sport
+  ['ur', { sounds: 1, priority: 0 }],  // fur, turn, nurse, spurious
+  
+  // Additional R-controlled patterns
+  ['ear', { sounds: 1, priority: 0 }], // hear, dear, clear
+  ['eer', { sounds: 1, priority: 0 }], // deer, beer, cheer
+  ['ire', { sounds: 1, priority: 0 }], // fire, tire, wire
+  ['ore', { sounds: 1, priority: 0 }], // more, store, core
+  ['ure', { sounds: 1, priority: 0 }], // sure, pure, cure
 
   // Three-letter vowel patterns
   ['igh', { sounds: 1, priority: 1 }], // night, light, sight
@@ -120,7 +127,14 @@ export class VowelDetector {
         let soundCount = 1;
 
         const clustersToCheck = Array.from(VOWEL_CLUSTERS.entries())
-          .sort((a, b) => b[0].length - a[0].length); // Check longer clusters first
+          .sort((a, b) => {
+            // First sort by priority (0 = highest priority)
+            if (a[1].priority !== b[1].priority) {
+              return a[1].priority - b[1].priority;
+            }
+            // Then by length (longer clusters first)
+            return b[0].length - a[0].length;
+          });
 
         for (const [cluster, info] of clustersToCheck) {
           const wordSlice = word.slice(i, i + cluster.length).toLowerCase();
