@@ -38,6 +38,11 @@ class CMUSyllabifier {
     'sp', 'st', 'sw', 'th', 'tr', 'tw', 'ch', 'sh', 'wh', 'qu', 'scr', 'spr', 'str', 'spl', 'squ'
   ]);
 
+  // Consonant combinations that should stay together (even if they can't start words)
+  private readonly CONSONANT_CLUSTERS_TO_PRESERVE = new Set([
+    'ng', 'nk', 'nd', 'nt', 'mp', 'mb', 'ld', 'rd', 'st', 'sk', 'sp'
+  ]);
+
   async initialize() {
     if (this.initialized) return;
     
@@ -275,6 +280,17 @@ class CMUSyllabifier {
     if (consonantCluster.length >= 2 && consonantCluster[0].toLowerCase() === 'c') {
       // Look ahead to see if there's a vowel after this cluster that would trigger c+i/e/y rule
       // This is handled elsewhere, so continue with normal cluster rules
+    }
+    
+    // Check for consonant combinations that should be preserved (like ng, nk, etc.)
+    if (consonantCluster.length >= 2) {
+      for (let i = 0; i < consonantCluster.length - 1; i++) {
+        const combo = consonantCluster.slice(i, i + 2).toLowerCase();
+        if (this.CONSONANT_CLUSTERS_TO_PRESERVE.has(combo)) {
+          // Keep this combination together - split before it
+          return consonantStart + i;
+        }
+      }
     }
     
     // Check if cluster can begin a word
