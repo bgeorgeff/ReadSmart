@@ -276,14 +276,8 @@ class CMUSyllabifier {
   }
 
   private applyCVRules(consonantCluster: string, consonantStart: number): number {
-    // Check for special phonetic rules first (c + i/e/y pattern)
-    if (consonantCluster.length >= 2 && consonantCluster[0].toLowerCase() === 'c') {
-      // Look ahead to see if there's a vowel after this cluster that would trigger c+i/e/y rule
-      // This is handled elsewhere, so continue with normal cluster rules
-    }
-    
     // PRIORITY 1: Check for consonant combinations that should be preserved (like ng, nk, etc.)
-    // This must come BEFORE word-initial cluster rules
+    // This MUST come FIRST before any other rules
     if (consonantCluster.length >= 2) {
       for (let i = 0; i < consonantCluster.length - 1; i++) {
         const combo = consonantCluster.slice(i, i + 2).toLowerCase();
@@ -292,6 +286,12 @@ class CMUSyllabifier {
           return consonantStart + i;
         }
       }
+    }
+    
+    // Check for special phonetic rules (c + i/e/y pattern)
+    if (consonantCluster.length >= 2 && consonantCluster[0].toLowerCase() === 'c') {
+      // Look ahead to see if there's a vowel after this cluster that would trigger c+i/e/y rule
+      // This is handled elsewhere, so continue with normal cluster rules
     }
     
     // PRIORITY 2: Check if cluster can begin a word (only if no preserve rules applied)
