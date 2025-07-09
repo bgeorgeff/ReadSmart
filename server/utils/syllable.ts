@@ -381,6 +381,24 @@ class CMUSyllabifier {
       return consonantStart;
     }
 
+    // PRIORITY 0.1: Protect suffix units that must NEVER be broken apart
+    const protectedSuffixes = [
+      'tion', 'sion', 'cious', 'tious', 'geous',
+      'ence', 'tia', 'tian', 'tial', 'tient', 'tience',
+      'cia', 'cion', 'cian', 'cial', 'cient', 'cience',
+      'sia', 'sian', 'gia', 'gion', 'gian', 'gious', 'ous'
+    ];
+    for (const suffix of protectedSuffixes) {
+      const suffixStart = word.toLowerCase().lastIndexOf(suffix);
+      if (suffixStart > 0 && suffixStart + suffix.length === word.length) {
+        // If we're trying to split within a protected suffix, don't allow it
+        if (consonantStart >= suffixStart && consonantStart < suffixStart + suffix.length) {
+          // Move split point before the entire suffix
+          return suffixStart;
+        }
+      }
+    }
+
     // PRIORITY 0.5: Check for vowel+ng patterns that should stay together
     // Look for patterns like "ing", "ang", "ong", "ung", "eng" that should be kept as complete syllables
     if (consonantCluster.includes('ng')) {
