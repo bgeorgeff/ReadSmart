@@ -104,7 +104,7 @@ export class VowelDetector {
                 letters: word.slice(letterIndex, letterIndex + cluster.length),
                 position: letterIndex,
                 isSilent: false,
-                soundCount: info.sounds
+                soundCount: 1 // Always treat vowel clusters as single sound units for syllabification
               });
               letterIndex += cluster.length;
               clusterFound = true;
@@ -162,7 +162,7 @@ export class VowelDetector {
           const wordSlice = word.slice(i, i + cluster.length).toLowerCase();
           if (wordSlice === cluster) {
             clusterLength = cluster.length;
-            soundCount = info.sounds;
+            soundCount = 1; // Always treat vowel clusters as single sound units for syllabification
             break;
           }
         }

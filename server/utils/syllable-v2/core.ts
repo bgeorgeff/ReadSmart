@@ -213,6 +213,16 @@ export class CMUSyllabifierV2 {
   private processTextSegment(text: string, phonemes: string[], vowelSounds: any[]): string[] {
     if (!text) return [];
     
+    // Get vowel sound positions from the detected vowel sounds
+    const vowelPositions = vowelSounds
+      .filter(vs => !vs.isSilent && vs.soundCount > 0)
+      .map(vs => vs.position);
+    
+    // If only one vowel sound, return as single syllable
+    if (vowelPositions.length <= 1) {
+      return [text];
+    }
+    
     const phoneticHints = this.phoneticProcessor.getPhoneticHints(text);
     const patternBoundaries = this.patternEngine.findPatternBoundaries(text);
     
@@ -222,9 +232,17 @@ export class CMUSyllabifierV2 {
       ...patternBoundaries
     ]);
     
-    // Filter out conflicting boundaries
+    // Filter out boundaries that would split vowel clusters
     const validBoundaries = Array.from(allBoundaries)
-      .filter(pos => !this.patternEngine.conflictsWithPattern(text, pos))
+      .filter(pos => {
+        // Don't split within any vowel cluster
+        for (const vs of vowelSounds) {
+          if (pos > vs.position && pos < vs.position + vs.letters.length) {
+            return false; // This would split a vowel cluster
+          }
+        }
+        return !this.patternEngine.conflictsWithPattern(text, pos);
+      })
       .sort((a, b) => a - b);
     
     // Build syllables from boundaries
