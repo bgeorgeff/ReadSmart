@@ -66,6 +66,48 @@ export const UNDIVIDABLE_SUFFIXES = new Map<string, string[]>([
   ['ible', ['i', 'ble']],  // vis-i-ble
 ]);
 
+// False flag silent-e words - final "e" is pronounced, not silent
+export const FALSE_FLAG_SILENT_E_OVERRIDES = new Map<string, string[]>([
+  // French-origin words (15 words)
+  ['cliche', ['cli', 'ché']],
+  ['fiance', ['fi', 'an', 'cé']],
+  ['fiancee', ['fi', 'an', 'cée']],
+  ['resume', ['ré', 'su', 'mé']],
+  ['cafe', ['ca', 'fé']],
+  ['risque', ['ris', 'qué']],
+  ['blase', ['bla', 'sé']],
+  ['frappe', ['frap', 'pé']],
+  ['protege', ['pro', 'té', 'gé']],
+  ['touche', ['tou', 'ché']],
+  ['souffle', ['souf', 'flé']],
+  ['macrame', ['mac', 'ra', 'mé']],
+  ['ole', ['o', 'lé']],
+  ['melee', ['mê', 'lée']],
+  ['matinee', ['mat', 'i', 'née']],
+  
+  // Latin/Greek-based words (14 words)
+  ['recipe', ['rec', 'i', 'pe']],
+  ['apostrophe', ['a', 'pos', 'tro', 'phe']],
+  ['catastrophe', ['ca', 'tas', 'tro', 'phe']],
+  ['epitome', ['e', 'pit', 'o', 'me']],
+  ['sesame', ['ses', 'a', 'me']],
+  ['posse', ['pos', 'se']],
+  ['acne', ['ac', 'ne']],
+  ['simile', ['sim', 'i', 'le']],
+  ['syncope', ['syn', 'co', 'pe']],
+  ['psyche', ['psy', 'che']],
+  ['karate', ['ka', 'ra', 'te']],
+  ['vigilante', ['vig', 'i', 'lan', 'te']],
+  ['anemone', ['a', 'nem', 'o', 'ne']],
+  ['calliope', ['cal', 'li', 'o', 'pe']],
+  
+  // Native American words (4 words)
+  ['apache', ['a', 'pa', 'che']],
+  ['comanche', ['co', 'man', 'che']],
+  ['osage', ['o', 'sage']],
+  ['tarhe', ['tar', 'he']]
+]);
+
 // Common prefixes
 export const PREFIXES = new Map<string, string[]>([
   ['un', ['un']],          // un-happy
@@ -132,6 +174,19 @@ export class MorphologicalAnalyzer {
    * Analyze word for morphological components
    */
   analyzeWord(word: string): Morpheme[] {
+    const lowerWord = word.toLowerCase();
+    
+    // Check for false flag silent-e words first (highest priority)
+    if (FALSE_FLAG_SILENT_E_OVERRIDES.has(lowerWord)) {
+      const syllables = FALSE_FLAG_SILENT_E_OVERRIDES.get(lowerWord)!;
+      return [{
+        text: word,
+        type: 'root',
+        position: 0,
+        syllables: [...syllables]
+      }];
+    }
+
     const morphemes: Morpheme[] = [];
     let remainingWord = word.toLowerCase();
     let currentPosition = 0;
