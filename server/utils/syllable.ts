@@ -50,64 +50,110 @@ class CMUSyllabifier {
   }
 
   private phonemesToSyllables(word: string, phonemes: string[]): string[] {
+    // Count syllables by counting vowel phonemes (each vowel = one syllable)
+    const vowelCount = phonemes.filter(p => this.VOWEL_PHONEMES.has(p.replace(/[0-2]$/, ''))).length;
+    
+    if (vowelCount === 0) {
+      return [word];
+    }
+    
+    if (vowelCount === 1) {
+      return [word];
+    }
+    
+    // Use a more sophisticated approach for multi-syllable words
+    return this.splitWordBySyllableCount(word, vowelCount);
+  }
+
+  private splitWordBySyllableCount(word: string, syllableCount: number): string[] {
+    if (syllableCount <= 1) {
+      return [word];
+    }
+    
+    const vowels = 'aeiouAEIOU';
+    const wordChars = word.split('');
     const syllables: string[] = [];
     let currentSyllable = '';
-    let letterIndex = 0;
+    let vowelsSeen = 0;
     
-    // Track which phonemes correspond to which letters
-    const wordChars = word.split('');
-    
-    for (let i = 0; i < phonemes.length; i++) {
-      const phoneme = phonemes[i];
-      const basePhoneme = phoneme.replace(/[0-2]$/, '');
-      const stress = phoneme.match(/[0-2]$/)?.[0];
+    for (let i = 0; i < wordChars.length; i++) {
+      const char = wordChars[i];
+      const isVowel = vowels.includes(char);
       
-      // If this is a vowel phoneme, it marks a syllable boundary
-      if (this.VOWEL_PHONEMES.has(basePhoneme)) {
-        // Add letters for this syllable
-        const syllableLetters = this.estimateLettersForSyllable(wordChars, letterIndex, i, phonemes.length);
-        currentSyllable += syllableLetters.join('');
-        letterIndex += syllableLetters.length;
+      // Add character to current syllable
+      currentSyllable += char;
+      
+      // If this is a vowel, we're in a vowel cluster
+      if (isVowel) {
+        // Check if this starts a new vowel cluster
+        const prevChar = wordChars[i - 1];
+        const isPrevVowel = prevChar && vowels.includes(prevChar);
         
-        // If we have a current syllable, finish it
-        if (currentSyllable) {
-          syllables.push(currentSyllable);
-          currentSyllable = '';
+        if (!isPrevVowel) {
+          vowelsSeen++;
+        }
+        
+        // Look ahead to decide where to split
+        const nextChar = wordChars[i + 1];
+        const nextNextChar = wordChars[i + 2];
+        
+        // If we have enough vowels seen and there's more content
+        if (vowelsSeen < syllableCount && nextChar) {
+          // Split strategy: 
+          // 1. If next is consonant followed by vowel, split before consonant
+          // 2. If next is vowel, continue current syllable
+          
+          if (!vowels.includes(nextChar)) { // next is consonant
+            if (nextNextChar && vowels.includes(nextNextChar)) {
+              // Consonant followed by vowel - split here
+              syllables.push(currentSyllable);
+              currentSyllable = '';
+            } else if (i + 2 < wordChars.length) {
+              // Look further ahead for better split point
+              const nextNextNextChar = wordChars[i + 3];
+              if (nextNextNextChar && vowels.includes(nextNextNextChar)) {
+                // Split after next consonant
+                currentSyllable += nextChar;
+                i++; // Skip the consonant we just added
+                syllables.push(currentSyllable);
+                currentSyllable = '';
+              }
+            }
+          }
         }
       }
     }
     
-    // Add any remaining letters to the last syllable
-    if (letterIndex < wordChars.length) {
-      const remaining = wordChars.slice(letterIndex).join('');
+    // Add final syllable
+    if (currentSyllable) {
       if (syllables.length > 0) {
-        syllables[syllables.length - 1] += remaining;
+        syllables[syllables.length - 1] += currentSyllable;
       } else {
-        syllables.push(remaining);
+        syllables.push(currentSyllable);
       }
     }
     
-    // Fallback: if no syllables were created, return the whole word
-    if (syllables.length === 0) {
-      return [word];
+    // Ensure we have the right number of syllables
+    if (syllables.length < syllableCount && syllables.length > 0) {
+      // Try to split the longest syllable
+      const longestIndex = syllables.reduce((maxIndex, current, index, array) => 
+        current.length > array[maxIndex].length ? index : maxIndex, 0);
+      
+      const longestSyllable = syllables[longestIndex];
+      if (longestSyllable.length > 3) {
+        const midPoint = Math.floor(longestSyllable.length / 2);
+        const firstPart = longestSyllable.slice(0, midPoint);
+        const secondPart = longestSyllable.slice(midPoint);
+        
+        syllables[longestIndex] = firstPart;
+        syllables.splice(longestIndex + 1, 0, secondPart);
+      }
     }
     
-    return syllables;
+    return syllables.length > 0 ? syllables : [word];
   }
 
-  private estimateLettersForSyllable(wordChars: string[], startIndex: number, phonemeIndex: number, totalPhonemes: number): string[] {
-    // Simple heuristic: distribute letters proportionally based on phoneme position
-    const remainingLetters = wordChars.length - startIndex;
-    const remainingPhonemes = totalPhonemes - phonemeIndex;
-    
-    if (remainingPhonemes <= 1) {
-      return wordChars.slice(startIndex);
-    }
-    
-    // Take roughly 1/3 to 1/2 of remaining letters for this syllable
-    const lettersToTake = Math.max(1, Math.floor(remainingLetters / remainingPhonemes));
-    return wordChars.slice(startIndex, startIndex + lettersToTake);
-  }
+
 
   async breakWordIntoSyllables(word: string): Promise<string[]> {
     await this.initialize();
