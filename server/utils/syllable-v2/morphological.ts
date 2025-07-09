@@ -104,7 +104,7 @@ export const FALSE_FLAG_SILENT_E_OVERRIDES = new Map<string, string[]>([
   // Native American words (4 words)
   ['apache', ['a', 'pa', 'che']],
   ['comanche', ['co', 'man', 'che']],
-  ['osage', ['o', 'sage']],
+  ['osage', ['o', 'sa', 'ge']],
   ['tarhe', ['tar', 'he']]
 ]);
 
