@@ -365,8 +365,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         exampleSentence = `This is an example sentence using the word "${word}".`;
       }
       
-      // Generate syllables (temporarily returning single syllable until CMU integration)
-      const syllables = await breakWordIntoSyllables(word);
+      // Generate syllables using V2 system
+      const { breakWordIntoSyllablesV2 } = await import('./utils/syllable-v2/core.js');
+      const syllables = await breakWordIntoSyllablesV2(word);
       
       res.json({
         success: true,
