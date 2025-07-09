@@ -60,6 +60,13 @@ class CMUSyllabifier {
     ['constitutional', ['con', 'sti', 'tu', 'tion', 'al']],
     ['educational', ['ed', 'u', 'ca', 'tion', 'al']],
     ['exceptional', ['ex', 'cep', 'tion', 'al']],
+    ['any', ['a', 'ny']],
+    ['many', ['ma', 'ny']],
+    ['very', ['ve', 'ry']],
+    ['only', ['on', 'ly']],
+    ['every', ['ev', 'ery']],
+    ['early', ['ear', 'ly']],
+    ['really', ['real', 'ly']],
   ]);
 
   // Consonant clusters that can begin English words
