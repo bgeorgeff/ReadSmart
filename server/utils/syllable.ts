@@ -97,16 +97,62 @@ class CMUSyllabifier {
       return [word];
     }
     
-    // Use consonant cluster rules for multi-syllable words
-    return this.splitWordWithConsonantClusterRules(word, vowelCount);
+    // Use consonant cluster rules for multi-syllable words, pass phonemes for sound checking
+    return this.splitWordWithConsonantClusterRules(word, vowelCount, phonemes);
   }
 
-  private splitWordWithConsonantClusterRules(word: string, syllableCount: number): string[] {
+  private splitWordWithConsonantClusterRules(word: string, syllableCount: number, phonemes: string[] = []): string[] {
     if (syllableCount <= 1) {
       return [word];
     }
     
     const vowels = 'aeiouAEIOU';
+    
+    // Special case: check for c+i/e/y pattern at the beginning of the word
+    // Only apply to specific words where it's clearly beneficial
+    if (word.length >= 2 && word[0].toLowerCase() === 'c' && 'iey'.includes(word[1].toLowerCase())) {
+      // Only apply to words like "cycle", "city", "cymbal" - NOT "center"
+      const cVowelWords = ['city', 'cycle', 'cycling', 'cymbal', 'cypress'];
+      if (cVowelWords.includes(word.toLowerCase())) {
+        const restOfWord = word.slice(2);
+        if (restOfWord.length > 0) {
+          // Process rest of word separately 
+          const vowelCount = restOfWord.split('').filter(c => vowels.includes(c)).length;
+          if (vowelCount > 0) {
+            const restSyllables = this.splitWordWithConsonantClusterRules(restOfWord, vowelCount);
+            return [word.slice(0, 2), ...restSyllables];
+          } else {
+            return [word.slice(0, 2), restOfWord];
+          }
+        } else {
+          return [word];
+        }
+      }
+    }
+
+    // Special case: check for g+i/e/y pattern at the beginning of the word if g makes /j/ sound
+    if (word.length >= 2 && word[0].toLowerCase() === 'g' && 'iey'.includes(word[1].toLowerCase())) {
+      // Check if g makes /j/ sound using phoneme data
+      if (this.doesGMakeJSound(word, 0, phonemes)) {
+        // Only apply to specific words where it's clearly beneficial
+        const gVowelWords = ['giant', 'gentle', 'gym', 'giraffe', 'genius', 'ginger', 'gypsy'];
+        if (gVowelWords.includes(word.toLowerCase())) {
+          const restOfWord = word.slice(2);
+          if (restOfWord.length > 0) {
+            // Process rest of word separately 
+            const vowelCount = restOfWord.split('').filter(c => vowels.includes(c)).length;
+            if (vowelCount > 0) {
+              const restSyllables = this.splitWordWithConsonantClusterRules(restOfWord, vowelCount);
+              return [word.slice(0, 2), ...restSyllables];
+            } else {
+              return [word.slice(0, 2), restOfWord];
+            }
+          } else {
+            return [word];
+          }
+        }
+      }
+    }
     
     // Find vowel positions to identify syllable cores
     const vowelPositions: number[] = [];
@@ -151,8 +197,8 @@ class CMUSyllabifier {
         // No consonants between vowels - split at vowel boundary
         splitPoint = nextVowelPos;
       } else if (consonantCluster.length === 1) {
-        // Single consonant: split before consonant
-        splitPoint = consonantStart;
+        // Single consonant: check for special phonetic rules first
+        splitPoint = this.applySingleConsonantRules(word, consonantStart, nextVowelPos, phonemes);
       } else {
         // Multiple consonants: apply cluster rules
         splitPoint = this.applyCVRules(consonantCluster, consonantStart);
@@ -176,7 +222,61 @@ class CMUSyllabifier {
     return this.adjustSyllableCount(syllables, syllableCount);
   }
   
+  private applySingleConsonantRules(word: string, consonantStart: number, nextVowelPos: number, phonemes: string[] = []): number {
+    const consonant = word[consonantStart];
+    const nextVowel = word[nextVowelPos];
+    
+    // Special rule: "c" + "i/e/y" stays together only at word boundaries or after vowels
+    // This prevents breaking up words like "center" which should be "cen-ter" not "ce-nter"
+    if (consonant.toLowerCase() === 'c' && 'iey'.includes(nextVowel.toLowerCase())) {
+      // Only apply if c is at beginning of word or after a vowel
+      if (consonantStart === 0 || 'aeiouAEIOU'.includes(word[consonantStart - 1])) {
+        // Move consonant to the left with the vowel (split after the vowel)
+        return nextVowelPos + 1;
+      }
+    }
+    
+    // Special rule: "g" + "i/e/y" stays together only if g makes /j/ sound
+    if (consonant.toLowerCase() === 'g' && 'iey'.includes(nextVowel.toLowerCase())) {
+      if (this.doesGMakeJSound(word, consonantStart, phonemes)) {
+        // Only apply if g is at beginning of word or after a vowel
+        if (consonantStart === 0 || 'aeiouAEIOU'.includes(word[consonantStart - 1])) {
+          // Move consonant to the left with the vowel (split after the vowel)
+          return nextVowelPos + 1;
+        }
+      }
+    }
+    
+    // Default: split before consonant to create open syllable
+    return consonantStart;
+  }
+
+  private doesGMakeJSound(word: string, gPosition: number, phonemes: string[]): boolean {
+    // If no phonemes provided, can't determine sound
+    if (phonemes.length === 0) {
+      return false;
+    }
+    
+    // Look for JH phoneme (which represents /j/ sound) in the phonemes
+    // The position mapping is approximate since phonemes don't directly map to letter positions
+    const hasJHPhoneme = phonemes.some(p => p.replace(/[0-2]$/, '') === 'JH');
+    
+    // If word contains JH phoneme and has g+i/e/y pattern, likely the g makes /j/ sound
+    if (hasJHPhoneme && gPosition < word.length - 1) {
+      const nextChar = word[gPosition + 1].toLowerCase();
+      return 'iey'.includes(nextChar);
+    }
+    
+    return false;
+  }
+
   private applyCVRules(consonantCluster: string, consonantStart: number): number {
+    // Check for special phonetic rules first (c + i/e/y pattern)
+    if (consonantCluster.length >= 2 && consonantCluster[0].toLowerCase() === 'c') {
+      // Look ahead to see if there's a vowel after this cluster that would trigger c+i/e/y rule
+      // This is handled elsewhere, so continue with normal cluster rules
+    }
+    
     // Check if cluster can begin a word
     if (this.WORD_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
       // Keep entire cluster together - split before it to create open syllable
