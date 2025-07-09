@@ -105,7 +105,12 @@ export const FALSE_FLAG_SILENT_E_OVERRIDES = new Map<string, string[]>([
   ['apache', ['a', 'pa', 'che']],
   ['comanche', ['co', 'man', 'che']],
   ['osage', ['o', 'sa', 'ge']],
-  ['tarhe', ['tar', 'he']]
+  ['tarhe', ['tar', 'he']],
+  
+  // Consonant+i pattern words requiring special handling
+  ['obedient', ['o', 'be', 'di', 'ent']],
+  ['expedient', ['ex', 'pe', 'di', 'ent']],
+  ['ingredient', ['in', 'gre', 'di', 'ent']]
 ]);
 
 // Common prefixes
