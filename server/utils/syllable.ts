@@ -208,9 +208,11 @@ class CMUSyllabifier {
     // Find vowel positions to identify syllable cores
     const vowelPositions: number[] = [];
     for (let i = 0; i < word.length; i++) {
-      if (vowels.includes(word[i])) {
+      // Include 'y' as a vowel when it's at the end of a word
+      const isVowel = vowels.includes(word[i]) || (word[i].toLowerCase() === 'y' && i === word.length - 1);
+      if (isVowel) {
         // Check if this is a new vowel cluster (not consecutive vowels)
-        if (i === 0 || !vowels.includes(word[i - 1])) {
+        if (i === 0 || (!vowels.includes(word[i - 1]) && !(word[i - 1].toLowerCase() === 'y' && i - 1 === word.length - 1))) {
           vowelPositions.push(i);
         }
       }
