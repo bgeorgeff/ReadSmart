@@ -211,7 +211,7 @@ class CMUSyllabifier {
         splitPoint = this.applySingleConsonantRules(word, consonantStart, nextVowelPos, phonemes);
       } else {
         // Multiple consonants: apply cluster rules
-        splitPoint = this.applyCVRules(consonantCluster, consonantStart);
+        splitPoint = this.applyCVRules(consonantCluster, consonantStart, word);
       }
 
       // Extract syllable
@@ -280,7 +280,7 @@ class CMUSyllabifier {
     return false;
   }
 
-  private applyCVRules(consonantCluster: string, consonantStart: number): number {
+  private applyCVRules(consonantCluster: string, consonantStart: number, word: string): number {
     // PRIORITY 1: Check for consonant combinations that should be preserved (like ng, nk, etc.)
     // This MUST come FIRST before any other rules
     if (consonantCluster.length >= 2) {
