@@ -70,87 +70,136 @@ class CMUSyllabifier {
       return [word];
     }
     
+    // Use established syllable division rules
     const vowels = 'aeiouAEIOU';
-    const wordChars = word.split('');
+    const consonants = 'bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ';
+    
+    // Find vowel positions to identify syllable cores
+    const vowelPositions: number[] = [];
+    for (let i = 0; i < word.length; i++) {
+      if (vowels.includes(word[i])) {
+        // Check if this is a new vowel cluster (not consecutive vowels)
+        if (i === 0 || !vowels.includes(word[i - 1])) {
+          vowelPositions.push(i);
+        }
+      }
+    }
+    
+    // If we don't have enough vowel clusters, fall back to simple splitting
+    if (vowelPositions.length < syllableCount) {
+      return this.simpleSyllableSplit(word, syllableCount);
+    }
+    
+    // Apply syllable division rules
     const syllables: string[] = [];
-    let currentSyllable = '';
-    let vowelsSeen = 0;
+    let currentStart = 0;
     
-    for (let i = 0; i < wordChars.length; i++) {
-      const char = wordChars[i];
-      const isVowel = vowels.includes(char);
+    for (let i = 0; i < vowelPositions.length - 1; i++) {
+      const currentVowelPos = vowelPositions[i];
+      const nextVowelPos = vowelPositions[i + 1];
       
-      // Add character to current syllable
-      currentSyllable += char;
-      
-      // If this is a vowel, we're in a vowel cluster
-      if (isVowel) {
-        // Check if this starts a new vowel cluster
-        const prevChar = wordChars[i - 1];
-        const isPrevVowel = prevChar && vowels.includes(prevChar);
-        
-        if (!isPrevVowel) {
-          vowelsSeen++;
-        }
-        
-        // Look ahead to decide where to split
-        const nextChar = wordChars[i + 1];
-        const nextNextChar = wordChars[i + 2];
-        
-        // If we have enough vowels seen and there's more content
-        if (vowelsSeen < syllableCount && nextChar) {
-          // Split strategy: 
-          // 1. If next is consonant followed by vowel, split before consonant
-          // 2. If next is vowel, continue current syllable
-          
-          if (!vowels.includes(nextChar)) { // next is consonant
-            if (nextNextChar && vowels.includes(nextNextChar)) {
-              // Consonant followed by vowel - split here
-              syllables.push(currentSyllable);
-              currentSyllable = '';
-            } else if (i + 2 < wordChars.length) {
-              // Look further ahead for better split point
-              const nextNextNextChar = wordChars[i + 3];
-              if (nextNextNextChar && vowels.includes(nextNextNextChar)) {
-                // Split after next consonant
-                currentSyllable += nextChar;
-                i++; // Skip the consonant we just added
-                syllables.push(currentSyllable);
-                currentSyllable = '';
-              }
-            }
-          }
-        }
+      // Find consonants between vowels
+      let consonantStart = currentVowelPos + 1;
+      while (consonantStart < nextVowelPos && vowels.includes(word[consonantStart])) {
+        consonantStart++;
       }
-    }
-    
-    // Add final syllable
-    if (currentSyllable) {
-      if (syllables.length > 0) {
-        syllables[syllables.length - 1] += currentSyllable;
+      
+      let consonantEnd = nextVowelPos - 1;
+      while (consonantEnd > consonantStart && vowels.includes(word[consonantEnd])) {
+        consonantEnd--;
+      }
+      
+      // Determine split point based on consonant count
+      const consonantCount = consonantEnd - consonantStart + 1;
+      let splitPoint: number;
+      
+      if (consonantCount <= 1) {
+        // Single consonant or no consonant: split before consonant
+        splitPoint = consonantStart;
       } else {
-        syllables.push(currentSyllable);
+        // Multiple consonants: split between consonants
+        // For better pronunciation, keep consonant clusters together when possible
+        if (consonantCount === 2) {
+          // Two consonants: split between them
+          splitPoint = consonantStart + 1;
+        } else {
+          // Three or more consonants: split after first consonant
+          splitPoint = consonantStart + 1;
+        }
+      }
+      
+      // Extract syllable
+      const syllable = word.slice(currentStart, splitPoint);
+      if (syllable) {
+        syllables.push(syllable);
+      }
+      currentStart = splitPoint;
+    }
+    
+    // Add the final syllable
+    const finalSyllable = word.slice(currentStart);
+    if (finalSyllable) {
+      syllables.push(finalSyllable);
+    }
+    
+    // Adjust if we have too many or too few syllables
+    return this.adjustSyllableCount(syllables, syllableCount);
+  }
+  
+  private simpleSyllableSplit(word: string, targetCount: number): string[] {
+    const syllables: string[] = [];
+    const avgLength = Math.ceil(word.length / targetCount);
+    
+    for (let i = 0; i < targetCount; i++) {
+      const start = i * avgLength;
+      const end = i === targetCount - 1 ? word.length : (i + 1) * avgLength;
+      const syllable = word.slice(start, end);
+      if (syllable) {
+        syllables.push(syllable);
       }
     }
     
-    // Ensure we have the right number of syllables
-    if (syllables.length < syllableCount && syllables.length > 0) {
-      // Try to split the longest syllable
-      const longestIndex = syllables.reduce((maxIndex, current, index, array) => 
-        current.length > array[maxIndex].length ? index : maxIndex, 0);
-      
-      const longestSyllable = syllables[longestIndex];
-      if (longestSyllable.length > 3) {
-        const midPoint = Math.floor(longestSyllable.length / 2);
-        const firstPart = longestSyllable.slice(0, midPoint);
-        const secondPart = longestSyllable.slice(midPoint);
+    return syllables;
+  }
+  
+  private adjustSyllableCount(syllables: string[], targetCount: number): string[] {
+    if (syllables.length === targetCount) {
+      return syllables;
+    }
+    
+    if (syllables.length < targetCount) {
+      // Need to split some syllables
+      while (syllables.length < targetCount) {
+        const longestIndex = syllables.reduce((maxIdx, current, idx, array) => 
+          current.length > array[maxIdx].length ? idx : maxIdx, 0);
+        
+        const longest = syllables[longestIndex];
+        if (longest.length <= 2) break; // Can't split further
+        
+        const midPoint = Math.floor(longest.length / 2);
+        const firstPart = longest.slice(0, midPoint);
+        const secondPart = longest.slice(midPoint);
         
         syllables[longestIndex] = firstPart;
         syllables.splice(longestIndex + 1, 0, secondPart);
       }
+    } else {
+      // Need to merge some syllables
+      while (syllables.length > targetCount) {
+        const shortestIndex = syllables.reduce((minIdx, current, idx, array) => 
+          current.length < array[minIdx].length ? idx : minIdx, 0);
+        
+        if (shortestIndex === 0) {
+          syllables[0] += syllables[1];
+          syllables.splice(1, 1);
+        } else {
+          syllables[shortestIndex - 1] += syllables[shortestIndex];
+          syllables.splice(shortestIndex, 1);
+        }
+      }
     }
     
-    return syllables.length > 0 ? syllables : [word];
+    return syllables;
   }
 
 
