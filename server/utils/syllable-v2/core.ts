@@ -120,14 +120,32 @@ export class CMUSyllabifierV2 {
    * Syllabify using CMU phoneme data
    */
   private syllabifyWithPhonemes(word: string, phonemes: string[]): SyllabificationResult {
-    // 1. Detect vowel sounds
+    // 1. Get morphological hints first
+    const morphHints = this.morphAnalyzer.getMorphologicalHints(word);
+    
+    // 2. Check for complete word overrides (highest priority)
+    if (morphHints.preservedUnits.length === 1) {
+      const unit = morphHints.preservedUnits[0];
+      if (unit.start === 0 && unit.end === word.length && unit.syllables.length > 0) {
+        // This is a complete word override, return syllables directly
+        return {
+          syllables: [...unit.syllables],
+          method: 'cmu',
+          confidence: 0.98, // High confidence for explicit overrides
+          debug: {
+            phonemes,
+            morphemes: morphHints.preservedUnits,
+            note: 'Complete word override applied'
+          }
+        };
+      }
+    }
+    
+    // 3. Detect vowel sounds for partial processing
     const vowelSounds = this.vowelDetector.detectVowelSounds(word, phonemes);
     const vowelCount = this.vowelDetector.countVowelSounds(vowelSounds);
     
-    // 2. Get morphological hints
-    const morphHints = this.morphAnalyzer.getMorphologicalHints(word);
-    
-    // 3. Build syllables
+    // 4. Build syllables from morphological units
     const syllables: string[] = [];
     let currentPos = 0;
     
@@ -222,6 +240,25 @@ export class CMUSyllabifierV2 {
    */
   private syllabifyWithPatterns(word: string): SyllabificationResult {
     const morphHints = this.morphAnalyzer.getMorphologicalHints(word);
+    
+    // Check for complete word overrides first (highest priority)
+    if (morphHints.preservedUnits.length === 1) {
+      const unit = morphHints.preservedUnits[0];
+      if (unit.start === 0 && unit.end === word.length && unit.syllables.length > 0) {
+        // This is a complete word override, return syllables directly
+        return {
+          syllables: [...unit.syllables],
+          method: 'pattern',
+          confidence: 0.98, // High confidence for explicit overrides
+          debug: {
+            patterns: this.patternEngine.identifyPatterns(word),
+            morphemes: morphHints.preservedUnits,
+            note: 'Complete word override applied'
+          }
+        };
+      }
+    }
+    
     const patternBoundaries = this.patternEngine.findPatternBoundaries(word);
     const phoneticHints = this.phoneticProcessor.getPhoneticHints(word);
     

@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateGradeLevelSummaries, testApiConnection, shortenText } from "./utils/openai";
 import { breakWordIntoSyllables } from "./utils/syllable";
+import { breakWordIntoSyllablesV2 } from "./utils/syllable-v2/core";
 import { processTextSchema, gradeLevelSummarySchema, wordDetailSchema, saveRecordingSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import OpenAI from "openai";

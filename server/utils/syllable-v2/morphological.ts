@@ -263,7 +263,20 @@ export class MorphologicalAnalyzer {
   getMorphologicalHints(word: string): { boundaries: number[], preservedUnits: Array<{start: number, end: number, syllables: string[]}> } {
     const lowerWord = word.toLowerCase();
 
-    // Check for consonant+i suffix patterns first
+    // Check for false flag silent-e words first (highest priority complete word overrides)
+    if (FALSE_FLAG_SILENT_E_OVERRIDES.has(lowerWord)) {
+      const syllables = FALSE_FLAG_SILENT_E_OVERRIDES.get(lowerWord)!;
+      return {
+        boundaries: [], // No boundaries needed for complete overrides
+        preservedUnits: [{
+          start: 0,
+          end: word.length,
+          syllables: [...syllables]
+        }]
+      };
+    }
+
+    // Check for consonant+i suffix patterns second
     const consonantISuffix = this.detectConsonantISuffix(word);
     if (consonantISuffix) {
       const { suffix, consonant, position } = consonantISuffix;
