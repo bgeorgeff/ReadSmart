@@ -8,6 +8,36 @@ class CMUSyllabifier {
     'AA', 'AE', 'AH', 'AO', 'AW', 'AY', 'EH', 'ER', 'EY', 'IH', 'IY', 'OW', 'OY', 'UH', 'UW'
   ]);
 
+  // Morphological overrides - root words + suffixes for educational clarity
+  private readonly MORPHOLOGICAL_OVERRIDES = new Map([
+    ['testing', ['test', 'ing']],
+    ['running', ['run', 'ning']],
+    ['walking', ['walk', 'ing']],
+    ['talking', ['talk', 'ing']],
+    ['reading', ['read', 'ing']],
+    ['writing', ['writ', 'ing']],
+    ['looking', ['look', 'ing']],
+    ['playing', ['play', 'ing']],
+    ['working', ['work', 'ing']],
+    ['jumping', ['jump', 'ing']],
+    ['swimming', ['swim', 'ming']],
+    ['singing', ['sing', 'ing']],
+    ['dancing', ['danc', 'ing']],
+    ['helping', ['help', 'ing']],
+    ['cleaning', ['clean', 'ing']],
+    ['teaching', ['teach', 'ing']],
+    ['learning', ['learn', 'ing']],
+    ['thinking', ['think', 'ing']],
+    ['feeling', ['feel', 'ing']],
+    ['knowing', ['know', 'ing']],
+  ]);
+
+  // Consonant clusters that can begin English words
+  private readonly WORD_INITIAL_CLUSTERS = new Set([
+    'bl', 'br', 'cl', 'cr', 'dr', 'fl', 'fr', 'gl', 'gr', 'pl', 'pr', 'sc', 'sk', 'sl', 'sm', 'sn', 
+    'sp', 'st', 'sw', 'th', 'tr', 'tw', 'ch', 'sh', 'wh', 'qu', 'scr', 'spr', 'str', 'spl', 'squ'
+  ]);
+
   async initialize() {
     if (this.initialized) return;
     
@@ -50,6 +80,12 @@ class CMUSyllabifier {
   }
 
   private phonemesToSyllables(word: string, phonemes: string[]): string[] {
+    // Check for morphological overrides first (morphological structure trumps other rules)
+    const morphOverride = this.MORPHOLOGICAL_OVERRIDES.get(word.toLowerCase());
+    if (morphOverride) {
+      return morphOverride;
+    }
+    
     // Count syllables by counting vowel phonemes (each vowel = one syllable)
     const vowelCount = phonemes.filter(p => this.VOWEL_PHONEMES.has(p.replace(/[0-2]$/, ''))).length;
     
@@ -61,18 +97,16 @@ class CMUSyllabifier {
       return [word];
     }
     
-    // Use a more sophisticated approach for multi-syllable words
-    return this.splitWordBySyllableCount(word, vowelCount);
+    // Use consonant cluster rules for multi-syllable words
+    return this.splitWordWithConsonantClusterRules(word, vowelCount);
   }
 
-  private splitWordBySyllableCount(word: string, syllableCount: number): string[] {
+  private splitWordWithConsonantClusterRules(word: string, syllableCount: number): string[] {
     if (syllableCount <= 1) {
       return [word];
     }
     
-    // Use established syllable division rules
     const vowels = 'aeiouAEIOU';
-    const consonants = 'bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ';
     
     // Find vowel positions to identify syllable cores
     const vowelPositions: number[] = [];
@@ -90,7 +124,7 @@ class CMUSyllabifier {
       return this.simpleSyllableSplit(word, syllableCount);
     }
     
-    // Apply syllable division rules
+    // Apply consonant cluster rules
     const syllables: string[] = [];
     let currentStart = 0;
     
@@ -109,23 +143,19 @@ class CMUSyllabifier {
         consonantEnd--;
       }
       
-      // Determine split point based on consonant count
-      const consonantCount = consonantEnd - consonantStart + 1;
+      // Get the consonant cluster
+      const consonantCluster = word.slice(consonantStart, consonantEnd + 1);
       let splitPoint: number;
       
-      if (consonantCount <= 1) {
-        // Single consonant or no consonant: split before consonant
+      if (consonantCluster.length === 0) {
+        // No consonants between vowels - split at vowel boundary
+        splitPoint = nextVowelPos;
+      } else if (consonantCluster.length === 1) {
+        // Single consonant: split before consonant
         splitPoint = consonantStart;
       } else {
-        // Multiple consonants: split between consonants
-        // For better pronunciation, keep consonant clusters together when possible
-        if (consonantCount === 2) {
-          // Two consonants: split between them
-          splitPoint = consonantStart + 1;
-        } else {
-          // Three or more consonants: split after first consonant
-          splitPoint = consonantStart + 1;
-        }
+        // Multiple consonants: apply cluster rules
+        splitPoint = this.applyCVRules(consonantCluster, consonantStart);
       }
       
       // Extract syllable
@@ -144,6 +174,27 @@ class CMUSyllabifier {
     
     // Adjust if we have too many or too few syllables
     return this.adjustSyllableCount(syllables, syllableCount);
+  }
+  
+  private applyCVRules(consonantCluster: string, consonantStart: number): number {
+    // Check if cluster can begin a word
+    if (this.WORD_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
+      // Keep entire cluster together - split before it
+      return consonantStart;
+    }
+    
+    // Check if suffix of cluster can begin a word
+    for (let i = 1; i < consonantCluster.length; i++) {
+      const suffix = consonantCluster.slice(i).toLowerCase();
+      if (this.WORD_INITIAL_CLUSTERS.has(suffix)) {
+        // Split before the valid cluster
+        return consonantStart + i;
+      }
+    }
+    
+    // No valid cluster found, split in middle
+    const midPoint = Math.floor(consonantCluster.length / 2);
+    return consonantStart + midPoint;
   }
   
   private simpleSyllableSplit(word: string, targetCount: number): string[] {
