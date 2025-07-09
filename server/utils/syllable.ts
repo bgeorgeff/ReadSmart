@@ -282,7 +282,8 @@ class CMUSyllabifier {
       // This is handled elsewhere, so continue with normal cluster rules
     }
     
-    // Check for consonant combinations that should be preserved (like ng, nk, etc.)
+    // PRIORITY 1: Check for consonant combinations that should be preserved (like ng, nk, etc.)
+    // This must come BEFORE word-initial cluster rules
     if (consonantCluster.length >= 2) {
       for (let i = 0; i < consonantCluster.length - 1; i++) {
         const combo = consonantCluster.slice(i, i + 2).toLowerCase();
@@ -293,15 +294,28 @@ class CMUSyllabifier {
       }
     }
     
-    // Check if cluster can begin a word
+    // PRIORITY 2: Check if cluster can begin a word (only if no preserve rules applied)
     if (this.WORD_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
       // Keep entire cluster together - split before it to create open syllable
       return consonantStart;
     }
     
-    // Check if suffix of cluster can begin a word
+    // PRIORITY 3: Check if suffix of cluster can begin a word or should be preserved
     for (let i = 1; i < consonantCluster.length; i++) {
       const suffix = consonantCluster.slice(i).toLowerCase();
+      
+      // First check if any part of this suffix should be preserved
+      if (suffix.length >= 2) {
+        for (let j = 0; j < suffix.length - 1; j++) {
+          const combo = suffix.slice(j, j + 2).toLowerCase();
+          if (this.CONSONANT_CLUSTERS_TO_PRESERVE.has(combo)) {
+            // Split before the preserved combination
+            return consonantStart + i + j;
+          }
+        }
+      }
+      
+      // Then check if suffix can start a word
       if (this.WORD_INITIAL_CLUSTERS.has(suffix)) {
         // Split before the valid cluster to create open syllable
         return consonantStart + i;
