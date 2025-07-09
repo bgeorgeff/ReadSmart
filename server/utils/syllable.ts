@@ -60,6 +60,7 @@ class CMUSyllabifier {
     ['constitutional', ['con', 'sti', 'tu', 'tion', 'al']],
     ['educational', ['ed', 'u', 'ca', 'tion', 'al']],
     ['exceptional', ['ex', 'cep', 'tion', 'al']],
+    ['unanimously', ['u', 'na', 'ni', 'mous', 'ly']],
 
   ]);
 
