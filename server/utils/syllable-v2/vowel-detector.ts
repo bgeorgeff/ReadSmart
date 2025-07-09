@@ -31,20 +31,20 @@ export const VOWEL_CLUSTERS = new Map<string, { sounds: number; priority: number
   ['ue', { sounds: 1, priority: 1 }],  // blue, true, rescue
   ['ui', { sounds: 1, priority: 1 }],  // fruit, suit, build
   ['ew', { sounds: 1, priority: 1 }],  // new, few, grew
-  
+
   // R-controlled vowels (keep together)
   ['ar', { sounds: 1, priority: 1 }],  // car, farm, star
   ['er', { sounds: 1, priority: 1 }],  // her, fern, verb
   ['ir', { sounds: 1, priority: 1 }],  // bird, first, girl
   ['or', { sounds: 1, priority: 1 }],  // for, corn, sport
   ['ur', { sounds: 1, priority: 1 }],  // fur, turn, nurse
-  
+
   // Three-letter vowel patterns
   ['igh', { sounds: 1, priority: 1 }], // night, light, sight
   ['ough', { sounds: 1, priority: 1 }], // though, through (varies but keep together)
   ['augh', { sounds: 1, priority: 1 }], // laugh, taught
   ['eigh', { sounds: 1, priority: 1 }], // eight, weigh
-  
+
   // Two sound sequences (hiatus - split these)
   ['ia', { sounds: 2, priority: 2 }],  // di-a-mond, pi-a-no
   ['io', { sounds: 2, priority: 2 }],  // bi-o-logy, vi-o-let
@@ -74,70 +74,34 @@ export class VowelDetector {
   detectVowelSounds(word: string, phonemes: string[]): VowelSound[] {
     const vowelSounds: VowelSound[] = [];
     const vowelLetters = 'aeiouAEIOU';
-    
+
     if (phonemes.length > 0) {
-      // Use phoneme data for accurate detection
+      // Always use letter-based vowel cluster detection first
+      const letterBasedVowels = this.detectVowelSoundsFromLetters(word);
+
+      // Validate vowel count against phonemes
       const vowelPhonemeCount = phonemes.filter(p => 
         VOWEL_PHONEMES.has(p.replace(/[0-2]$/, ''))
       ).length;
-      
-      // Map phonemes to letter positions
-      let letterIndex = 0;
-      let phonemeIndex = 0;
-      
-      while (letterIndex < word.length && phonemeIndex < phonemes.length) {
-        const phoneme = phonemes[phonemeIndex].replace(/[0-2]$/, '');
-        
-        if (VOWEL_PHONEMES.has(phoneme)) {
-          // Find the vowel letter(s) for this phoneme
-          const start = letterIndex;
-          
-          // Look for vowel cluster first (prioritize longer clusters)
-          let clusterFound = false;
-          const clustersToCheck = Array.from(VOWEL_CLUSTERS.entries())
-            .sort((a, b) => b[0].length - a[0].length); // Check longer clusters first
-          
-          for (const [cluster, info] of clustersToCheck) {
-            const wordSlice = word.slice(letterIndex, letterIndex + cluster.length).toLowerCase();
-            if (wordSlice === cluster) {
-              vowelSounds.push({
-                letters: word.slice(letterIndex, letterIndex + cluster.length),
-                position: letterIndex,
-                isSilent: false,
-                soundCount: 1 // Always treat vowel clusters as single sound units for syllabification
-              });
-              letterIndex += cluster.length;
-              clusterFound = true;
-              break;
-            }
-          }
-          
-          // If no cluster, find single vowel
-          if (!clusterFound) {
-            while (letterIndex < word.length && !vowelLetters.includes(word[letterIndex])) {
-              letterIndex++;
-            }
-            if (letterIndex < word.length) {
-              vowelSounds.push({
-                letters: word[letterIndex],
-                position: letterIndex,
-                isSilent: false,
-                soundCount: 1
-              });
-              letterIndex++;
-            }
-          }
-        } else {
-          // Skip consonant
-          letterIndex++;
-        }
-        phonemeIndex++;
+
+      const actualVowelCount = letterBasedVowels.filter(vs => !vs.isSilent).reduce((sum, vs) => sum + vs.soundCount, 0);
+
+      // If counts match, use letter-based (preserves clusters correctly)
+      if (actualVowelCount === vowelPhonemeCount) {
+        return letterBasedVowels;
       }
+
+      // If counts don't match, still prefer letter-based but mark as approximate
+      return letterBasedVowels.map(vs => ({
+        ...vs,
+        approximateMapping: true
+      }));
     } else {
       // Fallback: letter-based detection
       return this.detectVowelSoundsFromLetters(word);
     }
-    
+
+    // Remove the phoneme-to-letter mapping code that was causing conflicts
     return vowelSounds;
   }
 
@@ -148,16 +112,16 @@ export class VowelDetector {
     const vowelSounds: VowelSound[] = [];
     const vowelLetters = 'aeiouAEIOU';
     let i = 0;
-    
+
     while (i < word.length) {
       if (vowelLetters.includes(word[i]) || (word[i].toLowerCase() === 'y' && i > 0)) {
         // Check for vowel clusters first (prioritize longer clusters)
         let clusterLength = 1;
         let soundCount = 1;
-        
+
         const clustersToCheck = Array.from(VOWEL_CLUSTERS.entries())
           .sort((a, b) => b[0].length - a[0].length); // Check longer clusters first
-        
+
         for (const [cluster, info] of clustersToCheck) {
           const wordSlice = word.slice(i, i + cluster.length).toLowerCase();
           if (wordSlice === cluster) {
@@ -166,23 +130,23 @@ export class VowelDetector {
             break;
           }
         }
-        
+
         // Check if silent
         const isSilent = this.isSilentVowel(word, i, clusterLength);
-        
+
         vowelSounds.push({
           letters: word.slice(i, i + clusterLength),
           position: i,
           isSilent,
           soundCount: isSilent ? 0 : soundCount
         });
-        
+
         i += clusterLength;
       } else {
         i++;
       }
     }
-    
+
     return vowelSounds;
   }
 
@@ -196,7 +160,7 @@ export class VowelDetector {
       const otherVowels = word.slice(0, position).match(/[aeiou]/gi);
       return otherVowels && otherVowels.length > 0;
     }
-    
+
     // Check other silent patterns
     const substring = word.slice(position);
     for (const pattern of SILENT_PATTERNS) {
@@ -204,7 +168,7 @@ export class VowelDetector {
         return true;
       }
     }
-    
+
     return false;
   }
 
