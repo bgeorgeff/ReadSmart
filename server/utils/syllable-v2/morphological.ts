@@ -17,7 +17,7 @@ export const UNDIVIDABLE_SUFFIXES = new Map<string, string[]>([
   ['ience', ['ience']],    // con-ven-ience
   ['tience', ['tience']],  // pa-tience
   ['cience', ['cience']],  // con-science
-  
+
   // -tia/-tion family
   ['tia', ['tia']],        // de-men-tia
   ['tion', ['tion']],      // na-tion
@@ -26,7 +26,7 @@ export const UNDIVIDABLE_SUFFIXES = new Map<string, string[]>([
   ['tial', ['tial']],      // par-tial
   ['tient', ['tient']],    // pa-tient
   ['tional', ['tion', 'al']], // na-tion-al
-  
+
   // -cia/-cial family
   ['cia', ['cia']],        // Mar-cia
   ['cion', ['cion']],      // su-spi-cion
@@ -34,25 +34,24 @@ export const UNDIVIDABLE_SUFFIXES = new Map<string, string[]>([
   ['cious', ['cious']],    // pre-cious
   ['cial', ['cial']],      // spe-cial
   ['cient', ['cient']],    // suf-fi-cient
-  
+
   // -sia/-sion family
   ['sia', ['sia']],        // A-sia
   ['sion', ['sion']],      // ten-sion
   ['sian', ['sian']],      // Rus-sian
   ['sious', ['sious']],    // am-bi-tious (variant)
-  
+
   // -gia/-gion family
   ['gia', ['gia']],        // Geor-gia
   ['gion', ['gion']],      // re-gion
   ['gian', ['gian']],      // Bel-gian
   ['gious', ['gious']],    // re-li-gious
-  
+
   // Other common suffixes
   ['ous', ['ous']],        // fa-mous
-  ['ious', ['ious']],      // cur-i-ous
   ['eous', ['eous']],      // cour-a-geous
   ['uous', ['uous']],      // con-tin-u-ous
-  
+
   // Standard suffixes
   ['ing', ['ing']],        // walk-ing
   ['ed', ['ed']],          // walk-ed (but see special rules)
@@ -91,7 +90,44 @@ export const PREFIXES = new Map<string, string[]>([
   ['ex', ['ex']],          // ex-port
 ]);
 
+// Universal suffix patterns that create consonant+i syllables
+export const CONSONANT_I_SUFFIXES = [
+  'ia',      // me-di-a, encyclope-di-a
+  'ion',     // cham-pi-on, dande-li-on
+  'ian',     // Ca-na-di-an, In-di-an
+  'ious',    // glor-i-ous, spur-i-ous
+  'ial',     // ra-di-al, cra-ni-al
+  'ient',    // o-be-di-ent, expe-di-ent
+  'ience',   // ex-per-i-ence, au-di-ence
+];
+
 export class MorphologicalAnalyzer {
+  /**
+   * Check if word ends with consonant+i suffix pattern
+   */
+  private detectConsonantISuffix(word: string): { suffix: string, consonant: string, position: number } | null {
+    const lowerWord = word.toLowerCase();
+
+    for (const suffix of CONSONANT_I_SUFFIXES) {
+      if (lowerWord.endsWith(suffix)) {
+        const suffixStart = lowerWord.length - suffix.length;
+        if (suffixStart > 0) {
+          const precedingChar = lowerWord[suffixStart - 1];
+          // Check if preceded by consonant (not vowel or 'y')
+          if (precedingChar && !/[aeiouy]/.test(precedingChar)) {
+            return {
+              suffix: suffix,
+              consonant: precedingChar,
+              position: suffixStart - 1
+            };
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
   /**
    * Analyze word for morphological components
    */
@@ -99,7 +135,7 @@ export class MorphologicalAnalyzer {
     const morphemes: Morpheme[] = [];
     let remainingWord = word.toLowerCase();
     let currentPosition = 0;
-    
+
     // 1. Check for prefixes
     for (const [prefix, syllables] of PREFIXES) {
       if (remainingWord.startsWith(prefix)) {
@@ -114,16 +150,16 @@ export class MorphologicalAnalyzer {
         break; // Only one prefix for now
       }
     }
-    
+
     // 2. Check for suffixes (from longest to shortest)
     const suffixCandidates = Array.from(UNDIVIDABLE_SUFFIXES.keys())
       .sort((a, b) => b.length - a.length);
-    
+
     for (const suffix of suffixCandidates) {
       if (remainingWord.endsWith(suffix)) {
         const suffixSyllables = UNDIVIDABLE_SUFFIXES.get(suffix)!;
         const suffixStart = currentPosition + remainingWord.length - suffix.length;
-        
+
         // Insert suffix at the beginning so we can add it to morphemes in order
         morphemes.push({
           text: suffix,
@@ -131,12 +167,12 @@ export class MorphologicalAnalyzer {
           position: suffixStart,
           syllables: [...suffixSyllables]
         });
-        
+
         remainingWord = remainingWord.slice(0, -suffix.length);
         break; // Only one suffix for now
       }
     }
-    
+
     // 3. What's left is the root
     if (remainingWord.length > 0) {
       morphemes.splice(morphemes.findIndex(m => m.type === 'suffix'), 0, {
@@ -146,41 +182,71 @@ export class MorphologicalAnalyzer {
         syllables: [] // Will be filled by syllabification
       });
     }
-    
+
     return morphemes;
   }
-  
+
   /**
    * Check if a position is at a morpheme boundary
    */
   isMorphemeBoundary(word: string, position: number): boolean {
     const morphemes = this.analyzeWord(word);
-    
+
     for (const morpheme of morphemes) {
       if (morpheme.position === position || 
           morpheme.position + morpheme.text.length === position) {
         return true;
       }
     }
-    
+
     return false;
   }
-  
+
   /**
    * Get morphological hints for syllabification
    */
   getMorphologicalHints(word: string): { boundaries: number[], preservedUnits: Array<{start: number, end: number, syllables: string[]}> } {
+    const lowerWord = word.toLowerCase();
+
+    // Check for consonant+i suffix patterns first
+    const consonantISuffix = this.detectConsonantISuffix(word);
+    if (consonantISuffix) {
+      const { suffix, consonant, position } = consonantISuffix;
+      const beforeConsonant = word.slice(0, position);
+      const consonantIPart = consonant + 'i';
+      const restOfSuffix = suffix.slice(1); // Remove the 'i' since it goes with consonant
+
+      // If there's a root before the consonant+i+suffix
+      if (beforeConsonant.length > 0) {
+        return {
+          boundaries: [position, position + 2], // Before consonant and after consonant+i
+          preservedUnits: [
+            {
+              start: position,
+              end: position + 2,
+              syllables: [consonantIPart]
+            },
+            {
+              start: position + 2,
+              end: word.length,
+              syllables: [restOfSuffix]
+            }
+          ]
+        };
+      }
+    }
+
     const morphemes = this.analyzeWord(word);
     const boundaries: number[] = [];
     const preservedUnits: Array<{start: number, end: number, syllables: string[]}> = [];
-    
+
     for (const morpheme of morphemes) {
       // Add boundaries
       boundaries.push(morpheme.position);
       if (morpheme.position + morpheme.text.length < word.length) {
         boundaries.push(morpheme.position + morpheme.text.length);
       }
-      
+
       // Add preserved units (prefixes and suffixes with known syllables)
       if (morpheme.syllables.length > 0) {
         preservedUnits.push({
@@ -190,16 +256,16 @@ export class MorphologicalAnalyzer {
         });
       }
     }
-    
+
     return { boundaries, preservedUnits };
   }
-  
+
   /**
    * Special rule for -ed suffix
    */
   handleEdSuffix(rootWord: string): string[] {
     const lastChar = rootWord.slice(-1).toLowerCase();
-    
+
     // -ed creates new syllable only after 't' or 'd'
     if (lastChar === 't' || lastChar === 'd') {
       return ['ed']; // Separate syllable
