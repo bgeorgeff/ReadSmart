@@ -60,13 +60,7 @@ class CMUSyllabifier {
     ['constitutional', ['con', 'sti', 'tu', 'tion', 'al']],
     ['educational', ['ed', 'u', 'ca', 'tion', 'al']],
     ['exceptional', ['ex', 'cep', 'tion', 'al']],
-    ['any', ['a', 'ny']],
-    ['many', ['ma', 'ny']],
-    ['very', ['ve', 'ry']],
-    ['only', ['on', 'ly']],
-    ['every', ['ev', 'ery']],
-    ['early', ['ear', 'ly']],
-    ['really', ['real', 'ly']],
+
   ]);
 
   // Consonant clusters that can begin English words
@@ -282,6 +276,13 @@ class CMUSyllabifier {
   private applySingleConsonantRules(word: string, consonantStart: number, nextVowelPos: number, phonemes: string[] = []): number {
     const consonant = word[consonantStart];
     const nextVowel = word[nextVowelPos];
+
+    // Special rule: consonant + "y" (when y acts as vowel)
+    // Consonants go to the left of y: "any" → "a-ny", "many" → "ma-ny", "very" → "ve-ry"
+    if (nextVowel.toLowerCase() === 'y' && nextVowelPos === word.length - 1) {
+      // Move consonant to the left with the y (split after the y)
+      return nextVowelPos + 1;
+    }
 
     // Special rule: "c" + "i/e/y" stays together only at word boundaries or after vowels
     // This prevents breaking up words like "center" which should be "cen-ter" not "ce-nter"
