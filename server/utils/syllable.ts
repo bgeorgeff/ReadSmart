@@ -30,6 +30,26 @@ class CMUSyllabifier {
     ['thinking', ['think', 'ing']],
     ['feeling', ['feel', 'ing']],
     ['knowing', ['know', 'ing']],
+    ['surprisingly', ['sur', 'pri', 'sing', 'ly']],
+    ['certainly', ['cer', 'tain', 'ly']],
+    ['definitely', ['def', 'i', 'nite', 'ly']],
+    ['completely', ['com', 'plete', 'ly']],
+    ['immediately', ['im', 'me', 'di', 'ate', 'ly']],
+    ['carefully', ['care', 'ful', 'ly']],
+    ['perfectly', ['per', 'fect', 'ly']],
+    ['hopefully', ['hope', 'ful', 'ly']],
+    ['suddenly', ['sud', 'den', 'ly']],
+    ['finally', ['fi', 'nal', 'ly']],
+    ['probably', ['prob', 'a', 'bly']],
+    ['possibly', ['pos', 'si', 'bly']],
+    ['especially', ['es', 'pe', 'cial', 'ly']],
+    ['generally', ['gen', 'er', 'al', 'ly']],
+    ['basically', ['ba', 'sic', 'al', 'ly']],
+    ['naturally', ['nat', 'u', 'ral', 'ly']],
+    ['originally', ['o', 'rig', 'i', 'nal', 'ly']],
+    ['personally', ['per', 'son', 'al', 'ly']],
+    ['actually', ['ac', 'tu', 'al', 'ly']],
+    ['literally', ['lit', 'er', 'al', 'ly']],
   ]);
 
   // Consonant clusters that can begin English words
@@ -472,7 +492,89 @@ class CMUSyllabifier {
   }
 
   private fallbackSyllabification(word: string): string[] {
+    // Check for common morphological patterns first
+    const morphological = this.handleMorphologicalPatterns(word);
+    if (morphological.length > 0) {
+      return morphological;
+    }
+
     // Simple fallback: split on vowel clusters
+    const vowels = 'aeiouAEIOU';
+    const syllables: string[] = [];
+    let currentSyllable = '';
+
+    for (let i = 0; i < word.length; i++) {
+      const char = word[i];
+      currentSyllable += char;
+
+      // If this is a vowel and the next character is a consonant (or end of word)
+      if (vowels.includes(char)) {
+        const nextChar = word[i + 1];
+        if (!nextChar || !vowels.includes(nextChar)) {
+          // Look ahead to see if we should split here
+          const nextNextChar = word[i + 2];
+          if (nextChar && nextNextChar && vowels.includes(nextNextChar)) {
+            // Split before the next consonant
+            syllables.push(currentSyllable);
+            currentSyllable = '';
+          }
+        }
+      }
+    }
+
+    // Add any remaining characters to the last syllable
+    if (currentSyllable) {
+      if (syllables.length > 0) {
+        syllables[syllables.length - 1] += currentSyllable;
+      } else {
+        syllables.push(currentSyllable);
+      }
+    }
+
+    return syllables.length > 0 ? syllables : [word];
+  }
+
+  private handleMorphologicalPatterns(word: string): string[] {
+    // Handle -ly endings (adverbs)
+    if (word.endsWith('ly') && word.length > 3) {
+      const root = word.slice(0, -2);
+      const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
+      return [...rootSyllables, 'ly'];
+    }
+
+    // Handle -ing endings
+    if (word.endsWith('ing') && word.length > 4) {
+      const root = word.slice(0, -3);
+      const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
+      return [...rootSyllables, 'ing'];
+    }
+
+    // Handle -ed endings
+    if (word.endsWith('ed') && word.length > 3) {
+      const root = word.slice(0, -2);
+      const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
+      return [...rootSyllables, 'ed'];
+    }
+
+    // Handle -er endings
+    if (word.endsWith('er') && word.length > 3) {
+      const root = word.slice(0, -2);
+      const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
+      return [...rootSyllables, 'er'];
+    }
+
+    // Handle -est endings
+    if (word.endsWith('est') && word.length > 4) {
+      const root = word.slice(0, -3);
+      const rootSyllables = this.dictionary.get(root) || this.basicSyllableSplit(root);
+      return [...rootSyllables, 'est'];
+    }
+
+    return [];
+  }
+
+  private basicSyllableSplit(word: string): string[] {
+    // Simple vowel-based splitting without morphological pattern handling
     const vowels = 'aeiouAEIOU';
     const syllables: string[] = [];
     let currentSyllable = '';
