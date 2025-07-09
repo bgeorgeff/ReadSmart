@@ -68,22 +68,22 @@ export const UNDIVIDABLE_SUFFIXES = new Map<string, string[]>([
 
 // False flag silent-e words - final "e" is pronounced, not silent
 export const FALSE_FLAG_SILENT_E_OVERRIDES = new Map<string, string[]>([
-  // French-origin words (15 words)
-  ['cliche', ['cli', 'ché']],
-  ['fiance', ['fi', 'an', 'cé']],
-  ['fiancee', ['fi', 'an', 'cée']],
-  ['resume', ['ré', 'su', 'mé']],
-  ['cafe', ['ca', 'fé']],
-  ['risque', ['ris', 'qué']],
-  ['blase', ['bla', 'sé']],
-  ['frappe', ['frap', 'pé']],
-  ['protege', ['pro', 'té', 'gé']],
-  ['touche', ['tou', 'ché']],
-  ['souffle', ['souf', 'flé']],
-  ['macrame', ['ma', 'cra', 'mé']],
-  ['ole', ['o', 'lé']],
-  ['melee', ['mê', 'lée']],
-  ['matinee', ['ma', 'ti', 'née']],
+  // French-origin words (15 words) - using English spellings without diacritical marks
+  ['cliche', ['cli', 'che']],
+  ['fiance', ['fi', 'an', 'ce']],
+  ['fiancee', ['fi', 'an', 'cee']],
+  ['resume', ['re', 'su', 'me']],
+  ['cafe', ['ca', 'fe']],
+  ['risque', ['ris', 'que']],
+  ['blase', ['bla', 'se']],
+  ['frappe', ['frap', 'pe']],
+  ['protege', ['pro', 'te', 'ge']],
+  ['touche', ['tou', 'che']],
+  ['souffle', ['souf', 'fle']],
+  ['macrame', ['ma', 'cra', 'me']],
+  ['ole', ['o', 'le']],
+  ['melee', ['me', 'lee']],
+  ['matinee', ['ma', 'ti', 'nee']],
   
   // Latin/Greek-based words (14 words)
   ['recipe', ['re', 'ci', 'pe']],
