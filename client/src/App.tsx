@@ -5,7 +5,6 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import Home from "@/pages/home";
 import NotFound from "@/pages/not-found";
-import SyllableTest from "./pages/syllable-test";
 
 function App() {
   const [location] = useLocation();
@@ -19,7 +18,6 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Switch>
         <Route path="/" component={Home} />
-        <Route path="/syllable-test" component={SyllableTest} />
         <Route component={NotFound} />
       </Switch>
       <Toaster />
