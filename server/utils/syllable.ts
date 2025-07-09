@@ -329,6 +329,14 @@ class CMUSyllabifier {
   }
 
   private applyCVRules(consonantCluster: string, consonantStart: number, word: string): number {
+    // PRIORITY 0: Check for consonant + "y" at end of word (y acts as vowel)
+    // Consonants go with the y: "any" → "a-ny", "many" → "ma-ny", "very" → "ve-ry"
+    if (consonantCluster.length === 1 && consonantStart + 1 < word.length && 
+        word[consonantStart + 1].toLowerCase() === 'y' && consonantStart + 2 === word.length) {
+      // Keep consonant with y - split before the consonant
+      return consonantStart;
+    }
+
     // PRIORITY 0.5: Check for vowel+ng patterns that should stay together
     // Look for patterns like "ing", "ang", "ong", "ung", "eng" that should be kept as complete syllables
     if (consonantCluster.includes('ng')) {
