@@ -206,15 +206,51 @@ class CMUSyllabifier {
       }
     }
 
-    // Find vowel positions to identify syllable cores
+    // Find vowel positions to identify syllable cores using phoneme data
     const vowelPositions: number[] = [];
-    for (let i = 0; i < word.length; i++) {
-      // Include 'y' as a vowel when it's at the end of a word
-      const isVowel = vowels.includes(word[i]) || (word[i].toLowerCase() === 'y' && i === word.length - 1);
-      if (isVowel) {
-        // Check if this is a new vowel cluster (not consecutive vowels)
-        if (i === 0 || (!vowels.includes(word[i - 1]) && !(word[i - 1].toLowerCase() === 'y' && i - 1 === word.length - 1))) {
-          vowelPositions.push(i);
+    
+    if (phonemes.length > 0) {
+      // Use phoneme data to identify actual vowel sounds
+      const vowelPhonemes = phonemes.filter(p => this.VOWEL_PHONEMES.has(p.replace(/[0-2]$/, '')));
+      
+      // Map phonemes to approximate letter positions
+      // This is a rough approximation - we need to find where each vowel sound occurs in the word
+      let letterIndex = 0;
+      let phonemeIndex = 0;
+      
+      while (letterIndex < word.length && phonemeIndex < phonemes.length) {
+        const phoneme = phonemes[phonemeIndex].replace(/[0-2]$/, '');
+        
+        if (this.VOWEL_PHONEMES.has(phoneme)) {
+          // Find the vowel letter(s) that represent this phoneme
+          let vowelFound = false;
+          for (let i = letterIndex; i < word.length; i++) {
+            if (vowels.includes(word[i]) || (word[i].toLowerCase() === 'y' && i === word.length - 1)) {
+              vowelPositions.push(i);
+              letterIndex = i + 1;
+              vowelFound = true;
+              break;
+            }
+          }
+          if (!vowelFound) {
+            letterIndex++;
+          }
+        } else {
+          // Skip consonant phonemes
+          letterIndex++;
+        }
+        phonemeIndex++;
+      }
+    } else {
+      // Fallback to letter-based detection if no phonemes
+      for (let i = 0; i < word.length; i++) {
+        // Include 'y' as a vowel when it's at the end of a word
+        const isVowel = vowels.includes(word[i]) || (word[i].toLowerCase() === 'y' && i === word.length - 1);
+        if (isVowel) {
+          // Check if this is a new vowel cluster (not consecutive vowels)
+          if (i === 0 || (!vowels.includes(word[i - 1]) && !(word[i - 1].toLowerCase() === 'y' && i - 1 === word.length - 1))) {
+            vowelPositions.push(i);
+          }
         }
       }
     }
