@@ -179,7 +179,7 @@ class CMUSyllabifier {
   private applyCVRules(consonantCluster: string, consonantStart: number): number {
     // Check if cluster can begin a word
     if (this.WORD_INITIAL_CLUSTERS.has(consonantCluster.toLowerCase())) {
-      // Keep entire cluster together - split before it
+      // Keep entire cluster together - split before it to create open syllable
       return consonantStart;
     }
     
@@ -187,14 +187,19 @@ class CMUSyllabifier {
     for (let i = 1; i < consonantCluster.length; i++) {
       const suffix = consonantCluster.slice(i).toLowerCase();
       if (this.WORD_INITIAL_CLUSTERS.has(suffix)) {
-        // Split before the valid cluster
+        // Split before the valid cluster to create open syllable
         return consonantStart + i;
       }
     }
     
-    // No valid cluster found, split in middle
-    const midPoint = Math.floor(consonantCluster.length / 2);
-    return consonantStart + midPoint;
+    // No valid cluster found - prefer open syllables
+    // For single consonant: split before it (creates open syllable)
+    // For multiple consonants: split after first consonant (creates open syllable)
+    if (consonantCluster.length === 1) {
+      return consonantStart; // Split before single consonant
+    } else {
+      return consonantStart + 1; // Split after first consonant to create open syllable
+    }
   }
   
   private simpleSyllableSplit(word: string, targetCount: number): string[] {
