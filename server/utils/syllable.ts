@@ -285,21 +285,27 @@ class CMUSyllabifier {
     return false;
   }
 
-  private applyCVRules(consonantCluster: string, consonantStart: number, word: string): number {
-    // PRIORITY 0.5: Check for vowel+ng patterns that should stay together
-    // Look backwards to see if there's a vowel+ng pattern that should be preserved
-    if (consonantCluster.includes('n') && consonantStart > 0) {
-      const ngPos = consonantCluster.indexOf('n');
-      if (ngPos < consonantCluster.length - 1 && consonantCluster[ngPos + 1] === 'g') {
-        // Found 'ng' in the cluster, check if there's a vowel before it that forms a pattern
-        const beforeNg = consonantStart + ngPos - 1;
-        if (beforeNg >= 0) {
-          const vowelChar = word[beforeNg].toLowerCase();
-          const pattern = vowelChar + 'ng';
-          if (this.VOWEL_NG_PATTERNS.has(pattern)) {
-            // Keep the vowel+ng pattern together - split before the vowel
-            return beforeNg;
+  // PRIORITY 0.5: Check for vowel+ng patterns that should stay together
+    // Look for patterns like "ing", "ang", "ong", "ung", "eng" that should be kept as complete syllables
+    if (consonantCluster.includes('ng')) {
+      const ngPos = consonantCluster.indexOf('ng');
+      // Check if there's a vowel before the 'ng' that forms a protected pattern
+      const beforeNgInWord = consonantStart + ngPos - 1;
+      if (beforeNgInWord >= 0) {
+        const vowelChar = word[beforeNgInWord].toLowerCase();
+        const pattern = vowelChar + 'ng';
+        if (this.VOWEL_NG_PATTERNS.has(pattern)) {
+          // Find the start of this vowel+ng pattern (could be multiple letters before 'ng')
+          let patternStart = beforeNgInWord;
+          
+          // For "ing" pattern, we want to keep the entire "ing" together
+          if (pattern === 'ing' && beforeNgInWord >= 1 && word[beforeNgInWord - 1].toLowerCase() === 'i') {
+            patternStart = beforeNgInWord - 1;
           }
+          
+          // Keep the entire vowel+ng pattern together as one syllable
+          // Split before the pattern starts
+          return patternStart;
         }
       }
     }
