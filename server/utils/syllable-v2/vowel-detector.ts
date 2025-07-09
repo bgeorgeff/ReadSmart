@@ -11,25 +11,41 @@ export const VOWEL_PHONEMES = new Set([
 
 // Common vowel letter clusters and their typical sound count
 export const VOWEL_CLUSTERS = new Map<string, { sounds: number; priority: number }>([
-  // Single sound clusters
+  // Single sound clusters (keep together - one vowel sound)
   ['ai', { sounds: 1, priority: 1 }],  // rain, train
   ['ay', { sounds: 1, priority: 1 }],  // day, play
-  ['ea', { sounds: 1, priority: 1 }],  // read, bread
-  ['ee', { sounds: 1, priority: 1 }],  // see, tree
-  ['oa', { sounds: 1, priority: 1 }],  // boat, coat
-  ['oo', { sounds: 1, priority: 1 }],  // book, moon
-  ['ou', { sounds: 1, priority: 1 }],  // house, out
-  ['oi', { sounds: 1, priority: 1 }],  // oil, coin
-  ['oy', { sounds: 1, priority: 1 }],  // boy, toy
-  ['au', { sounds: 1, priority: 1 }],  // haul, author
-  ['aw', { sounds: 1, priority: 1 }],  // law, saw
-  ['ew', { sounds: 1, priority: 1 }],  // new, few
-  ['ow', { sounds: 1, priority: 1 }],  // cow, now
-  ['ie', { sounds: 1, priority: 1 }],  // pie, tie
-  ['ue', { sounds: 1, priority: 1 }],  // blue, true
-  ['ui', { sounds: 1, priority: 1 }],  // fruit, suit
+  ['au', { sounds: 1, priority: 1 }],  // audience, haul, author, August
+  ['aw', { sounds: 1, priority: 1 }],  // law, saw, dawn
+  ['ea', { sounds: 1, priority: 1 }],  // read, bread, beach
+  ['ee', { sounds: 1, priority: 1 }],  // see, tree, feet
+  ['ei', { sounds: 1, priority: 1 }],  // receive, ceiling
+  ['ey', { sounds: 1, priority: 1 }],  // key, they
+  ['ie', { sounds: 1, priority: 1 }],  // pie, tie, field
+  ['oa', { sounds: 1, priority: 1 }],  // boat, coat, road
+  ['oe', { sounds: 1, priority: 1 }],  // toe, doe
+  ['oo', { sounds: 1, priority: 1 }],  // book, moon, food
+  ['ou', { sounds: 1, priority: 1 }],  // house, out, could
+  ['ow', { sounds: 1, priority: 1 }],  // cow, now, show
+  ['oi', { sounds: 1, priority: 1 }],  // oil, coin, voice
+  ['oy', { sounds: 1, priority: 1 }],  // boy, toy, enjoy
+  ['ue', { sounds: 1, priority: 1 }],  // blue, true, rescue
+  ['ui', { sounds: 1, priority: 1 }],  // fruit, suit, build
+  ['ew', { sounds: 1, priority: 1 }],  // new, few, grew
   
-  // Two sound sequences (hiatus)
+  // R-controlled vowels (keep together)
+  ['ar', { sounds: 1, priority: 1 }],  // car, farm, star
+  ['er', { sounds: 1, priority: 1 }],  // her, fern, verb
+  ['ir', { sounds: 1, priority: 1 }],  // bird, first, girl
+  ['or', { sounds: 1, priority: 1 }],  // for, corn, sport
+  ['ur', { sounds: 1, priority: 1 }],  // fur, turn, nurse
+  
+  // Three-letter vowel patterns
+  ['igh', { sounds: 1, priority: 1 }], // night, light, sight
+  ['ough', { sounds: 1, priority: 1 }], // though, through (varies but keep together)
+  ['augh', { sounds: 1, priority: 1 }], // laugh, taught
+  ['eigh', { sounds: 1, priority: 1 }], // eight, weigh
+  
+  // Two sound sequences (hiatus - split these)
   ['ia', { sounds: 2, priority: 2 }],  // di-a-mond, pi-a-no
   ['io', { sounds: 2, priority: 2 }],  // bi-o-logy, vi-o-let
   ['ua', { sounds: 2, priority: 2 }],  // sit-u-a-tion
@@ -76,15 +92,19 @@ export class VowelDetector {
           // Find the vowel letter(s) for this phoneme
           const start = letterIndex;
           
-          // Look for vowel cluster first
+          // Look for vowel cluster first (prioritize longer clusters)
           let clusterFound = false;
-          for (const [cluster, info] of VOWEL_CLUSTERS) {
-            if (word.slice(letterIndex, letterIndex + cluster.length).toLowerCase() === cluster) {
+          const clustersToCheck = Array.from(VOWEL_CLUSTERS.entries())
+            .sort((a, b) => b[0].length - a[0].length); // Check longer clusters first
+          
+          for (const [cluster, info] of clustersToCheck) {
+            const wordSlice = word.slice(letterIndex, letterIndex + cluster.length).toLowerCase();
+            if (wordSlice === cluster) {
               vowelSounds.push({
                 letters: word.slice(letterIndex, letterIndex + cluster.length),
                 position: letterIndex,
                 isSilent: false,
-                soundCount: 1
+                soundCount: info.sounds
               });
               letterIndex += cluster.length;
               clusterFound = true;
@@ -131,13 +151,16 @@ export class VowelDetector {
     
     while (i < word.length) {
       if (vowelLetters.includes(word[i]) || (word[i].toLowerCase() === 'y' && i > 0)) {
-        // Check for vowel clusters
+        // Check for vowel clusters first (prioritize longer clusters)
         let clusterLength = 1;
         let soundCount = 1;
         
-        // Look ahead for clusters
-        for (const [cluster, info] of VOWEL_CLUSTERS) {
-          if (word.slice(i, i + cluster.length).toLowerCase() === cluster) {
+        const clustersToCheck = Array.from(VOWEL_CLUSTERS.entries())
+          .sort((a, b) => b[0].length - a[0].length); // Check longer clusters first
+        
+        for (const [cluster, info] of clustersToCheck) {
+          const wordSlice = word.slice(i, i + cluster.length).toLowerCase();
+          if (wordSlice === cluster) {
             clusterLength = cluster.length;
             soundCount = info.sounds;
             break;
