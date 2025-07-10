@@ -24,23 +24,23 @@ export interface SyllabificationResult {
 export class CMUSyllabifierV2 {
   private dictionary: Map<string, string[]> = new Map();
   private initialized = false;
-  
+
   // Module instances
   private vowelDetector: VowelDetector;
   private morphAnalyzer: MorphologicalAnalyzer;
   private phoneticProcessor: PhoneticProcessor;
   private patternEngine: PatternEngine;
   private fallbackSyllabifier: FallbackSyllabifier;
-  
+
   // CMU phoneme data
   private readonly VOWEL_PHONEMES = new Set([
     'AA', 'AE', 'AH', 'AO', 'AW', 'AY', 'EH', 'ER', 'EY', 
     'IH', 'IY', 'OW', 'OY', 'UH', 'UW'
   ]);
-  
+
   // Performance cache
   private cache: Map<string, SyllabificationResult> = new Map();
-  
+
   constructor() {
     this.vowelDetector = new VowelDetector();
     this.morphAnalyzer = new MorphologicalAnalyzer();
@@ -48,31 +48,31 @@ export class CMUSyllabifierV2 {
     this.patternEngine = new PatternEngine();
     this.fallbackSyllabifier = new FallbackSyllabifier();
   }
-  
+
   async initialize() {
     if (this.initialized) return;
-    
+
     try {
       // Fetch CMU dictionary data from URL like V1 does
       const response = await fetch('https://raw.githubusercontent.com/Alexir/CMUdict/master/cmudict-0.7b');
       const dictContent = await response.text();
       const lines = dictContent.split('\n');
-      
+
       for (const line of lines) {
         // Skip comments and empty lines
         if (line.startsWith(';;;') || line.trim() === '') continue;
-        
+
         const parts = line.trim().split(/\s+/);
         if (parts.length < 2) continue;
-        
+
         const word = parts[0];
         const phonemes = parts.slice(1);
-        
+
         // Remove variant markers (1), (2), etc.
         const cleanWord = word.replace(/\(\d+\)$/, '').toLowerCase();
         this.dictionary.set(cleanWord, phonemes);
       }
-      
+
       this.initialized = true;
       console.log(`CMU Dictionary V2 initialized with ${this.dictionary.size} entries`);
     } catch (error) {
@@ -80,7 +80,7 @@ export class CMUSyllabifierV2 {
       this.initialized = true; // Continue with fallback methods
     }
   }
-  
+
   /**
    * Main syllabification method
    */
@@ -88,7 +88,7 @@ export class CMUSyllabifierV2 {
     if (!this.initialized) {
       await this.initialize();
     }
-    
+
     // Direct word overrides - bypass all other processing
     const lowerWord = word.toLowerCase();
     if (lowerWord === 'encyclopedia') {
@@ -99,13 +99,13 @@ export class CMUSyllabifierV2 {
         debug: { note: 'Direct word override' }
       };
     }
-    
+
     // Check cache first
     const cacheKey = word.toLowerCase();
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey)!;
     }
-    
+
     // Try CMU dictionary first
     const phonemes = this.dictionary.get(cacheKey);
     if (phonemes) {
@@ -113,27 +113,27 @@ export class CMUSyllabifierV2 {
       this.cache.set(cacheKey, result);
       return result;
     }
-    
+
     // Try pattern-based syllabification
     const patternResult = this.syllabifyWithPatterns(word);
     if (patternResult.confidence > 0.7) {
       this.cache.set(cacheKey, patternResult);
       return patternResult;
     }
-    
+
     // Fallback to basic rules
     const fallbackResult = this.syllabifyWithFallback(word);
     this.cache.set(cacheKey, fallbackResult);
     return fallbackResult;
   }
-  
+
   /**
    * Syllabify using CMU phoneme data
    */
   private syllabifyWithPhonemes(word: string, phonemes: string[]): SyllabificationResult {
     // 1. Get morphological hints first
     const morphHints = this.morphAnalyzer.getMorphologicalHints(word);
-    
+
     // 2. Check for complete word overrides (highest priority)
     if (morphHints.preservedUnits.length === 1) {
       const unit = morphHints.preservedUnits[0];
@@ -151,15 +151,15 @@ export class CMUSyllabifierV2 {
         };
       }
     }
-    
+
     // 3. Detect vowel sounds for partial processing
     const vowelSounds = this.vowelDetector.detectVowelSounds(word, phonemes);
     const vowelCount = this.vowelDetector.countVowelSounds(vowelSounds);
-    
+
     // 4. Build syllables from morphological units
     const syllables: string[] = [];
     let currentPos = 0;
-    
+
     // Handle preserved morphological units first
     for (const unit of morphHints.preservedUnits) {
       if (unit.start > currentPos) {
@@ -168,24 +168,24 @@ export class CMUSyllabifierV2 {
         const gapSyllables = this.processTextSegment(gapText, phonemes, vowelSounds);
         syllables.push(...gapSyllables);
       }
-      
+
       // Add preserved unit syllables
       syllables.push(...unit.syllables);
       currentPos = unit.end;
     }
-    
+
     // Process any remaining text
     if (currentPos < word.length) {
       const remainingText = word.slice(currentPos);
       const remainingSyllables = this.processTextSegment(remainingText, phonemes, vowelSounds);
       syllables.push(...remainingSyllables);
     }
-    
+
     // Special handling for -ed suffix
     if (word.endsWith('ed') && syllables.length > 0) {
       const rootWord = word.slice(0, -2);
       const edHandling = this.morphAnalyzer.handleEdSuffix(rootWord);
-      
+
       if (edHandling.length === 0) {
         // -ed should join with previous syllable
         const lastSyllable = syllables[syllables.length - 1];
@@ -194,7 +194,7 @@ export class CMUSyllabifierV2 {
         }
       }
     }
-    
+
     return {
       syllables: this.validateSyllables(syllables, word),
       method: 'cmu',
@@ -206,32 +206,32 @@ export class CMUSyllabifierV2 {
       }
     };
   }
-  
+
   /**
    * Process a text segment without morphological boundaries
    */
   private processTextSegment(text: string, phonemes: string[], vowelSounds: any[]): string[] {
     if (!text) return [];
-    
+
     // Get vowel sound positions from the detected vowel sounds
     const vowelPositions = vowelSounds
       .filter(vs => !vs.isSilent && vs.soundCount > 0)
       .map(vs => vs.position);
-    
+
     // If only one vowel sound, return as single syllable
     if (vowelPositions.length <= 1) {
       return [text];
     }
-    
+
     const phoneticHints = this.phoneticProcessor.getPhoneticHints(text);
     const patternBoundaries = this.patternEngine.findPatternBoundaries(text);
-    
+
     // Combine all boundaries
     const allBoundaries = new Set([
       ...phoneticHints.splitPoints,
       ...patternBoundaries
     ]);
-    
+
     // Filter out boundaries that would split vowel clusters
     const validBoundaries = Array.from(allBoundaries)
       .filter(pos => {
@@ -244,32 +244,32 @@ export class CMUSyllabifierV2 {
         return !this.patternEngine.conflictsWithPattern(text, pos);
       })
       .sort((a, b) => a - b);
-    
+
     // Build syllables from boundaries
     const syllables: string[] = [];
     let start = 0;
-    
+
     for (const boundary of validBoundaries) {
       if (boundary > start && boundary < text.length) {
         syllables.push(text.slice(start, boundary));
         start = boundary;
       }
     }
-    
+
     // Add remaining text
     if (start < text.length) {
       syllables.push(text.slice(start));
     }
-    
+
     return syllables.length > 0 ? syllables : [text];
   }
-  
+
   /**
    * Syllabify using pattern matching
    */
   private syllabifyWithPatterns(word: string): SyllabificationResult {
     const morphHints = this.morphAnalyzer.getMorphologicalHints(word);
-    
+
     // Check for complete word overrides first (highest priority)
     if (morphHints.preservedUnits.length === 1) {
       const unit = morphHints.preservedUnits[0];
@@ -287,34 +287,34 @@ export class CMUSyllabifierV2 {
         };
       }
     }
-    
+
     const patternBoundaries = this.patternEngine.findPatternBoundaries(word);
     const phoneticHints = this.phoneticProcessor.getPhoneticHints(word);
-    
+
     // Combine boundaries with priority
     const allBoundaries = new Set([
       ...morphHints.boundaries,
       ...patternBoundaries,
       ...phoneticHints.splitPoints
     ]);
-    
+
     const sortedBoundaries = Array.from(allBoundaries).sort((a, b) => a - b);
-    
+
     // Build syllables
     const syllables: string[] = [];
     let start = 0;
-    
+
     for (const boundary of sortedBoundaries) {
       if (boundary > start && boundary < word.length) {
         syllables.push(word.slice(start, boundary));
         start = boundary;
       }
     }
-    
+
     if (start < word.length) {
       syllables.push(word.slice(start));
     }
-    
+
     return {
       syllables: this.validateSyllables(syllables, word),
       method: 'pattern',
@@ -325,20 +325,20 @@ export class CMUSyllabifierV2 {
       }
     };
   }
-  
+
   /**
    * Fallback syllabification
    */
   private syllabifyWithFallback(word: string): SyllabificationResult {
     const syllables = this.fallbackSyllabifier.basicSyllableSplit(word);
-    
+
     return {
       syllables: this.validateSyllables(syllables, word),
       method: 'fallback',
       confidence: 0.5
     };
   }
-  
+
   /**
    * Validate and clean syllables
    */
@@ -349,15 +349,15 @@ export class CMUSyllabifierV2 {
       console.warn(`Syllable mismatch: ${joined} vs ${originalWord}`);
       return [originalWord]; // Safety fallback
     }
-    
+
     // Fix syllables without vowels by merging with adjacent syllables
     const fixedSyllables: string[] = [];
-    
+
     for (let i = 0; i < syllables.length; i++) {
       const syllable = syllables[i];
       const hasVowel = /[aeiouAEIOU]/.test(syllable) || 
                       (syllable.includes('y') && syllable.length > 1);
-      
+
       if (hasVowel) {
         // This syllable has a vowel, add it
         fixedSyllables.push(syllable);
@@ -375,7 +375,7 @@ export class CMUSyllabifierV2 {
         }
       }
     }
-    
+
     // Final validation - ensure we have at least one syllable
     return fixedSyllables.length > 0 ? fixedSyllables : [originalWord];
   }

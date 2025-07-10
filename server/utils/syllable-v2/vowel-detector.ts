@@ -136,17 +136,47 @@ export class VowelDetector {
             return b[0].length - a[0].length;
           });
 
+        let foundCluster = false;
         for (const [cluster, info] of clustersToCheck) {
           const wordSlice = word.slice(i, i + cluster.length).toLowerCase();
           if (wordSlice === cluster) {
             clusterLength = cluster.length;
-            soundCount = 1; // Always treat vowel clusters as single sound units for syllabification
+            soundCount = info.sounds; // Use actual sound count from cluster definition
+            foundCluster = true;
             break;
+          }
+        }
+
+        // If no cluster found, check for separate vowel sounds
+        if (!foundCluster) {
+          // Check if this vowel is separate from the next vowel
+          if (i + 1 < word.length && vowelLetters.includes(word[i + 1])) {
+            // Two vowels next to each other that don't form a recognized cluster
+            // Each gets its own syllable (e.g., "ur" + "i" in "surpri")
+            clusterLength = 1;
+            soundCount = 1;
           }
         }
 
         // Check if silent
         const isSilent = this.isSilentVowel(word, i, clusterLength);
+
+        // Special case: if this is "ur" followed by another vowel, treat as separate sounds
+        const currentSlice = word.slice(i, i + clusterLength).toLowerCase();
+        if (currentSlice === 'ur' && i + clusterLength < word.length) {
+          const nextChar = word[i + clusterLength].toLowerCase();
+          if (vowelLetters.includes(nextChar)) {
+            // "ur" followed by another vowel - they are separate sounds
+            vowelSounds.push({
+              letters: word.slice(i, i + clusterLength),
+              position: i,
+              isSilent,
+              soundCount: isSilent ? 0 : 1  // "ur" is one sound
+            });
+            i += clusterLength;
+            continue; // Process the next vowel separately
+          }
+        }
 
         vowelSounds.push({
           letters: word.slice(i, i + clusterLength),
