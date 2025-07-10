@@ -1,6 +1,4 @@
 
-#!/usr/bin/env tsx
-
 /**
  * Simple script to process LADEC CSV and update compound words
  */
