@@ -83,88 +83,1415 @@ export const DIVISIBLE_SUFFIXES = new Map<string, string[]>([
 ]);
 
 // Compound words that should be split at word boundaries
+// Extended database from VB system (833 compound words)
 export const COMPOUND_WORDS = new Map<string, string[]>([
-  ['backtalk', ['back', 'talk']],
-  ['backyard', ['back', 'yard']],
-  ['backpack', ['back', 'pack']],
-  ['backward', ['back', 'ward']],
-  ['background', ['back', 'ground']],
+  // After- compounds
+  ['afterall', ['after', 'all']],
+  ['afterlife', ['after', 'life']],
+  ['aftermath', ['after', 'math']],
+  ['afternoon', ['after', 'noon']],
+  ['aftershave', ['after', 'shave']],
+  ['afterthought', ['after', 'thought']],
+  ['afterward', ['after', 'ward']],
+  
+  // Air- compounds
+  ['airbag', ['air', 'bag']],
+  ['airboat', ['air', 'boat']],
+  ['airhole', ['air', 'hole']],
+  ['airmattress', ['air', 'mattress']],
+  ['aircraft', ['air', 'craft']],
+  ['airfield', ['air', 'field']],
+  ['airmail', ['air', 'mail']],
+  ['airman', ['air', 'man']],
+  ['airplane', ['air', 'plane']],
+  ['airport', ['air', 'port']],
+  ['airsick', ['air', 'sick']],
+  ['airtight', ['air', 'tight']],
+  
+  // Ant- compounds
+  ['anteater', ['ant', 'eater']],
+  ['anthill', ['ant', 'hill']],
+  
+  // Any- compounds
+  ['anybody', ['any', 'body']],
+  ['anyhow', ['any', 'how']],
+  ['anyone', ['any', 'one']],
+  ['anyplace', ['any', 'place']],
+  ['anything', ['any', 'thing']],
+  ['anytime', ['any', 'time']],
+  ['anyway', ['any', 'way']],
+  ['anywhere', ['any', 'where']],
+  
+  // Apple compounds
+  ['applesauce', ['apple', 'sauce']],
+  
+  // Arm- compounds
+  ['armchair', ['arm', 'chair']],
+  ['armpit', ['arm', 'pit']],
+  ['armrest', ['arm', 'rest']],
+  
+  // Arrow- compounds
+  ['arrowhead', ['arrow', 'head']],
+  
+  // Baby- compounds
+  ['babyhood', ['baby', 'hood']],
+  
+  // Back- compounds
+  ['backaway', ['back', 'away']],
+  ['backroom', ['back', 'room']],
+  ['backache', ['back', 'ache']],
+  ['backbiting', ['back', 'biting']],
+  ['backboard', ['back', 'board']],
   ['backbone', ['back', 'bone']],
-  ['feedback', ['feed', 'back']],
-  ['comeback', ['come', 'back']],
-  ['setback', ['set', 'back']],
-  ['flashback', ['flash', 'back']],
-  ['throwback', ['throw', 'back']],
-  ['kickback', ['kick', 'back']],
-  ['payback', ['pay', 'back']],
-  ['cutback', ['cut', 'back']],
-  ['drawback', ['draw', 'back']],
-  ['lookout', ['look', 'out']],
-  ['takeout', ['take', 'out']],
-  ['workout', ['work', 'out']],
-  ['handout', ['hand', 'out']],
-  ['timeout', ['time', 'out']],
-  ['sellout', ['sell', 'out']],
-  ['dropout', ['drop', 'out']],
-  ['checkout', ['check', 'out']],
-  ['layout', ['lay', 'out']],
-  ['payout', ['pay', 'out']],
-  ['buyout', ['buy', 'out']],
-  ['blowout', ['blow', 'out']],
-  ['fallout', ['fall', 'out']],
-  ['washout', ['wash', 'out']],
-  ['blackout', ['black', 'out']],
-  ['knockout', ['knock', 'out']],
-  ['lockout', ['lock', 'out']],
-  ['walkout', ['walk', 'out']],
-  ['slideshow', ['slide', 'show']],
-  ['snowball', ['snow', 'ball']],
-  ['football', ['foot', 'ball']],
+  ['backbreaking', ['back', 'breaking']],
+  ['backdoor', ['back', 'door']],
+  ['backdrop', ['back', 'drop']],
+  ['backfield', ['back', 'field']],
+  ['backfire', ['back', 'fire']],
+  ['background', ['back', 'ground']],
+  ['backhand', ['back', 'hand']],
+  ['backlash', ['back', 'lash']],
+  ['backlog', ['back', 'log']],
+  ['backpack', ['back', 'pack']],
+  ['backseat', ['back', 'seat']],
+  ['backspin', ['back', 'spin']],
+  ['backstab', ['back', 'stab']],
+  ['backstage', ['back', 'stage']],
+  ['backstop', ['back', 'stop']],
+  ['backstroke', ['back', 'stroke']],
+  ['backward', ['back', 'ward']],
+  ['backyard', ['back', 'yard']],
+  
+  // Bag- compounds
+  ['bagpipe', ['bag', 'pipe']],
+  
+  // Ball- compounds
+  ['ballgame', ['ball', 'game']],
+  ['ballpark', ['ball', 'park']],
+  ['ballplayer', ['ball', 'player']],
+  
+  // Band- compounds
+  ['bandleader', ['band', 'leader']],
+  ['bandwagon', ['band', 'wagon']],
+  ['bandwidth', ['band', 'width']],
+  
+  // Bare- compounds
+  ['barefoot', ['bare', 'foot']],
+  
+  // Barn- compounds
+  ['barnyard', ['barn', 'yard']],
+  
+  // Base- compounds
   ['baseball', ['base', 'ball']],
-  ['basketball', ['bas', 'ket', 'ball']],
-  ['volleyball', ['vol', 'ley', 'ball']],
-  ['softball', ['soft', 'ball']],
-  ['hardball', ['hard', 'ball']],
-  ['fastball', ['fast', 'ball']],
-  ['curveball', ['curve', 'ball']],
-  ['meatball', ['meat', 'ball']],
-  ['eyeball', ['eye', 'ball']],
-  ['fireball', ['fire', 'ball']],
-  ['snowman', ['snow', 'man']],
-  ['postman', ['post', 'man']],
-  ['milkman', ['milk', 'man']],
-  ['workman', ['work', 'man']],
-  ['businessman', ['bus', 'i', 'ness', 'man']],
-  ['policeman', ['po', 'lice', 'man']],
-  ['fireman', ['fire', 'man']],
-  ['superman', ['su', 'per', 'man']],
-  ['salesman', ['sales', 'man']],
-  ['gentleman', ['gen', 'tle', 'man']],
-  ['fisherman', ['fish', 'er', 'man']],
-  ['weatherman', ['weath', 'er', 'man']],
-  ['chairman', ['chair', 'man']],
-  ['doorman', ['door', 'man']],
-  ['iceman', ['ice', 'man']],
-  ['spaceman', ['space', 'man']],
-  ['caveman', ['cave', 'man']],
-  ['snowflake', ['snow', 'flake']],
-  ['earthquake', ['earth', 'quake']],
-  ['handshake', ['hand', 'shake']],
-  ['milkshake', ['milk', 'shake']],
-  ['pancake', ['pan', 'cake']],
-  ['cupcake', ['cup', 'cake']],
-  ['cheesecake', ['cheese', 'cake']],
-  ['fruitcake', ['fruit', 'cake']],
+  
+  // Basket- compounds
+  ['basketball', ['basket', 'ball']],
+  
+  // Bath- compounds
+  ['bathmat', ['bath', 'mat']],
+  ['bathrobe', ['bath', 'robe']],
+  ['bathroom', ['bath', 'room']],
+  ['bathtub', ['bath', 'tub']],
+  ['bathwater', ['bath', 'water']],
+  
+  // Battle- compounds
+  ['battlefield', ['battle', 'field']],
+  ['battlefront', ['battle', 'front']],
+  ['battleground', ['battle', 'ground']],
+  
+  // Bean- compounds
+  ['beanbag', ['bean', 'bag']],
+  ['beanpod', ['bean', 'pod']],
+  ['beanpole', ['bean', 'pole']],
+  
+  // Bed- compounds
+  ['bedrest', ['bed', 'rest']],
+  ['bedclothes', ['bed', 'clothes']],
+  ['bedpost', ['bed', 'post']],
+  ['bedridden', ['bed', 'ridden']],
+  ['bedrock', ['bed', 'rock']],
+  ['bedroll', ['bed', 'roll']],
+  ['bedroom', ['bed', 'room']],
+  ['bedside', ['bed', 'side']],
+  ['bedspread', ['bed', 'spread']],
+  ['bedspring', ['bed', 'spring']],
+  ['bedtime', ['bed', 'time']],
+  
+  // Bee- compounds
+  ['beehive', ['bee', 'hive']],
+  ['beeline', ['bee', 'line']],
+  
+  // Before- compounds
+  ['beforehand', ['before', 'hand']],
+  
+  // Bench- compounds
+  ['benchmark', ['bench', 'mark']],
+  
+  // Big- compounds
+  ['bigmouth', ['big', 'mouth']],
+  
+  // Bill- compounds
+  ['billfold', ['bill', 'fold']],
+  
+  // Bird- compounds
+  ['birddog', ['bird', 'dog']],
+  ['birdbath', ['bird', 'bath']],
+  ['birdcage', ['bird', 'cage']],
+  ['birdcall', ['bird', 'call']],
+  ['birdhouse', ['bird', 'house']],
+  ['birdseed', ['bird', 'seed']],
+  
+  // Birth- compounds
   ['birthday', ['birth', 'day']],
-  ['everyday', ['ev', 'ery', 'day']],
-  ['someday', ['some', 'day']],
-  ['yesterday', ['yes', 'ter', 'day']],
-  ['today', ['to', 'day']],
-  ['holiday', ['hol', 'i', 'day']],
-  ['weekday', ['week', 'day']],
-  ['workday', ['work', 'day']],
-  ['payday', ['pay', 'day']],
+  ['birthmark', ['birth', 'mark']],
+  
+  // Black- compounds
+  ['blackbird', ['black', 'bird']],
+  ['blackboard', ['black', 'board']],
+  ['blacklist', ['black', 'list']],
+  ['blackmail', ['black', 'mail']],
+  ['blacktop', ['black', 'top']],
+  
+  // Blind- compounds
+  ['blindfold', ['blind', 'fold']],
+  
+  // Block- compounds
+  ['blockbuster', ['block', 'buster']],
+  
+  // Blow- compounds
+  ['blowout', ['blow', 'out']],
+  
+  // Blue- compounds
+  ['blueberry', ['blue', 'berry']],
+  ['bluebird', ['blue', 'bird']],
+  ['blueprint', ['blue', 'print']],
+  
+  // Boat- compounds
+  ['boathouse', ['boat', 'house']],
+  
+  // Body- compounds
+  ['bodyguard', ['body', 'guard']],
+  
+  // Book- compounds
+  ['bookbag', ['book', 'bag']],
+  ['bookcase', ['book', 'case']],
+  ['bookmark', ['book', 'mark']],
+  
+  // Border- compounds
+  ['borderline', ['border', 'line']],
+  
+  // Bother- compounds
+  ['bothersome', ['bother', 'some']],
+  
+  // Bottle- compounds
+  ['bottleneck', ['bottle', 'neck']],
+  ['bottonhole', ['button', 'hole']],
+  
+  // Boy- compounds
+  ['boyfriend', ['boy', 'friend']],
+  
+  // Brain- compounds
+  ['brainstorm', ['brain', 'storm']],
+  ['brainwash', ['brain', 'wash']],
+  
+  // Bread- compounds
+  ['breadbox', ['bread', 'box']],
+  ['breadwinner', ['bread', 'winner']],
+  
+  // Break- compounds
+  ['breakdown', ['break', 'down']],
+  ['breakfast', ['break', 'fast']],
+  ['breakout', ['break', 'out']],
+  ['breakthrough', ['break', 'through']],
+  
+  // Brick- compounds
+  ['bricklayer', ['brick', 'layer']],
+  
+  // Broad- compounds
+  ['broadcast', ['broad', 'cast']],
+  
+  // Broom- compounds
+  ['broomstick', ['broom', 'stick']],
+  
+  // Bull- compounds
+  ['bulldog', ['bull', 'dog']],
+  ['bullfight', ['bull', 'fight']],
+  ['bullfrog', ['bull', 'frog']],
+  
+  // Bunk- compounds
+  ['bunkhouse', ['bunk', 'house']],
+  
+  // Butter- compounds
+  ['butterfly', ['butter', 'fly']],
+  ['buttermilk', ['butter', 'milk']],
+  
+  // By- compounds
+  ['bypass', ['by', 'pass']],
+  
+  // Camp- compounds
+  ['campfire', ['camp', 'fire']],
+  ['campground', ['camp', 'ground']],
+  
+  // Candle- compounds
+  ['candlelight', ['candle', 'light']],
+  ['candlemaker', ['candle', 'maker']],
+  ['candlestick', ['candle', 'stick']],
+  
+  // Card- compounds
+  ['cardboard', ['card', 'board']],
+  
+  // Care- compounds
+  ['carefree', ['care', 'free']],
+  ['caregiver', ['care', 'giver']],
+  ['careless', ['care', 'less']],
+  ['caretaker', ['care', 'taker']],
+  
+  // Catch- compounds
+  ['catchword', ['catch', 'word']],
+  
+  // Chair- compounds
+  ['chairperson', ['chair', 'person']],
+  
+  // Chalk- compounds
+  ['chalkboard', ['chalk', 'board']],
+  
+  // Cheer- compounds
+  ['cheerleader', ['cheer', 'leader']],
+  
+  // Class- compounds
+  ['classmate', ['class', 'mate']],
+  ['classroom', ['class', 'room']],
+  
+  // Clergy- compounds
+  ['clergyperson', ['clergy', 'person']],
+  
+  // Close- compounds
+  ['closemouthed', ['close', 'mouthed']],
+  
+  // Clothes- compounds
+  ['clothespin', ['clothes', 'pin']],
+  
+  // Club- compounds
+  ['clubhouse', ['club', 'house']],
+  
+  // Coal- compounds
+  ['coalmine', ['coal', 'mine']],
+  
+  // Collar- compounds
+  ['collarbone', ['collar', 'bone']],
+  
+  // Common- compounds
+  ['commonplace', ['common', 'place']],
+  ['commonwealth', ['common', 'wealth']],
+  
+  // Cook- compounds
+  ['cookbook', ['cook', 'book']],
+  
+  // Copy- compounds
+  ['copyright', ['copy', 'right']],
+  
+  // Corn- compounds
+  ['cornbread', ['corn', 'bread']],
+  ['corncob', ['corn', 'cob']],
+  ['cornfield', ['corn', 'field']],
+  
+  // Count- compounds
+  ['countdown', ['count', 'down']],
+  
+  // Counter- compounds
+  ['counteract', ['counter', 'act']],
+  ['counterbalance', ['counter', 'balance']],
+  ['counterpart', ['counter', 'part']],
+  
+  // Country- compounds
+  ['countryside', ['country', 'side']],
+  
+  // Cow- compounds
+  ['cowboy', ['cow', 'boy']],
+  
+  // Crafts- compounds
+  ['craftsperson', ['crafts', 'person']],
+  
+  // Cross- compounds
+  ['crossways', ['cross', 'ways']],
+  ['crossword', ['cross', 'word']],
+  ['crosswind', ['cross', 'wind']],
+  
+  // Cup- compounds
+  ['cupcake', ['cup', 'cake']],
+  
+  // Cut- compounds
+  ['cutback', ['cut', 'back']],
+  ['cutthroat', ['cut', 'throat']],
+  
+  // Cyber- compounds
+  ['cyberpunk', ['cyber', 'punk']],
+  ['cyperspace', ['cyber', 'space']],
+  
+  // Dash- compounds
+  ['dashboard', ['dash', 'board']],
+  
+  // Day- compounds
+  ['daybook', ['day', 'book']],
+  ['daybreak', ['day', 'break']],
+  ['daycare', ['day', 'care']],
+  ['daydream', ['day', 'dream']],
+  ['daylight', ['day', 'light']],
+  
+  // Dead- compounds
+  ['deadline', ['dead', 'line']],
+  ['deadlock', ['dead', 'lock']],
+  ['deadpan', ['dead', 'pan']],
+  
+  // Die- compounds
+  ['diehard', ['die', 'hard']],
+  
+  // Dish- compounds
+  ['dishcloth', ['dish', 'cloth']],
+  ['dishpan', ['dish', 'pan']],
+  
+  // Diving- compounds
+  ['divingboard', ['diving', 'board']],
+  
+  // Dog- compounds
+  ['doghouse', ['dog', 'house']],
+  
+  // Doll- compounds
+  ['dollhouse', ['doll', 'house']],
+  
+  // Doom- compounds
+  ['doomsayer', ['doom', 'sayer']],
   ['doomsday', ['dooms', 'day']],
+  
+  // Door- compounds
+  ['doorbell', ['door', 'bell']],
+  ['doorknob', ['door', 'knob']],
+  ['doorman', ['door', 'man']],
+  ['doormat', ['door', 'mat']],
+  ['doorstep', ['door', 'step']],
+  ['doorway', ['door', 'way']],
+  
+  // Double- compounds
+  ['doubleheader', ['double', 'header']],
+  
+  // Dove- compounds
+  ['dovetail', ['dove', 'tail']],
+  
+  // Down- compounds
+  ['downbeat', ['down', 'beat']],
+  ['downcast', ['down', 'cast']],
+  ['downfall', ['down', 'fall']],
+  ['downgrade', ['down', 'grade']],
+  ['downhill', ['down', 'hill']],
+  ['download', ['down', 'load']],
+  ['downpour', ['down', 'pour']],
+  ['downside', ['down', 'side']],
+  ['downstairs', ['down', 'stairs']],
+  ['downtown', ['down', 'town']],
+  ['downturn', ['down', 'turn']],
+  
+  // Dragon- compounds
+  ['dragonfly', ['dragon', 'fly']],
+  
+  // Draw- compounds
+  ['drawback', ['draw', 'back']],
+  
+  // Dress- compounds
+  ['dressmaker', ['dress', 'maker']],
+  
+  // Drive- compounds
+  ['driveway', ['drive', 'way']],
+  
+  // Drug- compounds
+  ['drugstore', ['drug', 'store']],
+  
+  // Drum- compounds
+  ['drumstick', ['drum', 'stick']],
+  
+  // Dug- compounds
+  ['dugout', ['dug', 'out']],
+  
+  // Dumb- compounds
+  ['dumbbell', ['dumb', 'bell']],
+  ['dumbfound', ['dumb', 'found']],
+  ['dumbstruck', ['dumb', 'struck']],
+  
+  // Dust- compounds
+  ['dustpan', ['dust', 'pan']],
+  
+  // Ear- compounds
+  ['earache', ['ear', 'ache']],
+  ['eardrum', ['ear', 'drum']],
+  ['earmark', ['ear', 'mark']],
+  ['earmuff', ['ear', 'muff']],
+  ['earphone', ['ear', 'phone']],
+  ['earring', ['ear', 'ring']],
+  ['earsplitting', ['ear', 'splitting']],
+  ['earwax', ['ear', 'wax']],
+  ['earwig', ['ear', 'wig']],
+  
+  // Earth- compounds
+  ['earthquake', ['earth', 'quake']],
+  ['earthworm', ['earth', 'worm']],
+  
+  // Egg- compounds
+  ['egghead', ['egg', 'head']],
+  ['eggshell', ['egg', 'shell']],
+  
+  // Electric- compounds
+  ['electricguitar', ['electric', 'guitar']],
+  
+  // End- compounds
+  ['endless', ['end', 'less']],
+  
+  // Ever- compounds
+  ['evergreen', ['ever', 'green']],
+  ['everlasting', ['ever', 'lasting']],
+  
+  // Every- compounds
+  ['everybody', ['every', 'body']],
+  ['everyday', ['every', 'day']],
+  ['everyone', ['every', 'one']],
+  ['everything', ['every', 'thing']],
+  ['everywhere', ['every', 'where']],
+  
+  // Eye- compounds
+  ['eyeball', ['eye', 'ball']],
+  ['eyeglasses', ['eye', 'glasses']],
+  ['eyelid', ['eye', 'lid']],
+  ['eyesight', ['eye', 'sight']],
+  ['eyesore', ['eye', 'sore']],
+  ['eyewitness', ['eye', 'witness']],
+  
+  // False- compounds
+  ['falsehood', ['false', 'hood']],
+  
+  // Far- compounds
+  ['faraway', ['far', 'away']],
+  
+  // Fare- compounds
+  ['farewell', ['fare', 'well']],
+  
+  // Farm- compounds
+  ['farmhouse', ['farm', 'house']],
+  
+  // Father- compounds
+  ['fatherinlaw', ['father', 'inlaw']],
+  ['fatherland', ['father', 'land']],
+  
+  // Feeble- compounds
+  ['feebleminded', ['feeble', 'minded']],
+  
+  // Feed- compounds
+  ['feedback', ['feed', 'back']],
+  
+  // Figure- compounds
+  ['figurehead', ['figure', 'head']],
+  
+  // Finger- compounds
+  ['fingerbowl', ['finger', 'bowl']],
+  ['fingerhole', ['finger', 'hole']],
+  ['fingernail', ['finger', 'nail']],
+  ['fingerpaint', ['finger', 'paint']],
+  ['fingerprint', ['finger', 'print']],
+  ['fingertip', ['finger', 'tip']],
+  
+  // Fire- compounds
+  ['firedrill', ['fire', 'drill']],
+  ['fireengine', ['fire', 'engine']],
+  ['fireescape', ['fire', 'escape']],
+  ['firestation', ['fire', 'station']],
+  ['firetruck', ['fire', 'truck']],
+  ['firearm', ['fire', 'arm']],
+  ['fireboat', ['fire', 'boat']],
+  ['firecracker', ['fire', 'cracker']],
+  ['fireeater', ['fire', 'eater']],
+  ['firefighter', ['fire', 'fighter']],
+  ['firefly', ['fire', 'fly']],
+  ['firehouse', ['fire', 'house']],
+  ['firelight', ['fire', 'light']],
+  ['fireplace', ['fire', 'place']],
+  ['fireproof', ['fire', 'proof']],
+  ['firewood', ['fire', 'wood']],
+  ['fireworks', ['fire', 'works']],
+  ['fireball', ['fire', 'ball']],
+  
+  // Fish- compounds
+  ['fishhook', ['fish', 'hook']],
+  ['fishpond', ['fish', 'pond']],
+  ['fisherman', ['fish', 'er', 'man']],
+  
+  // Flag- compounds
+  ['flagpole', ['flag', 'pole']],
+  
+  // Flash- compounds
+  ['flashback', ['flash', 'back']],
+  ['flashlight', ['flash', 'light']],
+  
+  // Flop- compounds
+  ['flophouse', ['flop', 'house']],
+  
+  // Flow- compounds
+  ['flowchart', ['flow', 'chart']],
+  
+  // Flower- compounds
+  ['flowerpot', ['flower', 'pot']],
+  
+  // Fog- compounds
+  ['foghorn', ['fog', 'horn']],
+  
+  // Folk- compounds
+  ['folklore', ['folk', 'lore']],
+  
+  // Fool- compounds
+  ['foolhardy', ['fool', 'hardy']],
+  ['foolproof', ['fool', 'proof']],
+  
+  // Foot- compounds
+  ['football', ['foot', 'ball']],
+  ['footbridge', ['foot', 'bridge']],
+  ['footloose', ['foot', 'loose']],
+  ['footpath', ['foot', 'path']],
+  ['footprint', ['foot', 'print']],
+  ['footrest', ['foot', 'rest']],
+  ['footstep', ['foot', 'step']],
+  ['footstool', ['foot', 'stool']],
+  
+  // Fountain- compounds
+  ['fountainhead', ['fountain', 'head']],
+  
+  // Free- compounds
+  ['freeware', ['free', 'ware']],
+  ['freeway', ['free', 'way']],
+  
+  // Fresh- compounds
+  ['freshman', ['fresh', 'man']],
+  
+  // Fruit- compounds
+  ['fruitcake', ['fruit', 'cake']],
+  
+  // Gentle- compounds
+  ['gentleman', ['gentle', 'man']],
+  ['gentleperson', ['gentle', 'person']],
+  
+  // Girl- compounds
+  ['girlfriend', ['girl', 'friend']],
+  
+  // Gold- compounds
+  ['goldfish', ['gold', 'fish']],
+  
+  // Good- compounds
+  ['goodwill', ['good', 'will']],
+  
+  // Grand- compounds
+  ['grandstand', ['grand', 'stand']],
+  
+  // Grape- compounds
+  ['grapevine', ['grape', 'vine']],
+  
+  // Grass- compounds
+  ['grasshopper', ['grass', 'hopper']],
+  ['grassland', ['grass', 'land']],
+  
+  // Grave- compounds
+  ['graveyard', ['grave', 'yard']],
+  
+  // Green- compounds
+  ['greenhouse', ['green', 'house']],
+  
+  // Ground- compounds
+  ['groundbreaking', ['ground', 'breaking']],
+  ['groundwork', ['ground', 'work']],
+  
+  // Grown- compounds
+  ['grownup', ['grown', 'up']],
+  
+  // Guide- compounds
+  ['guidebook', ['guide', 'book']],
+  ['guideline', ['guide', 'line']],
+  
+  // Hair- compounds
+  ['hairbrush', ['hair', 'brush']],
+  ['haircut', ['hair', 'cut']],
+  ['hairdresser', ['hair', 'dresser']],
+  ['hairline', ['hair', 'line']],
+  ['hairnet', ['hair', 'net']],
+  ['hairpiece', ['hair', 'piece']],
+  ['hairpin', ['hair', 'pin']],
+  ['hairsplitting', ['hair', 'splitting']],
+  ['hairstyle', ['hair', 'style']],
+  
+  // Half- compounds
+  ['halfhearted', ['half', 'hearted']],
+  ['halftime', ['half', 'time']],
+  ['halfway', ['half', 'way']],
+  
+  // Hall- compounds
+  ['hallway', ['hall', 'way']],
+  
+  // Hand- compounds
+  ['handbag', ['hand', 'bag']],
+  ['handball', ['hand', 'ball']],
+  ['handbook', ['hand', 'book']],
+  ['handcuff', ['hand', 'cuff']],
+  ['handfeed', ['hand', 'feed']],
+  ['handmade', ['hand', 'made']],
+  ['handpick', ['hand', 'pick']],
+  ['handsaw', ['hand', 'saw']],
+  ['handshake', ['hand', 'shake']],
+  ['handstand', ['hand', 'stand']],
+  ['handwrit', ['hand', 'writ']],
+  ['handwriting', ['hand', 'writing']],
+  ['handout', ['hand', 'out']],
+  
+  // Hard- compounds
+  ['hardship', ['hard', 'ship']],
+  ['hardware', ['hard', 'ware']],
+  ['hardball', ['hard', 'ball']],
+  
+  // Hare- compounds
+  ['harebrained', ['hare', 'brained']],
+  
+  // Hay- compounds
+  ['hayseed', ['hay', 'seed']],
+  ['haywire', ['hay', 'wire']],
+  
+  // Head- compounds
+  ['headache', ['head', 'ache']],
+  ['headband', ['head', 'band']],
+  ['headhunting', ['head', 'hunting']],
+  ['headlight', ['head', 'light']],
+  ['headlong', ['head', 'long']],
+  ['headphone', ['head', 'phone']],
+  ['headquarters', ['head', 'quarters']],
+  ['headstand', ['head', 'stand']],
+  ['headstrong', ['head', 'strong']],
+  ['headway', ['head', 'way']],
+  ['headwind', ['head', 'wind']],
+  
+  // Heart- compounds
+  ['heartache', ['heart', 'ache']],
+  ['heartbreak', ['heart', 'break']],
+  ['heartfelt', ['heart', 'felt']],
+  ['heartsick', ['heart', 'sick']],
+  ['heartwarming', ['heart', 'warming']],
+  
+  // Heavy- compounds
+  ['heavyweight', ['heavy', 'weight']],
+  
+  // Hen- compounds
+  ['henhouse', ['hen', 'house']],
+  
+  // High- compounds
+  ['highchair', ['high', 'chair']],
+  ['highjump', ['high', 'jump']],
+  ['highnoon', ['high', 'noon']],
+  ['highschool', ['high', 'school']],
+  ['highbrow', ['high', 'brow']],
+  ['highlight', ['high', 'light']],
+  ['highrise', ['high', 'rise']],
+  ['highway', ['high', 'way']],
+  
+  // Hill- compounds
+  ['hilltop', ['hill', 'top']],
+  
+  // Hind- compounds
+  ['hindsight', ['hind', 'sight']],
+  
+  // Hog- compounds
+  ['hogwash', ['hog', 'wash']],
+  
+  // Home- compounds
+  ['homeplate', ['home', 'plate']],
+  ['homerun', ['home', 'run']],
+  ['homeboy', ['home', 'boy']],
+  ['homegrown', ['home', 'grown']],
+  ['homemade', ['home', 'made']],
+  ['homeroom', ['home', 'room']],
+  ['homesick', ['home', 'sick']],
+  ['homespun', ['home', 'spun']],
+  ['hometown', ['home', 'town']],
+  ['homework', ['home', 'work']],
+  
+  // Horse- compounds
+  ['horseback', ['horse', 'back']],
+  ['horsefly', ['horse', 'fly']],
+  ['horseplay', ['horse', 'play']],
+  ['horseshoe', ['horse', 'shoe']],
+  
+  // Hot- compounds
+  ['hotdog', ['hot', 'dog']],
+  ['hotheaded', ['hot', 'headed']],
+  
+  // House- compounds
+  ['houseboat', ['house', 'boat']],
+  ['household', ['house', 'hold']],
+  ['housekeeper', ['house', 'keeper']],
+  ['housework', ['house', 'work']],
+  
+  // Ice- compounds
+  ['iceskate', ['ice', 'skate']],
+  ['iceskater', ['ice', 'skater']],
+  ['iceberg', ['ice', 'berg']],
+  ['iceman', ['ice', 'man']],
+  
+  // In- compounds
+  ['indoor', ['in', 'door']],
+  ['inside', ['in', 'side']],
+  ['instep', ['in', 'step']],
+  
+  // Jelly- compounds
+  ['jellyfish', ['jelly', 'fish']],
+  
+  // Key- compounds
+  ['keyboard', ['key', 'board']],
+  ['keyhole', ['key', 'hole']],
+  ['keynote', ['key', 'note']],
+  ['keystone', ['key', 'stone']],
+  
+  // Kick- compounds
+  ['kickback', ['kick', 'back']],
+  
+  // Kid- compounds
+  ['kidnap', ['kid', 'nap']],
+  
+  // Kill- compounds
+  ['killjoy', ['kill', 'joy']],
+  
+  // Kind- compounds
+  ['kindhearted', ['kind', 'hearted']],
+  
+  // Knock- compounds
+  ['knockout', ['knock', 'out']],
+  
+  // Lack- compounds
+  ['lackluster', ['lack', 'luster']],
+  
+  // Land- compounds
+  ['landfill', ['land', 'fill']],
+  ['landlord', ['land', 'lord']],
+  ['landmark', ['land', 'mark']],
+  ['landscape', ['land', 'scape']],
+  ['landslide', ['land', 'slide']],
+  
+  // Law- compounds
+  ['lawbreaker', ['law', 'breaker']],
+  
+  // Lawn- compounds
+  ['lawnmower', ['lawn', 'mower']],
+  
+  // Lay- compounds
+  ['layperson', ['lay', 'person']],
+  ['layout', ['lay', 'out']],
+  
+  // Left- compounds
+  ['leftover', ['left', 'over']],
+  
+  // Let- compounds
+  ['letdown', ['let', 'down']],
+  ['letup', ['let', 'up']],
+  
+  // Level- compounds
+  ['levelheaded', ['level', 'headed']],
+  
+  // Life- compounds
+  ['lifeboat', ['life', 'boat']],
+  ['lifelike', ['life', 'like']],
+  ['lifelong', ['life', 'long']],
+  ['lifesaver', ['life', 'saver']],
+  ['lifestyle', ['life', 'style']],
+  ['lifetime', ['life', 'time']],
+  ['lifework', ['life', 'work']],
+  
+  // Light- compounds
+  ['lighthearted', ['light', 'hearted']],
+  ['lighthouse', ['light', 'house']],
+  ['lightweight', ['light', 'weight']],
+  
+  // Living- compounds
+  ['livingroom', ['living', 'room']],
+  
+  // Look- compounds
+  ['lookout', ['look', 'out']],
+  
+  // Loud- compounds
+  ['loudspeaker', ['loud', 'speaker']],
+  
+  // Love- compounds
+  ['lovelorn', ['love', 'lorn']],
+  ['lovesick', ['love', 'sick']],
+  
+  // Luke- compounds
+  ['lukewarm', ['luke', 'warm']],
+  
+  // Lunch- compounds
+  ['lunchroom', ['lunch', 'room']],
+  
+  // Mad- compounds
+  ['madcap', ['mad', 'cap']],
+  ['madhouse', ['mad', 'house']],
+  
+  // Mail- compounds
+  ['mailbox', ['mail', 'box']],
+  ['mailroom', ['mail', 'room']],
+  
+  // Main- compounds
+  ['mainland', ['main', 'land']],
+  ['mainstay', ['main', 'stay']],
+  ['mainstream', ['main', 'stream']],
+  
+  // Make- compounds
+  ['makeshift', ['make', 'shift']],
+  ['makeup', ['make', 'up']],
+  
+  // Master- compounds
+  ['masterpiece', ['master', 'piece']],
+  
+  // Match- compounds
+  ['matchbook', ['match', 'book']],
+  ['matchbox', ['match', 'box']],
+  
+  // Mean- compounds
+  ['meantime', ['mean', 'time']],
+  ['meanwhile', ['mean', 'while']],
+  
+  // Merry- compounds
+  ['merrygoround', ['merry', 'goround']],
+  
+  // Mile- compounds
+  ['milestone', ['mile', 'stone']],
+  
+  // Milk- compounds
+  ['milkshake', ['milk', 'shake']],
+  ['milkman', ['milk', 'man']],
+  
+  // Moon- compounds
+  ['moonbeam', ['moon', 'beam']],
+  ['moonlight', ['moon', 'light']],
+  ['moonshine', ['moon', 'shine']],
+  
+  // Motor- compounds
+  ['motorboat', ['motor', 'boat']],
+  ['motorcycle', ['motor', 'cycle']],
+  
+  // Mountain- compounds
+  ['mountaintop', ['mountain', 'top']],
+  
+  // Mouse- compounds
+  ['mousetrap', ['mouse', 'trap']],
+  
+  // Mouth- compounds
+  ['mouthpiece', ['mouth', 'piece']],
+  
+  // Music- compounds
+  ['musicbox', ['music', 'box']],
+  
+  // Near- compounds
+  ['nearby', ['near', 'by']],
+  ['nearsighted', ['near', 'sighted']],
+  
+  // Neck- compounds
+  ['necklace', ['neck', 'lace']],
+  
+  // Needle- compounds
+  ['needlework', ['needle', 'work']],
+  
+  // Neighbor- compounds
+  ['neighborhood', ['neighbor', 'hood']],
+  
+  // Net- compounds
+  ['network', ['net', 'work']],
+  
+  // New- compounds
+  ['newborn', ['new', 'born']],
+  ['newcomer', ['new', 'comer']],
+  ['newspaper', ['new', 'spaper']],
+  ['newsstand', ['new', 'sstand']],
+  ['newsworthy', ['new', 'sworthy']],
+  
+  // Nick- compounds
+  ['nickname', ['nick', 'name']],
+  
+  // Night- compounds
+  ['nightclub', ['night', 'club']],
+  ['nightfall', ['night', 'fall']],
+  ['nightgown', ['night', 'gown']],
+  ['nightmare', ['night', 'mare']],
+  ['nighttime', ['night', 'time']],
+  
+  // Noise- compounds
+  ['noiseproof', ['noise', 'proof']],
+  
+  // Nose- compounds
+  ['nosebleed', ['nose', 'bleed']],
+  
+  // Note- compounds
+  ['notebook', ['note', 'book']],
+  ['noteworthy', ['note', 'worthy']],
+  
+  // Numb- compounds
+  ['numbskull', ['numb', 'skull']],
+  
+  // Nurse- compounds
+  ['nursemaid', ['nurse', 'maid']],
+  
+  // Nut- compounds
+  ['nutcracker', ['nut', 'cracker']],
+  ['nutshell', ['nut', 'shell']],
+  
+  // Odd- compounds
+  ['oddball', ['odd', 'ball']],
+  
+  // Off- compounds
+  ['offbeat', ['off', 'beat']],
+  ['offhand', ['off', 'hand']],
+  ['offset', ['off', 'set']],
+  ['offshoot', ['off', 'shoot']],
+  ['offside', ['off', 'side']],
+  ['offspring', ['off', 'spring']],
+  
+  // On- compounds
+  ['oncoming', ['on', 'coming']],
+  ['oneself', ['one', 'self']],
+  ['ongoing', ['on', 'going']],
+  ['onlooker', ['on', 'looker']],
+  ['onrush', ['on', 'rush']],
+  ['onslaught', ['on', 'slaught']],
+  ['onto', ['on', 'to']],
+  
+  // Other- compounds
+  ['otherwise', ['other', 'wise']],
+  ['otherworldly', ['other', 'worldly']],
+  
+  // Out- compounds
+  ['outburst', ['out', 'burst']],
+  ['outcast', ['out', 'cast']],
+  ['outclass', ['out', 'class']],
+  ['outcome', ['out', 'come']],
+  ['outdo', ['out', 'do']],
+  ['outdoors', ['out', 'doors']],
+  ['outfield', ['out', 'field']],
+  ['outgrowth', ['out', 'growth']],
+  ['outhouse', ['out', 'house']],
+  ['outside', ['out', 'side']],
+  
+  // Over- compounds
+  ['overall', ['over', 'all']],
+  ['overbearing', ['over', 'bearing']],
+  ['overblown', ['over', 'blown']],
+  ['overcoat', ['over', 'coat']],
+  ['overdue', ['over', 'due']],
+  ['overflow', ['over', 'flow']],
+  ['overhaul', ['over', 'haul']],
+  ['overhead', ['over', 'head']],
+  ['overlap', ['over', 'lap']],
+  ['overlook', ['over', 'look']],
+  ['overnight', ['over', 'night']],
+  ['overpower', ['over', 'power']],
+  ['oversee', ['over', 'see']],
+  ['overshadow', ['over', 'shadow']],
+  ['overtake', ['over', 'take']],
+  ['overturn', ['over', 'turn']],
+  ['overwrought', ['over', 'wrought']],
+  
+  // Pace- compounds
+  ['pacesetter', ['pace', 'setter']],
+  
+  // Pain- compounds
+  ['painkiller', ['pain', 'killer']],
+  ['painstaking', ['pain', 'staking']],
+  
+  // Pan- compounds
+  ['pancake', ['pan', 'cake']],
+  
+  // Paper- compounds
+  ['paperback', ['paper', 'back']],
+  
+  // Passer- compounds
+  ['passerby', ['passer', 'by']],
+  
+  // Patch- compounds
+  ['patchwork', ['patch', 'work']],
+  
+  // Peace- compounds
+  ['peacemaker', ['peace', 'maker']],
+  
+  // Pea- compounds
+  ['peanut', ['pea', 'nut']],
+  
+  // Photo- compounds
+  ['photocopy', ['photo', 'copy']],
+  
+  // Pick- compounds
+  ['pickup', ['pick', 'up']],
+  
+  // Pillow- compounds
+  ['pillowcase', ['pill', 'owcase']],
+  
+  // Pine- compounds
+  ['pinecone', ['pine', 'cone']],
+  
+  // Pin- compounds
+  ['pinwheel', ['pin', 'wheel']],
+  
+  // Pitch- compounds
+  ['pitchfork', ['pitch', 'fork']],
+  
+  // Play- compounds
+  ['playground', ['play', 'ground']],
+  ['playhouse', ['play', 'house']],
+  ['playmate', ['play', 'mate']],
+  ['playpen', ['play', 'pen']],
+  ['playroom', ['play', 'room']],
+  ['plaything', ['play', 'thing']],
+  ['playtime', ['play', 'time']],
+  
+  // Pocket- compounds
+  ['pocketbook', ['pocket', 'book']],
+  
+  // Pock- compounds
+  ['pockmark', ['pock', 'mark']],
+  
+  // Poison- compounds
+  ['poisonivy', ['poison', 'ivy']],
+  
+  // Polar- compounds
+  ['polarbear', ['polar', 'bear']],
+  
+  // Pop- compounds
+  ['popcorn', ['pop', 'corn']],
+  
+  // Post- compounds
+  ['postcard', ['post', 'card']],
+  ['postman', ['post', 'man']],
+  
+  // Proof- compounds
+  ['proofread', ['proof', 'read']],
+  
+  // Psycho- compounds
+  ['psychobabble', ['psycho', 'babble']],
+  
+  // Push- compounds
+  ['pushover', ['push', 'over']],
+  
+  // Quarrel- compounds
+  ['quarrelsome', ['quarrel', 'some']],
+  
+  // Quick- compounds
+  ['quicksand', ['quick', 'sand']],
+  
+  // Race- compounds
+  ['racehorse', ['race', 'horse']],
+  
+  // Rail- compounds
+  ['railroad', ['rail', 'road']],
+  ['railway', ['rail', 'way']],
+  
+  // Rain- compounds
+  ['rainbow', ['rain', 'bow']],
+  ['raincoat', ['rain', 'coat']],
+  ['raindrop', ['rain', 'drop']],
+  ['rainfall', ['rain', 'fall']],
+  
+  // Ring- compounds
+  ['ringmaster', ['ring', 'master']],
+  
+  // River- compounds
+  ['riverboat', ['river', 'boat']],
+  
+  // Road- compounds
+  ['roadside', ['road', 'side']],
+  
+  // Roof- compounds
+  ['roofgarden', ['roof', 'garden']],
+  ['rooftop', ['roof', 'top']],
+  
+  // Room- compounds
+  ['roommate', ['room', 'mate']],
+  
+  // Rose- compounds
+  ['rosebud', ['rose', 'bud']],
+  ['rosebush', ['rose', 'bush']],
+  
+  // Round- compounds
+  ['roundabout', ['round', 'about']],
+  ['roundup', ['round', 'up']],
+  
+  // Row- compounds
+  ['rowboat', ['row', 'boat']],
+  
+  // Rubber- compounds
+  ['rubberneck', ['rubber', 'neck']],
+  
+  // Run- compounds
+  ['rundown', ['run', 'down']],
+  ['runway', ['run', 'way']],
+  
+  // Safe- compounds
+  ['safeguard', ['safe', 'guard']],
+  ['safekeeping', ['safe', 'keeping']],
+  
+  // Sail- compounds
+  ['sailboat', ['sail', 'boat']],
+  
+  // Sales- compounds
+  ['salesperson', ['sales', 'person']],
+  ['salesman', ['sales', 'man']],
+  
+  // Sand- compounds
+  ['sandbox', ['sand', 'box']],
+  ['sandpaper', ['sand', 'paper']],
+  
+  // Sauce- compounds
+  ['saucepan', ['sauce', 'pan']],
+  
+  // Saw- compounds
+  ['sawdust', ['saw', 'dust']],
+  ['sawmill', ['saw', 'mill']],
+  
+  // Scare- compounds
+  ['scarecrow', ['scare', 'crow']],
+  
+  // School- compounds
+  ['schoolhouse', ['school', 'house']],
+  
+  // Score- compounds
+  ['scoreboard', ['score', 'board']],
+  
+  // Scrap- compounds
+  ['scrapbook', ['scrap', 'book']],
+  
+  // Sea- compounds
+  ['seabreeze', ['sea', 'breeze']],
+  ['seacaptain', ['sea', 'captain']],
+  ['seagull', ['sea', 'gull']],
+  ['seahorse', ['sea', 'horse']],
+  ['seacoast', ['sea', 'coast']],
+  ['seafood', ['sea', 'food']],
+  ['seaport', ['sea', 'port']],
+  ['seashell', ['sea', 'shell']],
+  ['seashore', ['sea', 'shore']],
+  ['seaside', ['sea', 'side']],
+  ['season', ['sea', 'son']],
+  ['seatbelt', ['sea', 'tbelt']],
+  ['seaward', ['sea', 'ward']],
+  ['seaway', ['sea', 'way']],
+  ['seaweed', ['sea', 'weed']],
+  
+  // Sell- compounds
+  ['sellout', ['sell', 'out']],
+  
+  // Send- compounds
+  ['sendoff', ['send', 'off']],
+  
+  // Set- compounds
+  ['setback', ['set', 'back']],
+  ['setup', ['set', 'up']],
+  
+  // Shame- compounds
+  ['shamefaced', ['shame', 'faced']],
+  
+  // Ship- compounds
+  ['shipshape', ['ship', 'shape']],
+  
+  // Shoe- compounds
+  ['shoelace', ['shoe', 'lace']],
+  ['shoestring', ['shoe', 'string']],
+  
+  // Shop- compounds
+  ['shopkeeper', ['shop', 'keeper']],
+  
+  // Shore- compounds
+  ['shoreline', ['shore', 'line']],
+  
+  // Short- compounds
+  ['shortchange', ['short', 'change']],
+  ['shortcoming', ['short', 'coming']],
+  ['shortcut', ['short', 'cut']],
+  ['shortfall', ['short', 'fall']],
+  ['shortstop', ['short', 'stop']],
+  
+  // Show- compounds
+  ['showdown', ['show', 'down']],
+  ['showoff', ['show', 'off']],
+  
+  // Side- compounds
+  ['sidekick', ['side', 'kick']],
+  ['sidestep', ['side', 'step']],
+  ['sidetrack', ['side', 'track']],
+  ['sidewalk', ['side', 'walk']],
+  ['sideways', ['side', 'ways']],
+  
+  // Skate- compounds
+  ['skateboard', ['skate', 'board']],
+  
+  // Sky- compounds
+  ['skyline', ['sky', 'line']],
+  ['skyscraper', ['sky', 'scraper']],
+  
+  // Slow- compounds
+  ['slowdown', ['slow', 'down']],
+  ['slowpoke', ['slow', 'poke']],
+  
+  // Smoke- compounds
+  ['smokestack', ['smoke', 'stack']],
+  
+  // Snap- compounds
+  ['snapshot', ['snap', 'shot']],
+  
+  // Snow- compounds
+  ['snowball', ['snow', 'ball']],
+  ['snowfall', ['snow', 'fall']],
+  ['snowflake', ['snow', 'flake']],
+  ['snowman', ['snow', 'man']],
+  ['snowplow', ['snow', 'plow']],
+  ['snowshoe', ['snow', 'shoe']],
+  ['snowstorm', ['snow', 'storm']],
+  ['snowsuit', ['snow', 'suit']],
+  
+  // Soft- compounds
+  ['softhearted', ['soft', 'hearted']],
+  ['softball', ['soft', 'ball']],
+  
+  // Some- compounds
+  ['somebody', ['some', 'body']],
+  ['someday', ['some', 'day']],
+  ['someone', ['some', 'one']],
+  ['something', ['some', 'thing']],
+  ['sometimes', ['some', 'times']],
+  ['someway', ['some', 'way']],
+  ['somewhat', ['some', 'what']],
+  ['somewhere', ['some', 'where']],
+  ['someplace', ['some', 'place']],
+  
+  // Space- compounds
+  ['spaceship', ['space', 'ship']],
+  ['spacesuit', ['space', 'suit']],
+  ['spaceman', ['space', 'man']],
+  
+  // Spell- compounds
+  ['spellbound', ['spell', 'bound']],
+  
+  // Spend- compounds
+  ['spendthrift', ['spend', 'thrift']],
+  
+  // Spokes- compounds
+  ['spokesperson', ['spokes', 'person']],
+  
+  // Sports- compounds
+  ['sportscar', ['sports', 'car']],
+  
+  // Spring- compounds
+  ['springtime', ['spring', 'time']],
+  
+  // Stand- compounds
+  ['standstill', ['stand', 'still']],
+  
+  // Star- compounds
+  ['starfish', ['star', 'fish']],
+  ['starlight', ['star', 'light']],
+  ['starship', ['star', 'ship']],
+  
+  // Steam- compounds
+  ['steamboat', ['steam', 'boat']],
+  
+  // Step- compounds
+  ['stepladder', ['step', 'ladder']],
+  
+  // Stock- compounds
+  ['stockpile', ['stock', 'pile']],
+  
+  // Store- compounds
+  ['storehouse', ['store', 'house']],
+  ['storekeeper', ['store', 'keeper']],
+  ['storeroom', ['store', 'room']],
+  
+  // Story- compounds
+  ['storybook', ['story', 'book']],
+  ['storyteller', ['story', 'teller']],
+  
+  // Straight- compounds
+  ['straightforward', ['straight', 'forward']],
+  
+  // Street- compounds
+  ['streetcar', ['street', 'car']],
+  ['streetlight', ['street', 'light']],
+  
+  // Summer- compounds
+  ['summertime', ['summer', 'time']],
+  
+  // Sun- compounds
+  ['sunburn', ['sun', 'burn']],
+  ['sunflower', ['sun', 'flower']],
+  ['sunlight', ['sun', 'light']],
+  ['sunrise', ['sun', 'rise']],
+  ['sunset', ['sun', 'set']],
+  ['sunshine', ['sun', 'shine']],
+  
+  // Super- compounds
+  ['supermarket', ['super', 'market']],
+  ['supernatural', ['super', 'natural']],
+  ['superman', ['su', 'per', 'man']],
+  
+  // Surf- compounds
+  ['surfboard', ['surf', 'board']],
+  
+  // Sweet- compounds
+  ['sweetheart', ['sweet', 'heart']],
+  
+  // Swimming- compounds
+  ['swimmingpool', ['swimming', 'pool']],
+  
+  // Swim- compounds
+  ['swimsuit', ['swim', 'suit']],
+  
+  // Table- compounds
+  ['tablespoon', ['table', 'spoon']],
+  ['tableware', ['table', 'ware']],
+  
+  // Take- compounds
+  ['takeoff', ['take', 'off']],
+  ['takeout', ['take', 'out']],
+  
+  // Tail- compounds
+  ['tailwind', ['tail', 'wind']],
+  
+  // Task- compounds
+  ['taskmaster', ['task', 'master']],
+  
+  // Tattle- compounds
+  ['tattletale', ['tattle', 'tale']],
+  
+  // Tea- compounds
+  ['teacup', ['tea', 'cup']],
+  ['teaspoon', ['tea', 'spoon']],
+  
+  // Teen- compounds
+  ['teenage', ['teen', 'age']],
+  
+  // Tender- compounds
+  ['tenderhearted', ['tender', 'hearted']],
+  
+  // Tennis- compounds
+  ['tenniscourt', ['tennis', 'court']],
+  
+  // Text- compounds
+  ['textbook', ['text', 'book']],
+  
+  // There- compounds
+  ['thereabout', ['there', 'about']],
+  ['thereafter', ['there', 'after']],
+  ['therefore', ['there', 'fore']],
+  
+  // Thunder- compounds
+  ['thunderstorm', ['thunder', 'storm']],
+  ['thunderstruck', ['thunder', 'struck']],
+  
+  // Tight- compounds
+  ['tightrope', ['tight', 'rope']],
+  ['tightwad', ['tight', 'wad']],
+  
+  // Time- compounds
   ['timetable', ['time', 'ta', 'ble']],
   ['timeframe', ['time', 'frame']],
   ['timeline', ['time', 'line']],
@@ -177,6 +1504,167 @@ export const COMPOUND_WORDS = new Map<string, string[]>([
   ['timepiece', ['time', 'piece']],
   ['timeless', ['time', 'less']],
   ['timely', ['time', 'ly']],
+  
+  // Tip- compounds
+  ['tipoff', ['tip', 'off']],
+  
+  // Toad- compounds
+  ['toadstool', ['toad', 'stool']],
+  
+  // Toe- compounds
+  ['toenail', ['toe', 'nail']],
+  ['toeshoe', ['toe', 'shoe']],
+  
+  // Tool- compounds
+  ['toolbox', ['tool', 'box']],
+  
+  // Tooth- compounds
+  ['toothache', ['tooth', 'ache']],
+  ['toothbrush', ['tooth', 'brush']],
+  ['toothpaste', ['tooth', 'paste']],
+  
+  // Top- compounds
+  ['topcoat', ['top', 'coat']],
+  
+  // Touch- compounds
+  ['touchdown', ['touch', 'down']],
+  
+  // Town- compounds
+  ['townspeople', ['town', 'speople']],
+  
+  // Trade- compounds
+  ['trademark', ['trade', 'mark']],
+  
+  // Tree- compounds
+  ['treetop', ['tree', 'top']],
+  
+  // Trouble- compounds
+  ['troublemaker', ['trouble', 'maker']],
+  ['troubleshooter', ['trouble', 'shooter']],
+  ['troublesome', ['trouble', 'some']],
+  
+  // Trust- compounds
+  ['trustworthy', ['trust', 'worthy']],
+  
+  // Tug- compounds
+  ['tugboat', ['tug', 'boat']],
+  
+  // Turn- compounds
+  ['turnout', ['turn', 'out']],
+  ['turnpike', ['turn', 'pike']],
+  
+  // Type- compounds
+  ['typewriter', ['type', 'writer']],
+  
+  // Under- compounds
+  ['undercover', ['under', 'cover']],
+  ['undercurrent', ['under', 'current']],
+  ['underdog', ['under', 'dog']],
+  ['underground', ['under', 'ground']],
+  ['underhand', ['under', 'hand']],
+  ['underline', ['under', 'line']],
+  ['understudy', ['under', 'study']],
+  ['undertaker', ['under', 'taker']],
+  ['underwater', ['under', 'water']],
+  ['underwear', ['under', 'wear']],
+  
+  // Up- compounds
+  ['upbeat', ['up', 'beat']],
+  ['update', ['up', 'date']],
+  ['upgrade', ['up', 'grade']],
+  ['uphill', ['up', 'hill']],
+  ['uplift', ['up', 'lift']],
+  ['uppermost', ['up', 'permost']],
+  ['upright', ['up', 'right']],
+  ['uproot', ['up', 'root']],
+  ['upstage', ['up', 'stage']],
+  ['upstairs', ['up', 'stairs']],
+  
+  // Video- compounds
+  ['videocassette', ['video', 'cassette']],
+  
+  // View- compounds
+  ['viewpoint', ['view', 'point']],
+  
+  // Vine- compounds
+  ['vineyard', ['vine', 'yard']],
+  
+  // Wall- compounds
+  ['wallpaper', ['wall', 'paper']],
+  
+  // War- compounds
+  ['warehouse', ['ware', 'house']],
+  ['warlike', ['war', 'like']],
+  ['warlock', ['war', 'lock']],
+  ['warmonger', ['war', 'monger']],
+  
+  // Warm- compounds
+  ['warmhearted', ['warm', 'hearted']],
+  
+  // Wash- compounds
+  ['washcloth', ['wash', 'cloth']],
+  ['washout', ['wash', 'out']],
+  
+  // Waste- compounds
+  ['wastebasket', ['waste', 'basket']],
+  
+  // Watch- compounds
+  ['watchdog', ['watch', 'dog']],
+  ['watchkeeper', ['watch', 'keeper']],
+  
+  // Water- compounds
+  ['watercolor', ['water', 'color']],
+  ['waterfall', ['water', 'fall']],
+  ['waterlogged', ['water', 'logged']],
+  ['waterproof', ['water', 'proof']],
+  ['waterway', ['wa', 'ter', 'way']],
+  
+  // Way- compounds
+  ['wayward', ['way', 'ward']],
+  
+  // Weather- compounds
+  ['weatherman', ['weath', 'er', 'man']],
+  
+  // Wed- compounds
+  ['wedlock', ['wed', 'lock']],
+  
+  // Week- compounds
+  ['weekend', ['week', 'end']],
+  ['weekday', ['week', 'day']],
+  
+  // West- compounds
+  ['westwind', ['west', 'wind']],
+  
+  // What- compounds
+  ['whatever', ['what', 'ever']],
+  
+  // Wheel- compounds
+  ['wheelchair', ['wheel', 'chair']],
+  
+  // When- compounds
+  ['whenever', ['when', 'ever']],
+  
+  // Where- compounds
+  ['whereas', ['where', 'as']],
+  ['whereby', ['where', 'by']],
+  
+  // Whirl- compounds
+  ['whirlpool', ['whirl', 'pool']],
+  ['whirlwind', ['whirl', 'wind']],
+  
+  // White- compounds
+  ['whitewash', ['white', 'wash']],
+  
+  // Who- compounds
+  ['whoever', ['who', 'ever']],
+  
+  // Will- compounds
+  ['willpower', ['will', 'power']],
+  
+  // Wind- compounds
+  ['windmill', ['wind', 'mill']],
+  ['windpipe', ['wind', 'pipe']],
+  ['windshield', ['wind', 'shield']],
   ['westwind', ['west', 'wind']],
   ['eastwind', ['east', 'wind']],
   ['northwind', ['north', 'wind']],
@@ -185,35 +1673,93 @@ export const COMPOUND_WORDS = new Map<string, string[]>([
   ['tailwind', ['tail', 'wind']],
   ['crosswind', ['cross', 'wind']],
   ['whirlwind', ['whirl', 'wind']],
-  ['judgment', ['judg', 'ment']],
-  ['midnight', ['mid', 'night']],
-  ['daylight', ['day', 'light']],
-  ['moonlight', ['moon', 'light']],
-  ['sunlight', ['sun', 'light']],
-  ['flashlight', ['flash', 'light']],
-  ['spotlight', ['spot', 'light']],
-  ['headlight', ['head', 'light']],
-  ['streetlight', ['street', 'light']],
-  ['stoplight', ['stop', 'light']],
-  ['fireplace', ['fire', 'place']],
+  
+  // Winter- compounds
+  ['wintertime', ['winter', 'time']],
+  
+  // Wish- compounds
+  ['wishbone', ['wish', 'bone']],
+  
+  // With- compounds
+  ['withdraw', ['with', 'draw']],
+  ['withdrawal', ['with', 'drawal']],
+  ['withdrawn', ['with', 'drawn']],
+  ['withheld', ['with', 'held']],
+  ['withhold', ['with', 'hold']],
+  ['without', ['with', 'out']],
+  ['withstand', ['with', 'stand']],
+  
+  // Wood- compounds
+  ['woodland', ['wood', 'land']],
+  ['woodpecker', ['wood', 'pecker']],
+  ['woodsman', ['wood', 'sman']],
+  ['woodwork', ['wood', 'work']],
+  
+  // Work- compounds
+  ['workbench', ['work', 'bench']],
+  ['workbook', ['work', 'book']],
+  ['workday', ['work', 'day']],
+  ['workout', ['work', 'out']],
+  ['worktable', ['work', 'table']],
+  ['workman', ['work', 'man']],
   ['workplace', ['work', 'place']],
-  ['someplace', ['some', 'place']],
-  ['anyplace', ['an', 'y', 'place']],
+  
+  // World- compounds
+  ['worldwide', ['world', 'wide']],
+  
+  // Worth- compounds
+  ['worthwhile', ['worth', 'while']],
+  
+  // Wrist- compounds
+  ['wristwatch', ['wrist', 'watch']],
+  
+  // Yard- compounds
+  ['yardstick', ['yard', 'stick']],
+  
+  // Year- compounds
+  ['yearbook', ['year', 'book']],
+  ['yesterday', ['yes', 'ter', 'day']],
+  
+  // Your- compounds
+  ['yourself', ['your', 'self']],
+  
+  // Zoo- compounds
+  ['zookeeper', ['zoo', 'keeper']],
+  
+  // Classic compound words for completeness
+  ['comeback', ['come', 'back']],
+  ['flashback', ['flash', 'back']],
+  ['throwback', ['throw', 'back']],
+  ['payback', ['pay', 'back']],
+  ['drawback', ['draw', 'back']],
+  ['lockout', ['lock', 'out']],
+  ['walkout', ['walk', 'out']],
+  ['fallout', ['fall', 'out']],
+  ['blackout', ['black', 'out']],
+  ['buyout', ['buy', 'out']],
+  ['payout', ['pay', 'out']],
+  ['slideshow', ['slide', 'show']],
+  ['volleyball', ['vol', 'ley', 'ball']],
+  ['fastball', ['fast', 'ball']],
+  ['curveball', ['curve', 'ball']],
+  ['meatball', ['meat', 'ball']],
+  ['businessman', ['bus', 'i', 'ness', 'man']],
+  ['policeman', ['po', 'lice', 'man']],
+  ['chairman', ['chair', 'man']],
+  ['caveman', ['cave', 'man']],
+  ['cheesecake', ['cheese', 'cake']],
+  ['everyday', ['ev', 'ery', 'day']],
+  ['today', ['to', 'day']],
+  ['holiday', ['hol', 'i', 'day']],
   ['marketplace', ['mar', 'ket', 'place']],
-  ['doorway', ['door', 'way']],
-  ['runway', ['run', 'way']],
-  ['hallway', ['hall', 'way']],
   ['pathway', ['path', 'way']],
-  ['highway', ['high', 'way']],
   ['subway', ['sub', 'way']],
-  ['halfway', ['half', 'way']],
-  ['railway', ['rail', 'way']],
-  ['walkway', ['walk', 'way']],
-  ['driveway', ['drive', 'way']],
-  ['waterway', ['wa', 'ter', 'way']],
   ['gateway', ['gate', 'way']],
-  ['freeway', ['free', 'way']],
   ['causeway', ['cause', 'way']],
+  ['midnight', ['mid', 'night']],
+  ['spotlight', ['spot', 'light']],
+  ['stoplight', ['stop', 'light']],
+  ['judgment', ['judg', 'ment']],
 ]);
 
 // False flag silent-e words - final "e" is pronounced, not silent
