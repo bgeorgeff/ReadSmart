@@ -1,4 +1,3 @@
-
 /**
  * Morphological Analysis Module
  * Detects prefixes, suffixes, and root words
@@ -582,12 +581,12 @@ export class MorphologicalAnalyzer {
    */
   handleEdSuffix(word: string): string[] | null {
     if (!word.endsWith('ed')) return null;
-    
+
     const root = word.slice(0, -2);
     if (root.length < 2) return null;
-    
+
     const lastChar = root.slice(-1).toLowerCase();
-    
+
     // -ed creates new syllable only after 't' or 'd'
     if (lastChar === 't' || lastChar === 'd') {
       return ['ed']; // Separate syllable
@@ -606,5 +605,48 @@ export class MorphologicalAnalyzer {
     ];
 
     return rControlledPatterns.includes(pattern.toLowerCase());
+  }
+
+    /**
+   * Get morphological hints for a word
+   */
+  getMorphologicalHints(word: string): string[] | null {
+    return null;
+  }
+
+  /**
+   * Detect morphological boundaries in a word
+   */
+  detectBoundaries(word: string): number[] {
+    const boundaries: number[] = [];
+    const lowerWord = word.toLowerCase();
+
+    // Detect prefix boundaries
+    const prefixes = ['un', 're', 'pre', 'dis', 'in', 'im', 'non', 'over', 'under', 'out', 'up', 'sub', 'super', 'anti', 'auto', 'co', 'de', 'ex', 'inter', 'multi', 'post', 'pro', 'semi', 'trans', 'ultra', 'counter', 'mis', 'fore', 'mid', 'self', 'neo', 'pseudo', 'retro', 'bi', 'tri', 'uni', 'mono', 'poly', 'micro', 'macro', 'mega', 'mini', 'hyper', 'hypo', 'meta', 'para', 'vice'];
+    for (const prefix of prefixes) {
+      if (lowerWord.startsWith(prefix) && lowerWord.length > prefix.length + 2) {
+        boundaries.push(prefix.length);
+        break;
+      }
+    }
+
+    // Detect suffix boundaries
+    const suffixes = ['ly', 'ing', 'ed', 'er', 'est', 'tion', 'sion', 'ness', 'ment', 'ful', 'less', 'able', 'ible', 'ous', 'ious', 'al', 'ial', 'ic', 'ive', 'ance', 'ence', 'ant', 'ent', 'ary', 'ery', 'ory', 'ity', 'ty', 'fy', 'ize', 'ise', 'ward', 'wise', 'like', 'ship', 'hood', 'dom', 'teen', 'ty', 'th'];
+    for (const suffix of suffixes) {
+      if (lowerWord.endsWith(suffix) && lowerWord.length > suffix.length + 2) {
+        boundaries.push(lowerWord.length - suffix.length);
+        break;
+      }
+    }
+
+    return boundaries;
+  }
+
+  /**
+   * Check if a syllable boundary should be preserved for morphological reasons
+   */
+  shouldPreserveBoundary(word: string, position: number): boolean {
+    const boundaries = this.detectBoundaries(word);
+    return boundaries.includes(position);
   }
 }
