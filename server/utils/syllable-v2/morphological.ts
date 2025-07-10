@@ -556,7 +556,25 @@ const MORPHOLOGICAL_OVERRIDES = new Map([
   ['one', 'one'],
   ['recipe', 'rec-i-pe'],
   ['some', 'some'],
-  ['tie', 'tie']
+  ['tie', 'tie'],
+  
+  // -tion/-al words that need correct morphological boundaries
+  ['international', 'in-ter-na-tion-al'],
+  ['national', 'na-tion-al'],
+  ['educational', 'ed-u-ca-tion-al'],
+  ['professional', 'pro-fes-sion-al'],
+  ['traditional', 'tra-di-tion-al'],
+  ['constitutional', 'con-sti-tu-tion-al'],
+  ['organizational', 'or-gan-i-za-tion-al'],
+  ['institutional', 'in-sti-tu-tion-al'],
+  ['operational', 'op-er-a-tion-al'],
+  ['recreational', 'rec-re-a-tion-al'],
+  ['promotional', 'pro-mo-tion-al'],
+  ['devotional', 'de-vo-tion-al'],
+  ['emotional', 'e-mo-tion-al'],
+  ['rational', 'ra-tion-al'],
+  ['optional', 'op-tion-al'],
+  ['additional', 'ad-di-tion-al']
 ]);
 
 export class MorphologicalAnalyzer {
