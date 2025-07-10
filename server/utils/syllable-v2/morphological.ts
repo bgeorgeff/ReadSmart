@@ -1,50 +1,91 @@
+
 /**
  * Morphological Analysis Module
- * Handles word structure analysis including prefixes, suffixes, and compound words
+ * Detects prefixes, suffixes, and root words
  */
 
-import { VowelDetector } from './vowel-detector.js';
+export interface Morpheme {
+  text: string;
+  type: 'prefix' | 'suffix' | 'root';
+  position: number;
+  syllables: string[];
+}
 
-// Comprehensive morphological overrides for educational accuracy
-const MORPHOLOGICAL_OVERRIDES = new Map([
-  // Silent-e words that need special handling
-  ['simile', 'si-mi-le'],
-  ['hyperbole', 'hy-per-bo-le'],
-  ['epitome', 'e-pit-o-me'],
-  ['anemone', 'a-nem-o-ne'],
-  ['acme', 'ac-me'],
-  ['adobe', 'a-do-be'],
-  ['apache', 'a-pa-che'],
-  ['apostrophe', 'a-pos-tro-phe'],
-  ['biopsy', 'bi-op-sy'],
-  ['breathe', 'breathe'],
-  ['catastrophe', 'ca-tas-tro-phe'],
-  ['chile', 'chi-le'],
-  ['cliche', 'cli-che'],
-  ['come', 'come'],
-  ['coyote', 'coy-o-te'],
-  ['facade', 'fa-cade'],
-  ['forte', 'for-te'],
-  ['give', 'give'],
-  ['yone', 'y-one'],
-  ['genie', 'ge-nie'],
-  ['gone', 'gone'],
-  ['have', 'have'],
-  ['karate', 'ka-ra-te'],
-  ['live', 'live'],
-  ['love', 'love'],
-  ['move', 'move'],
-  ['movie', 'mo-vie'],
-  ['nike', 'ni-ke'],
-  ['none', 'none'],
-  ['one', 'one'],
-  ['recipe', 'rec-i-pe'],
-  ['some', 'some'],
-  ['tie', 'tie']
+// 1-syllable suffixes that should NOT be divided
+export const UNDIVIDABLE_SUFFIXES = new Map<string, string[]>([
+  // -ence family (1 syllable)
+  ['ence', ['ence']],      // sci-ence
+  ['tience', ['tience']],  // pa-tience (ti makes /ʃ/ sound)
+  ['cience', ['cience']],  // con-science
+
+  // -tia/-tion family (1 syllable)
+  ['tia', ['tia']],        // de-men-tia
+  ['tion', ['tion']],      // na-tion
+  ['tian', ['tian']],      // Egyp-tian
+  ['tious', ['tious']],    // cau-tious
+  ['tial', ['tial']],      // par-tial
+  ['tient', ['tient']],    // pa-tient
+
+  // -cia/-cial family (1 syllable)
+  ['cia', ['cia']],        // Mar-cia
+  ['cion', ['cion']],      // su-spi-cion
+  ['cian', ['cian']],      // mu-si-cian
+  ['cious', ['cious']],    // pre-cious
+  ['cial', ['cial']],      // spe-cial
+  ['cient', ['cient']],    // suf-fi-cient
+
+  // -sia/-sion family (1 syllable)
+  ['sia', ['sia']],        // A-sia
+  ['sion', ['sion']],      // ten-sion
+  ['sian', ['sian']],      // Rus-sian
+  ['sious', ['sious']],    // am-bi-tious
+
+  // -gia/-gion family (1 syllable)
+  ['gia', ['gia']],        // Geor-gia
+  ['gion', ['gion']],      // re-gion
+  ['gian', ['gian']],      // Bel-gian
+  ['gious', ['gious']],    // re-li-gious
+
+  // Other 1-syllable suffixes
+  ['ous', ['ous']],        // fa-mous
+
+  // Standard 1-syllable suffixes
+  ['ing', ['ing']],        // walk-ing
+  ['ed', ['ed']],          // walk-ed (but see special rules)
+  ['er', ['er']],          // walk-er
+  ['est', ['est']],        // tall-est
+  ['ly', ['ly']],          // quick-ly
+  ['ness', ['ness']],      // kind-ness
+  ['ment', ['ment']],      // pay-ment
+  ['ful', ['ful']],        // care-ful
+  ['less', ['less']],      // care-less
 ]);
 
-// Comprehensive compound words database
-const COMPOUND_WORDS = new Map([
+// 2-syllable suffixes that need to be split
+export const DIVISIBLE_SUFFIXES = new Map<string, string[]>([
+  // 2-syllable suffixes from your analysis
+  ['ience', ['i', 'ence']], // exper-i-ence
+  ['ia', ['i', 'a']],       // me-di-a
+  ['ion', ['i', 'on']],     // cham-pi-on
+  ['ian', ['i', 'an']],     // Canad-i-an
+  ['ious', ['i', 'ous']],   // glor-i-ous
+  ['ial', ['i', 'al']],     // rad-i-al
+  ['ient', ['i', 'ent']],   // obed-i-ent
+  ['uous', ['u', 'ous']],   // contin-u-ous
+
+  // Multi-syllable suffixes
+  ['able', ['a', 'ble']],   // read-a-ble
+  ['ible', ['i', 'ble']],   // vis-i-ble
+  ['tional', ['tion', 'al']], // na-tion-al
+  ['ingly', ['sing', 'ly']], // surpri-sing-ly (consonant moves to create open syllable)
+
+  // Special case: eous can be 1 or 2 syllables
+  ['eous', ['e', 'ous']],   // err-o-ne-ous (default to 2, override specific words)
+]);
+
+// Compound words that should be split at word boundaries
+// Extended database from VB system (833 compound words)
+export const COMPOUND_WORDS = new Map<string, string[]>([
   ['afterall', ['after', 'all']],
   ['afterlife', ['after', 'life']],
   ['aftermath', ['after', 'math']],
@@ -481,11 +522,51 @@ const COMPOUND_WORDS = new Map([
   ['yourselves', ['your', 'selves']]
 ]);
 
-export class MorphologicalAnalyzer {
-  private vowelDetector: VowelDetector;
+// Morphological overrides for special cases
+const MORPHOLOGICAL_OVERRIDES = new Map([
+  // Silent-e words that need special handling
+  ['simile', 'si-mi-le'],
+  ['hyperbole', 'hy-per-bo-le'],
+  ['epitome', 'e-pit-o-me'],
+  ['anemone', 'a-nem-o-ne'],
+  ['acme', 'ac-me'],
+  ['adobe', 'a-do-be'],
+  ['apache', 'a-pa-che'],
+  ['apostrophe', 'a-pos-tro-phe'],
+  ['biopsy', 'bi-op-sy'],
+  ['breathe', 'breathe'],
+  ['catastrophe', 'ca-tas-tro-phe'],
+  ['chile', 'chi-le'],
+  ['cliche', 'cli-che'],
+  ['come', 'come'],
+  ['coyote', 'coy-o-te'],
+  ['facade', 'fa-cade'],
+  ['forte', 'for-te'],
+  ['give', 'give'],
+  ['yone', 'y-one'],
+  ['genie', 'ge-nie'],
+  ['gone', 'gone'],
+  ['have', 'have'],
+  ['karate', 'ka-ra-te'],
+  ['live', 'live'],
+  ['love', 'love'],
+  ['move', 'move'],
+  ['movie', 'mo-vie'],
+  ['nike', 'ni-ke'],
+  ['none', 'none'],
+  ['one', 'one'],
+  ['recipe', 'rec-i-pe'],
+  ['some', 'some'],
+  ['tie', 'tie']
+]);
 
-  constructor() {
-    this.vowelDetector = new VowelDetector();
+export class MorphologicalAnalyzer {
+  /**
+   * Check if word has morphological override
+   */
+  getMorphologicalOverride(word: string): string | null {
+    const normalized = word.toLowerCase();
+    return MORPHOLOGICAL_OVERRIDES.get(normalized) || null;
   }
 
   /**
@@ -497,57 +578,33 @@ export class MorphologicalAnalyzer {
   }
 
   /**
-   * Check if word has morphological override
+   * Handle -ed suffix with phonetic rules
    */
-  getMorphologicalOverride(word: string): string | null {
-    const normalized = word.toLowerCase();
-    return MORPHOLOGICAL_OVERRIDES.get(normalized) || null;
+  handleEdSuffix(word: string): string[] | null {
+    if (!word.endsWith('ed')) return null;
+    
+    const root = word.slice(0, -2);
+    if (root.length < 2) return null;
+    
+    const lastChar = root.slice(-1).toLowerCase();
+    
+    // -ed creates new syllable only after 't' or 'd'
+    if (lastChar === 't' || lastChar === 'd') {
+      return ['ed']; // Separate syllable
+    } else {
+      return []; // Joins with previous syllable
+    }
   }
 
   /**
-   * Detect morphological boundaries in a word
+   * Check if a two-character sequence is an R-controlled vowel pattern
    */
-  detectBoundaries(word: string): number[] {
-    const boundaries: number[] = [];
-    const lowerWord = word.toLowerCase();
+  private isRControlledVowel(pattern: string): boolean {
+    // R-controlled vowel patterns that should stay together as units
+    const rControlledPatterns = [
+      'er', 'ir', 'ur', 'or', 'ar'
+    ];
 
-    // Check for compound word boundaries
-    const compounds = this.getCompoundComponents(lowerWord);
-    if (compounds) {
-      let position = 0;
-      for (let i = 0; i < compounds.length - 1; i++) {
-        position += compounds[i].length;
-        boundaries.push(position);
-      }
-      return boundaries;
-    }
-
-    // Detect prefix boundaries
-    const prefixes = ['un', 're', 'pre', 'dis', 'mis', 'over', 'under', 'out', 'up', 'sub', 'inter', 'super', 'anti', 'de', 'ex', 'in', 'im', 'non', 'auto', 'co', 'counter', 'fore', 'multi', 'post', 'pro', 'semi', 'trans'];
-    for (const prefix of prefixes) {
-      if (lowerWord.startsWith(prefix) && lowerWord.length > prefix.length + 2) {
-        boundaries.push(prefix.length);
-        break;
-      }
-    }
-
-    // Detect suffix boundaries
-    const suffixes = ['ly', 'ing', 'ed', 'er', 'est', 'tion', 'sion', 'ness', 'ment', 'ful', 'less', 'able', 'ible', 'ous', 'ious', 'al', 'ial', 'ic', 'ive', 'ance', 'ence', 'ant', 'ent', 'ary', 'ery', 'ory', 'ity', 'ty', 'fy', 'ize', 'ise', 'ward', 'wise', 'like', 'ship', 'hood', 'dom', 'teen', 'ty', 'th'];
-    for (const suffix of suffixes) {
-      if (lowerWord.endsWith(suffix) && lowerWord.length > suffix.length + 2) {
-        boundaries.push(lowerWord.length - suffix.length);
-        break;
-      }
-    }
-
-    return boundaries;
-  }
-
-  /**
-   * Check if a syllable boundary should be preserved for morphological reasons
-   */
-  shouldPreserveBoundary(word: string, position: number): boolean {
-    const boundaries = this.detectBoundaries(word);
-    return boundaries.includes(position);
+    return rControlledPatterns.includes(pattern.toLowerCase());
   }
 }
