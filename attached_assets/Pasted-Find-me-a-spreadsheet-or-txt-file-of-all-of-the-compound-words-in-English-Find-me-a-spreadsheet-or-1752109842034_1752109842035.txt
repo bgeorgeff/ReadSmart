@@ -1,0 +1,113 @@
+Find me a spreadsheet or txt file of all of the compound words in English.
+Find me a spreadsheet or txt file of all of the compound words in English.
+Available English Compound Words Spreadsheets and Text Files
+Based on my research, I found several options for obtaining comprehensive lists of English compound words in spreadsheet or text file formats. Here are the best resources available:
+
+Major Compound Words Databases
+LADEC (Large Database of English Compounds)
+The largest academic database specifically for compound words contains over 8,000 English compound words that can be parsed into two constituents. The database includes:
+
+8,376 unique compounds with additional parsing variants
+
+Available in both CSV and Stata formats
+
+Hand-coded compounds with linguistic and psycholinguistic variables
+
+Originally available through the University of Alberta's repository, though the specific download link has been migrated to https://ualberta.scholaris.ca
+
+Comprehensive Word Lists for General Use
+While not exclusively compound words, the dwyl/english-words GitHub repository provides extensive word lists:
+
+479,000+ English words in multiple formats
+
+Available files include:
+
+words.txt - contains all words
+
+words_alpha.txt - alphabetic characters only
+
+words_dictionary.json - JSON format for programming use
+
+uk-us-dict.txt - UK/US spelling differences
+
+Specialized Compound Word Resources
+Academic and Research Databases
+
+Juhasz et al. (2015) database with 629 compound words including ratings for familiarity, semantic transparency, and other linguistic properties
+
+GitHub repository with 1,042 English noun compounds annotated for semantic compositionality and conventionalization
+
+LaDEP (Large Database of English Pseudo-compounds) containing nearly 7,500 words that appear compound-like but aren't true compounds
+
+Educational Resources
+Several educational platforms offer compound word lists:
+
+3,317 compound words in alphabetical order from educational websites
+
+1,720 compound words organized by categories
+
+501 compound words for kids in PDF format
+
+Various educational sites with 100-500 compound word lists
+
+Accessing the Resources
+For Academic/Research Use:
+
+Access LADEC through the University of Alberta's new repository system
+
+Download specialized datasets from GitHub repositories
+
+Use research databases like Semantic Scholar for academic compound word studies
+
+For General Use:
+
+Download from GitHub: https://github.com/dwyl/english-words
+
+Access educational compound word lists from teaching resource websites
+
+Use WordNet utilities for compound word extraction
+
+Important Note: While there isn't a single comprehensive file containing "all" compound words in English (as the language is constantly evolving), the LADEC database represents the most complete academic collection specifically focused on compound words, while the dwyl/english-words repository offers the most comprehensive general English word collection that includes many compound words among its 479,000+ entries.
+
+The choice depends on your specific needs - academic research would benefit from LADEC, while general applications might prefer the larger, more accessible word lists from open-source repositories.
+
+which of these would be best to use within an app I am building to break compound words into syllables? Do any of these have the compound words already divided into syllables?
+which of these would be best to use within an app I am building to break compound words into syllables? Do any of these have the compound words already divided into syllables?
+Best Dataset for Breaking Compound Words into Syllables
+Summary Table
+Dataset/Resource	Contains Compound Words	Syllable Division Included?	Notes
+LADEC (Large Database of English Compounds)	Yes	No	Contains 8,000+ compounds, but does not include syllable division.
+dwyl/english-words (GitHub)	Yes (among all words)	No	General English word list; no syllable breakdown.
+Educational/Teaching Lists	Yes (varies by list)	No (typically)	Lists for teaching, but rarely include syllable breakdowns.
+WordNet Utilities	Yes (via extraction)	No	Does not provide syllable divisions.
+Key Points
+None of the major compound word datasets (including LADEC and dwyl/english-words) provide compound words already divided into syllables.
+
+LADEC is the most comprehensive, research-grade resource for English compound words, but it only provides compounds split into their constituent words, not into syllables.
+
+Most educational lists and open-source repositories focus on listing compound words or their constituent parts, not their syllabic structure.
+
+Syllable Division Guidance
+Standard practice for syllable division in compound words is to:
+
+Split the compound into its constituent words (e.g., "butterfly" → "butter" + "fly").
+
+Divide each constituent word into syllables using general English syllabication rules (e.g., "butter" → "but-ter", "fly" → "fly"; so "butterfly" → "but-ter-fly").
+
+There are several well-established rules and online tools for syllable division, but these are typically applied programmatically or with the help of syllabification libraries, not via pre-annotated datasets.
+
+Recommendations for Your App
+Best starting point: Use the LADEC database to reliably identify and split compound words into their constituent parts.
+
+For syllable division: Integrate an English syllabification library or API (such as those used by sites like HowManySyllables.com) to break each constituent word into syllables.
+
+No ready-made dataset currently provides both compound word lists and their syllable breakdowns. Combining LADEC with a syllabification tool will yield the best results for your app.
+
+Next Steps
+Download LADEC for compound word parsing.
+
+Apply a syllabification algorithm to each constituent word in your app.
+
+Present the final breakdown (e.g., "butterfly" → "but-ter-fly") to users.
+
+This approach offers flexibility, accuracy, and scalability for handling new or uncommon compound words.
