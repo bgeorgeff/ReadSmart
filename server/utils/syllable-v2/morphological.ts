@@ -151,6 +151,7 @@ export const PREFIXES = new Map<string, string[]>([
   ['non', ['non']],        // non-sense
   ['de', ['de']],          // de-code
   ['ex', ['ex']],          // ex-port
+  ['sur', ['sur']],        // sur-prise, sur-face
 ]);
 
 // Universal suffix patterns that create consonant+i syllables
