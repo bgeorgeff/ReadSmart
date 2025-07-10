@@ -71,12 +71,12 @@ export const DIVISIBLE_SUFFIXES = new Map<string, string[]>([
   ['ial', ['i', 'al']],     // rad-i-al
   ['ient', ['i', 'ent']],   // obed-i-ent
   ['uous', ['u', 'ous']],   // contin-u-ous
-  
+
   // Multi-syllable suffixes
   ['able', ['a', 'ble']],   // read-a-ble
   ['ible', ['i', 'ble']],   // vis-i-ble
   ['tional', ['tion', 'al']], // na-tion-al
-  
+
   // Special case: eous can be 1 or 2 syllables
   ['eous', ['e', 'ous']],   // err-o-ne-ous (default to 2, override specific words)
 ]);
@@ -99,7 +99,7 @@ export const FALSE_FLAG_SILENT_E_OVERRIDES = new Map<string, string[]>([
   ['ole', ['o', 'le']],
   ['melee', ['me', 'lee']],
   ['matinee', ['ma', 'ti', 'nee']],
-  
+
   // Latin/Greek-based words (14 words)
   ['recipe', ['re', 'ci', 'pe']],
   ['apostrophe', ['a', 'po', 'stro', 'phe']],
@@ -115,13 +115,13 @@ export const FALSE_FLAG_SILENT_E_OVERRIDES = new Map<string, string[]>([
   ['vigilante', ['vi', 'gi', 'lan', 'te']],
   ['anemone', ['a', 'ne', 'mo', 'ne']],
   ['calliope', ['cal', 'li', 'o', 'pe']],
-  
+
   // Native American words (4 words)
   ['apache', ['a', 'pa', 'che']],
   ['comanche', ['co', 'man', 'che']],
   ['osage', ['o', 'sa', 'ge']],
   ['tarhe', ['tar', 'he']],
-  
+
   // Consonant+i pattern words requiring special handling
   ['obedient', ['o', 'be', 'di', 'ent']],
   ['expedient', ['ex', 'pe', 'di', 'ent']],
@@ -212,7 +212,7 @@ export class MorphologicalAnalyzer {
    */
   analyzeWord(word: string): Morpheme[] {
     const lowerWord = word.toLowerCase();
-    
+
     // Check for R-controlled + ious words first (highest priority for these specific cases)
     if (R_CONTROLLED_IOUS_WORDS.has(lowerWord)) {
       const syllables = R_CONTROLLED_IOUS_WORDS.get(lowerWord)!;
@@ -223,7 +223,7 @@ export class MorphologicalAnalyzer {
         syllables: [...syllables]
       }];
     }
-    
+
     // Check for false flag silent-e words second (high priority)
     if (FALSE_FLAG_SILENT_E_OVERRIDES.has(lowerWord)) {
       const syllables = FALSE_FLAG_SILENT_E_OVERRIDES.get(lowerWord)!;
@@ -270,7 +270,7 @@ export class MorphologicalAnalyzer {
         } else {
           suffixSyllables = map.get(suffix)!;
         }
-        
+
         const suffixStart = currentPosition + remainingWord.length - suffix.length;
 
         morphemes.push({
@@ -410,5 +410,17 @@ export class MorphologicalAnalyzer {
     } else {
       return []; // Joins with previous syllable
     }
+  }
+
+  /**
+   * Check if a two-character sequence is an R-controlled vowel pattern
+   */
+  private isRControlledVowel(pattern: string): boolean {
+    // R-controlled vowel patterns that should stay together as units
+    const rControlledPatterns = [
+      'er', 'ir', 'ur', 'or', 'ar'
+    ];
+
+    return rControlledPatterns.includes(pattern.toLowerCase());
   }
 }
