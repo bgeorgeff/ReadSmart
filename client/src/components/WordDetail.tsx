@@ -13,13 +13,13 @@ interface WordDetailProps {
 export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
   const { toast } = useToast();
   const { speak, stopSpeaking } = useTextToSpeech();
-  
+
   // Word detail query
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/word', word, 'v2'], // Add version to force cache refresh
     queryFn: async () => {
       if (!word) return null;
-      
+
       const response = await fetch(`/api/word/${encodeURIComponent(word)}`);
       if (!response.ok) {
         throw new Error('Failed to fetch word details');
@@ -29,38 +29,38 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
     enabled: !!word && isOpen,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
-  
+
   // Stop speaking when modal closes and add keyboard support
   useEffect(() => {
     if (!isOpen) {
       stopSpeaking();
       return;
     }
-    
+
     // Add keyboard support for closing modal with Escape key
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
-    
+
     // Cleanup
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, stopSpeaking, onClose]);
-  
+
   if (!isOpen) return null;
-  
+
   // Handle pronunciation
   const handlePronounce = () => {
     if (word) {
       speak(word);
     }
   };
-  
+
   return (
     <div 
       className="fixed inset-0 bg-black/25 backdrop-blur-sm flex items-center justify-center z-50"
@@ -84,7 +84,7 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
             </svg>
           </button>
         </div>
-        
+
         {/* Content */}
         <div className="p-6">
           {isLoading ? (
@@ -121,7 +121,7 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
                   </button>
                 </div>
               </div>
-              
+
               <div>
                 <div className="mb-4">
                   <h4 className="font-['Google_Sans'] text-sm uppercase text-gray-500 mb-2">Definition</h4>
@@ -140,7 +140,7 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
                     Listen
                   </button>
                 </div>
-                
+
                 <div className="mb-4">
                   <h4 className="font-['Google_Sans'] text-sm uppercase text-gray-500 mb-2">Example</h4>
                   <div className="bg-[#34A853]/5 p-3 rounded-lg mb-1">
@@ -158,7 +158,7 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
                     Listen
                   </button>
                 </div>
-                
+
                 <div className="mb-4">
                   <h4 className="font-['Google_Sans'] text-sm uppercase text-gray-500 mb-2">Example</h4>
                   <div className="bg-[#34A853]/5 p-3 rounded-lg mb-1">
@@ -176,7 +176,7 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
                     Listen
                   </button>
                 </div>
-                
+
                 <p className="text-sm text-center text-gray-500 mt-4">
                   Click any listen button to hear the word, definition, or example
                 </p>
@@ -188,7 +188,7 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
             </div>
           )}
         </div>
-        
+
         {/* Footer */}
         <div className="bg-gray-50 px-6 py-3 flex justify-center">
           <button 
