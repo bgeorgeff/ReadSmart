@@ -131,6 +131,7 @@ export const FALSE_FLAG_SILENT_E_OVERRIDES = new Map<string, string[]>([
 
 // Common prefixes
 export const PREFIXES = new Map<string, string[]>([
+  // Single syllable prefixes
   ['un', ['un']],          // un-happy
   ['re', ['re']],          // re-do
   ['in', ['in']],          // in-active
@@ -139,19 +140,55 @@ export const PREFIXES = new Map<string, string[]>([
   ['mis', ['mis']],        // mis-take
   ['pre', ['pre']],        // pre-view
   ['post', ['post']],      // post-war
-  ['over', ['o', 'ver']],  // o-ver-do
-  ['under', ['un', 'der']], // un-der-stand
   ['out', ['out']],        // out-side
   ['sub', ['sub']],        // sub-way
-  ['super', ['su', 'per']], // su-per-man
-  ['inter', ['in', 'ter']], // in-ter-act
-  ['trans', ['trans']],    // trans-port
-  ['anti', ['an', 'ti']],  // an-ti-body
-  ['semi', ['sem', 'i']],  // sem-i-circle
   ['non', ['non']],        // non-sense
   ['de', ['de']],          // de-code
   ['ex', ['ex']],          // ex-port
   ['sur', ['sur']],        // sur-prise, sur-face
+  ['con', ['con']],        // con-nect
+  ['com', ['com']],        // com-bine
+  ['pro', ['pro']],        // pro-duce
+  ['up', ['up']],          // up-grade
+  ['bi', ['bi']],          // bi-cycle
+  ['tri', ['tri']],        // tri-angle
+  ['ir', ['ir']],          // ir-regular
+  ['il', ['il']],          // il-legal
+  ['fore', ['fore']],      // fore-cast
+  ['trans', ['trans']],    // trans-port, trans-atlantic
+
+  // Two syllable prefixes
+  ['over', ['o', 'ver']],  // o-ver-do
+  ['under', ['un', 'der']], // un-der-stand
+  ['super', ['su', 'per']], // su-per-man
+  ['inter', ['in', 'ter']], // in-ter-act
+  ['anti', ['an', 'ti']],  // an-ti-body, an-ti-social
+  ['semi', ['sem', 'i']],  // sem-i-circle
+  ['auto', ['au', 'to']],  // au-to-matic
+  ['micro', ['mi', 'cro']], // mi-cro-scope
+  ['ultra', ['ul', 'tra']], // ul-tra-sound
+  ['extra', ['ex', 'tra']], // ex-tra-ordinary
+  ['counter', ['coun', 'ter']], // coun-ter-act, coun-ter-productive
+  ['para', ['pa', 'ra']],  // pa-ra-graph
+  ['meta', ['met', 'a']],  // met-a-data
+  ['hyper', ['hy', 'per']], // hy-per-active
+  ['pseudo', ['pseu', 'do']], // pseu-do-science
+  ['neo', ['ne', 'o']],    // ne-o-classical
+  ['proto', ['pro', 'to']], // pro-to-type
+  ['tele', ['tel', 'e']],  // tel-e-phone
+  ['mono', ['mon', 'o']],  // mon-o-tone
+  ['poly', ['pol', 'y']],  // pol-y-gon
+  ['mega', ['meg', 'a']],  // meg-a-byte
+  ['giga', ['gig', 'a']],  // gig-a-byte
+  ['mini', ['min', 'i']],  // min-i-mum
+  ['maxi', ['max', 'i']],  // max-i-mum
+  ['after', ['af', 'ter']], // af-ter-noon
+  ['intro', ['in', 'tro']], // in-tro-duce
+  ['retro', ['ret', 'ro']], // ret-ro-spective
+  ['multi', ['mul', 'ti']], // mul-ti-ple
+
+  // Three syllable prefixes
+  ['circum', ['cir', 'cum']], // cir-cum-ference
 ]);
 
 // Universal suffix patterns that create consonant+i syllables
@@ -254,7 +291,7 @@ export class MorphologicalAnalyzer {
       }];
     }
 
-    
+
 
     const morphemes: Morpheme[] = [];
     let remainingWord = word.toLowerCase();
