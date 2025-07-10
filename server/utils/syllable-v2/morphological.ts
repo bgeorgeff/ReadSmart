@@ -135,13 +135,6 @@ export class MorphologicalAnalyzer {
   }
 }
 
-// Extended database from VB system (833 compound words)
-// Compound words database (8639 entries)
-// Merged from original 833 tested compounds + LADEC research database
-// Compound words database (8639 entries)
-// Merged from original 833 tested compounds + LADEC research database
-// Compound words database (8639 entries)
-// Merged from original 833 tested compounds + LADEC research database
 // Compound words database (8639 entries)
 // Merged from original 883 tested compounds + LADEC research database
 export const COMPOUND_WORDS = new Map<string, string[]>([
@@ -8929,32 +8922,7 @@ export const SINGLE_SYLLABLE_EOUS_WORDS = new Map<string, string[]>([
   ['righteous', ['right', 'eous']],   // right-eous (1 syllable ending)
 ]);
 
-export class MorphologicalAnalyzer {
-  /**
-   * Check if word ends with consonant+i suffix pattern
-   */
-  private detectConsonantISuffix(word: string): { suffix: string, consonant: string, position: number } | null {
-    const lowerWord = word.toLowerCase();
-
-    for (const suffix of CONSONANT_I_SUFFIXES) {
-      if (lowerWord.endsWith(suffix)) {
-        const suffixStart = lowerWord.length - suffix.length;
-        if (suffixStart > 0) {
-          const precedingChar = lowerWord[suffixStart - 1];
-          // Check if preceded by consonant (not vowel or 'y')
-          if (precedingChar && !/[aeiouy]/.test(precedingChar)) {
-            return {
-              suffix: suffix,
-              consonant: precedingChar,
-              position: suffixStart - 1
-            };
-          }
-        }
-      }
-    }
-
-    return null;
-  }
+export 
 
   /**
    * Analyze word for morphological components
