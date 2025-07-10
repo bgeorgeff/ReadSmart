@@ -85,12 +85,33 @@ export function processLADECFile(csvFilePath: string): Map<string, string[]> {
 }
 
 /**
+ * Check for duplicates between LADEC and existing compound words
+ */
+export function findDuplicates(
+  ladecWords: Map<string, string[]>, 
+  existingWords: Map<string, string[]>
+): string[] {
+  const duplicates: string[] = [];
+  
+  for (const [compound] of ladecWords) {
+    if (existingWords.has(compound)) {
+      duplicates.push(compound);
+    }
+  }
+  
+  return duplicates.sort();
+}
+
+/**
  * Merge LADEC data with existing compound words, preserving our tested entries
  */
 export function mergeLADECWithExisting(
   ladecWords: Map<string, string[]>, 
   existingWords: Map<string, string[]>
 ): Map<string, string[]> {
+  
+  // Find duplicates first
+  const duplicates = findDuplicates(ladecWords, existingWords);
   
   const mergedWords = new Map(existingWords); // Start with our tested entries
   let addedCount = 0;
@@ -108,6 +129,20 @@ export function mergeLADECWithExisting(
   
   console.log(`Added ${addedCount} new compounds from LADEC`);
   console.log(`Skipped ${skippedCount} compounds (preserving existing entries)`);
+  
+  if (duplicates.length > 0) {
+    console.log(`\n📋 Duplicate Detection Report:`);
+    console.log(`Found ${duplicates.length} duplicates between your entries and LADEC:`);
+    if (duplicates.length <= 20) {
+      console.log(`   ${duplicates.join(', ')}`);
+    } else {
+      console.log(`   ${duplicates.slice(0, 20).join(', ')}... and ${duplicates.length - 20} more`);
+    }
+    console.log(`✅ Your original entries were preserved (kept as "gold standard")`);
+  } else {
+    console.log(`✅ No duplicates found - all LADEC entries are unique additions`);
+  }
+  
   console.log(`Total compound words: ${mergedWords.size}`);
   
   return mergedWords;
