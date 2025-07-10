@@ -10,6 +10,15 @@ export interface Morpheme {
   syllables: string[];
 }
 
+export interface MorphologicalHints {
+  preservedUnits: Array<{
+    start: number;
+    end: number;
+    syllables: string[];
+  }>;
+  boundaries: number[];
+}
+
 // 1-syllable suffixes that should NOT be divided
 export const UNDIVIDABLE_SUFFIXES = new Map<string, string[]>([
   // -ence family (1 syllable)
@@ -83,6 +92,49 @@ export const DIVISIBLE_SUFFIXES = new Map<string, string[]>([
 ]);
 
 // Compound words that should be split at word boundaries
+export class MorphologicalAnalyzer {
+  /**
+   * Check if a word is a compound word and return its components
+   */
+  getCompoundComponents(word: string): string[] | null {
+    const lowerWord = word.toLowerCase();
+    return COMPOUND_WORDS.get(lowerWord) || null;
+  }
+
+  /**
+   * Get morphological hints for a word
+   */
+  getMorphologicalHints(word: string): MorphologicalHints {
+    // Check for compound words first
+    const compoundComponents = this.getCompoundComponents(word);
+    if (compoundComponents && compoundComponents.length > 1) {
+      // For compound words, we'll handle them separately
+      return {
+        preservedUnits: [],
+        boundaries: []
+      };
+    }
+
+    // Handle other morphological patterns here
+    return {
+      preservedUnits: [],
+      boundaries: []
+    };
+  }
+
+  /**
+   * Handle -ed suffix syllabification rules
+   */
+  handleEdSuffix(rootWord: string): string[] {
+    // If root ends in 't' or 'd' sound, -ed creates new syllable
+    if (rootWord.endsWith('t') || rootWord.endsWith('d')) {
+      return ['ed'];
+    }
+    // Otherwise -ed attaches to final syllable
+    return [];
+  }
+}
+
 // Extended database from VB system (833 compound words)
 // Compound words database (8639 entries)
 // Merged from original 833 tested compounds + LADEC research database
@@ -91,7 +143,7 @@ export const DIVISIBLE_SUFFIXES = new Map<string, string[]>([
 // Compound words database (8639 entries)
 // Merged from original 833 tested compounds + LADEC research database
 // Compound words database (8639 entries)
-// Merged from original 833 tested compounds + LADEC research database
+// Merged from original 883 tested compounds + LADEC research database
 export const COMPOUND_WORDS = new Map<string, string[]>([
   ['acetylcholine', ['acetyl', 'choline']],
   ['activewear', ['active', 'wear']],

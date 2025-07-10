@@ -134,7 +134,13 @@ export class CMUSyllabifierV2 {
     // 1. Get morphological hints first
     const morphHints = this.morphAnalyzer.getMorphologicalHints(word);
 
-    // 2. Check for complete word overrides (highest priority)
+    // 2. Check for compound words first (highest priority)
+    const compoundComponents = this.morphAnalyzer.getCompoundComponents(word);
+    if (compoundComponents && compoundComponents.length > 1) {
+      return this.syllabifyCompoundWord(compoundComponents, word);
+    }
+
+    // 3. Check for complete word overrides (highest priority)
     if (morphHints.preservedUnits.length === 1) {
       const unit = morphHints.preservedUnits[0];
       if (unit.start === 0 && unit.end === word.length && unit.syllables.length > 0) {
@@ -208,6 +214,55 @@ export class CMUSyllabifierV2 {
   }
 
   /**
+   * Syllabify compound words by processing each component separately
+   */
+  private async syllabifyCompoundWord(components: string[], originalWord: string): Promise<SyllabificationResult> {
+    const allSyllables: string[] = [];
+    let totalConfidence = 0;
+    const debugInfo: any[] = [];
+
+    for (const component of components) {
+      // Get phonemes for this component if available
+      const componentPhonemes = this.dictionary.get(component.toLowerCase());
+      
+      if (componentPhonemes) {
+        // Recursively syllabify this component using CMU data
+        const componentResult = this.syllabifyWithPhonemes(component, componentPhonemes);
+        allSyllables.push(...componentResult.syllables);
+        totalConfidence += componentResult.confidence;
+        debugInfo.push({
+          component,
+          syllables: componentResult.syllables,
+          method: componentResult.method
+        });
+      } else {
+        // Fallback to pattern-based syllabification for this component
+        const patternResult = this.syllabifyWithPatterns(component);
+        allSyllables.push(...patternResult.syllables);
+        totalConfidence += patternResult.confidence;
+        debugInfo.push({
+          component,
+          syllables: patternResult.syllables,
+          method: patternResult.method
+        });
+      }
+    }
+
+    const averageConfidence = totalConfidence / components.length;
+
+    return {
+      syllables: this.validateSyllables(allSyllables, originalWord),
+      method: 'cmu',
+      confidence: Math.min(0.95, averageConfidence), // Cap at 0.95 for compound words
+      debug: {
+        note: 'Compound word processing',
+        components: debugInfo,
+        originalComponents: components
+      }
+    };
+  }
+
+  /**
    * Process a text segment without morphological boundaries
    */
   private processTextSegment(text: string, phonemes: string[], vowelSounds: any[]): string[] {
@@ -268,9 +323,15 @@ export class CMUSyllabifierV2 {
    * Syllabify using pattern matching
    */
   private syllabifyWithPatterns(word: string): SyllabificationResult {
+    // 1. Check for compound words first (highest priority)
+    const compoundComponents = this.morphAnalyzer.getCompoundComponents(word);
+    if (compoundComponents && compoundComponents.length > 1) {
+      return this.syllabifyCompoundWordWithPatterns(compoundComponents, word);
+    }
+
     const morphHints = this.morphAnalyzer.getMorphologicalHints(word);
 
-    // Check for complete word overrides first (highest priority)
+    // 2. Check for complete word overrides (highest priority)
     if (morphHints.preservedUnits.length === 1) {
       const unit = morphHints.preservedUnits[0];
       if (unit.start === 0 && unit.end === word.length && unit.syllables.length > 0) {
@@ -322,6 +383,40 @@ export class CMUSyllabifierV2 {
       debug: {
         patterns: this.patternEngine.identifyPatterns(word),
         morphemes: morphHints.preservedUnits
+      }
+    };
+  }
+
+  /**
+   * Syllabify compound words using pattern matching for each component
+   */
+  private syllabifyCompoundWordWithPatterns(components: string[], originalWord: string): SyllabificationResult {
+    const allSyllables: string[] = [];
+    let totalConfidence = 0;
+    const debugInfo: any[] = [];
+
+    for (const component of components) {
+      // Recursively syllabify this component using patterns
+      const componentResult = this.syllabifyWithPatterns(component);
+      allSyllables.push(...componentResult.syllables);
+      totalConfidence += componentResult.confidence;
+      debugInfo.push({
+        component,
+        syllables: componentResult.syllables,
+        method: componentResult.method
+      });
+    }
+
+    const averageConfidence = totalConfidence / components.length;
+
+    return {
+      syllables: this.validateSyllables(allSyllables, originalWord),
+      method: 'pattern',
+      confidence: Math.min(0.85, averageConfidence), // Cap at 0.85 for pattern-based compound words
+      debug: {
+        note: 'Compound word pattern processing',
+        components: debugInfo,
+        originalComponents: components
       }
     };
   }
