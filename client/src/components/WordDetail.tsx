@@ -120,16 +120,6 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
                     </svg>
                   </button>
                 </div>
-                
-                {/* Syllables Display */}
-                {data.syllables && data.syllables.length > 0 ? (
-                  <div className="mt-3 text-center">
-                    <p className="text-gray-500 font-['Roboto'] text-xs uppercase mb-1">Syllables</p>
-                    <div className="text-[#4285F4] font-['Google_Sans'] text-lg">
-                      {data.syllables.join(' • ')}
-                    </div>
-                  </div>
-                ) : null}
               </div>
               
               <div>
