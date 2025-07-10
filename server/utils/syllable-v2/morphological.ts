@@ -10,24 +10,22 @@ export interface Morpheme {
   syllables: string[];
 }
 
-// Comprehensive suffix list that should NOT be divided
+// 1-syllable suffixes that should NOT be divided
 export const UNDIVIDABLE_SUFFIXES = new Map<string, string[]>([
-  // -ence family
-  ['ence', ['ence']],      // ex-per-i-ence
-  ['ience', ['ience']],    // con-ven-ience
-  ['tience', ['tience']],  // pa-tience
+  // -ence family (1 syllable)
+  ['ence', ['ence']],      // sci-ence
+  ['tience', ['tience']],  // pa-tience (ti makes /ʃ/ sound)
   ['cience', ['cience']],  // con-science
 
-  // -tia/-tion family
+  // -tia/-tion family (1 syllable)
   ['tia', ['tia']],        // de-men-tia
   ['tion', ['tion']],      // na-tion
   ['tian', ['tian']],      // Egyp-tian
   ['tious', ['tious']],    // cau-tious
   ['tial', ['tial']],      // par-tial
   ['tient', ['tient']],    // pa-tient
-  ['tional', ['tion', 'al']], // na-tion-al
 
-  // -cia/-cial family
+  // -cia/-cial family (1 syllable)
   ['cia', ['cia']],        // Mar-cia
   ['cion', ['cion']],      // su-spi-cion
   ['cian', ['cian']],      // mu-si-cian
@@ -35,24 +33,22 @@ export const UNDIVIDABLE_SUFFIXES = new Map<string, string[]>([
   ['cial', ['cial']],      // spe-cial
   ['cient', ['cient']],    // suf-fi-cient
 
-  // -sia/-sion family
+  // -sia/-sion family (1 syllable)
   ['sia', ['sia']],        // A-sia
   ['sion', ['sion']],      // ten-sion
   ['sian', ['sian']],      // Rus-sian
-  ['sious', ['sious']],    // am-bi-tious (variant)
+  ['sious', ['sious']],    // am-bi-tious
 
-  // -gia/-gion family
+  // -gia/-gion family (1 syllable)
   ['gia', ['gia']],        // Geor-gia
   ['gion', ['gion']],      // re-gion
   ['gian', ['gian']],      // Bel-gian
   ['gious', ['gious']],    // re-li-gious
 
-  // Other common suffixes
+  // Other 1-syllable suffixes
   ['ous', ['ous']],        // fa-mous
-  ['eous', ['eous']],      // cour-a-geous
-  ['uous', ['uous']],      // con-tin-u-ous
 
-  // Standard suffixes
+  // Standard 1-syllable suffixes
   ['ing', ['ing']],        // walk-ing
   ['ed', ['ed']],          // walk-ed (but see special rules)
   ['er', ['er']],          // walk-er
@@ -62,8 +58,27 @@ export const UNDIVIDABLE_SUFFIXES = new Map<string, string[]>([
   ['ment', ['ment']],      // pay-ment
   ['ful', ['ful']],        // care-ful
   ['less', ['less']],      // care-less
-  ['able', ['a', 'ble']],  // read-a-ble
-  ['ible', ['i', 'ble']],  // vis-i-ble
+]);
+
+// 2-syllable suffixes that need to be split
+export const DIVISIBLE_SUFFIXES = new Map<string, string[]>([
+  // 2-syllable suffixes from your analysis
+  ['ience', ['i', 'ence']], // exper-i-ence
+  ['ia', ['i', 'a']],       // me-di-a
+  ['ion', ['i', 'on']],     // cham-pi-on
+  ['ian', ['i', 'an']],     // Canad-i-an
+  ['ious', ['i', 'ous']],   // glor-i-ous
+  ['ial', ['i', 'al']],     // rad-i-al
+  ['ient', ['i', 'ent']],   // obed-i-ent
+  ['uous', ['u', 'ous']],   // contin-u-ous
+  
+  // Multi-syllable suffixes
+  ['able', ['a', 'ble']],   // read-a-ble
+  ['ible', ['i', 'ble']],   // vis-i-ble
+  ['tional', ['tion', 'al']], // na-tion-al
+  
+  // Special case: eous can be 1 or 2 syllables
+  ['eous', ['e', 'ous']],   // err-o-ne-ous (default to 2, override specific words)
 ]);
 
 // False flag silent-e words - final "e" is pronounced, not silent
@@ -159,6 +174,12 @@ export const R_CONTROLLED_IOUS_WORDS = new Map<string, string[]>([
   ['penurious', ['pe', 'nur', 'i', 'ous']],
 ]);
 
+// Special eous words that are 1 syllable (override the default 2-syllable split)
+export const SINGLE_SYLLABLE_EOUS_WORDS = new Map<string, string[]>([
+  ['gorgeous', ['gor', 'geous']],     // gor-geous (1 syllable ending)
+  ['righteous', ['right', 'eous']],   // right-eous (1 syllable ending)
+]);
+
 export class MorphologicalAnalyzer {
   /**
    * Check if word ends with consonant+i suffix pattern
@@ -234,15 +255,24 @@ export class MorphologicalAnalyzer {
     }
 
     // 2. Check for suffixes (from longest to shortest)
-    const suffixCandidates = Array.from(UNDIVIDABLE_SUFFIXES.keys())
-      .sort((a, b) => b.length - a.length);
+    // First check divisible suffixes, then undividable ones
+    const allSuffixes = [
+      ...Array.from(DIVISIBLE_SUFFIXES.keys()).map(k => ({ key: k, map: DIVISIBLE_SUFFIXES })),
+      ...Array.from(UNDIVIDABLE_SUFFIXES.keys()).map(k => ({ key: k, map: UNDIVIDABLE_SUFFIXES }))
+    ].sort((a, b) => b.key.length - a.key.length);
 
-    for (const suffix of suffixCandidates) {
+    for (const { key: suffix, map } of allSuffixes) {
       if (remainingWord.endsWith(suffix)) {
-        const suffixSyllables = UNDIVIDABLE_SUFFIXES.get(suffix)!;
+        // Special handling for eous
+        let suffixSyllables;
+        if (suffix === 'eous' && SINGLE_SYLLABLE_EOUS_WORDS.has(lowerWord)) {
+          suffixSyllables = ['eous']; // Keep as 1 syllable for special words
+        } else {
+          suffixSyllables = map.get(suffix)!;
+        }
+        
         const suffixStart = currentPosition + remainingWord.length - suffix.length;
 
-        // Insert suffix at the beginning so we can add it to morphemes in order
         morphemes.push({
           text: suffix,
           type: 'suffix',
