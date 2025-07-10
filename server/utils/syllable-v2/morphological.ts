@@ -235,6 +235,16 @@ export class MorphologicalAnalyzer {
       }];
     }
 
+    // Check for experience-type words with R-controlled vowels (third priority)
+    if (lowerWord === 'experience') {
+      return [{
+        text: word,
+        type: 'root',
+        position: 0,
+        syllables: ['ex', 'per', 'i', 'ence']
+      }];
+    }
+
     const morphemes: Morpheme[] = [];
     let remainingWord = word.toLowerCase();
     let currentPosition = 0;
