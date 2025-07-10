@@ -88,6 +88,10 @@ export const DIVISIBLE_SUFFIXES = new Map<string, string[]>([
 // Merged from original 833 tested compounds + LADEC research database
 // Compound words database (8639 entries)
 // Merged from original 833 tested compounds + LADEC research database
+// Compound words database (8639 entries)
+// Merged from original 833 tested compounds + LADEC research database
+// Compound words database (8639 entries)
+// Merged from original 833 tested compounds + LADEC research database
 export const COMPOUND_WORDS = new Map<string, string[]>([
   ['acetylcholine', ['acetyl', 'choline']],
   ['activewear', ['active', 'wear']],
