@@ -1,4 +1,5 @@
 
+
 import { VowelDetector } from './vowel-detector.js';
 
 export interface MorphologicalAnalysis {
