@@ -76,6 +76,7 @@ export const DIVISIBLE_SUFFIXES = new Map<string, string[]>([
   ['able', ['a', 'ble']],   // read-a-ble
   ['ible', ['i', 'ble']],   // vis-i-ble
   ['tional', ['tion', 'al']], // na-tion-al
+  ['ingly', ['sing', 'ly']], // surpri-sing-ly (consonant moves to create open syllable)
 
   // Special case: eous can be 1 or 2 syllables
   ['eous', ['e', 'ous']],   // err-o-ne-ous (default to 2, override specific words)
@@ -290,16 +291,39 @@ export class MorphologicalAnalyzer {
           suffixSyllables = map.get(suffix)!;
         }
 
-        const suffixStart = currentPosition + remainingWord.length - suffix.length;
+        let suffixStart = currentPosition + remainingWord.length - suffix.length;
+        let actualSuffix = suffix;
+
+        // Special handling for -ingly suffix to create open syllables
+        if (suffix === 'ingly') {
+          // Check if there's a consonant before "ingly" that should move to create open syllable
+          const beforeInglySuffix = remainingWord.slice(0, -suffix.length);
+          if (beforeInglySuffix.length > 0) {
+            const lastChar = beforeInglySuffix.slice(-1);
+            // If last character is a consonant and the syllable before would not be a root word
+            if (!/[aeiouAEIOU]/.test(lastChar)) {
+              // Move the consonant to the suffix to create open syllable
+              actualSuffix = lastChar + 'ingly';
+              suffixSyllables = [lastChar + 'ing', 'ly'];
+              suffixStart = currentPosition + remainingWord.length - actualSuffix.length;
+              remainingWord = remainingWord.slice(0, -(actualSuffix.length));
+            } else {
+              remainingWord = remainingWord.slice(0, -suffix.length);
+            }
+          } else {
+            remainingWord = remainingWord.slice(0, -suffix.length);
+          }
+        } else {
+          remainingWord = remainingWord.slice(0, -suffix.length);
+        }
 
         morphemes.push({
-          text: suffix,
+          text: actualSuffix,
           type: 'suffix',
           position: suffixStart,
           syllables: [...suffixSyllables]
         });
 
-        remainingWord = remainingWord.slice(0, -suffix.length);
         break; // Only one suffix for now
       }
     }
