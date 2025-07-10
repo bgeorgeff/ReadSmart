@@ -82,6 +82,120 @@ export const DIVISIBLE_SUFFIXES = new Map<string, string[]>([
   ['eous', ['e', 'ous']],   // err-o-ne-ous (default to 2, override specific words)
 ]);
 
+// Compound words that should be split at word boundaries
+export const COMPOUND_WORDS = new Map<string, string[]>([
+  ['backtalk', ['back', 'talk']],
+  ['backyard', ['back', 'yard']],
+  ['backpack', ['back', 'pack']],
+  ['backward', ['back', 'ward']],
+  ['background', ['back', 'ground']],
+  ['backbone', ['back', 'bone']],
+  ['feedback', ['feed', 'back']],
+  ['comeback', ['come', 'back']],
+  ['setback', ['set', 'back']],
+  ['flashback', ['flash', 'back']],
+  ['throwback', ['throw', 'back']],
+  ['kickback', ['kick', 'back']],
+  ['payback', ['pay', 'back']],
+  ['cutback', ['cut', 'back']],
+  ['drawback', ['draw', 'back']],
+  ['lookout', ['look', 'out']],
+  ['takeout', ['take', 'out']],
+  ['workout', ['work', 'out']],
+  ['handout', ['hand', 'out']],
+  ['timeout', ['time', 'out']],
+  ['sellout', ['sell', 'out']],
+  ['dropout', ['drop', 'out']],
+  ['checkout', ['check', 'out']],
+  ['layout', ['lay', 'out']],
+  ['payout', ['pay', 'out']],
+  ['buyout', ['buy', 'out']],
+  ['blowout', ['blow', 'out']],
+  ['fallout', ['fall', 'out']],
+  ['washout', ['wash', 'out']],
+  ['blackout', ['black', 'out']],
+  ['knockout', ['knock', 'out']],
+  ['lockout', ['lock', 'out']],
+  ['walkout', ['walk', 'out']],
+  ['slideshow', ['slide', 'show']],
+  ['snowball', ['snow', 'ball']],
+  ['football', ['foot', 'ball']],
+  ['baseball', ['base', 'ball']],
+  ['basketball', ['bas', 'ket', 'ball']],
+  ['volleyball', ['vol', 'ley', 'ball']],
+  ['softball', ['soft', 'ball']],
+  ['hardball', ['hard', 'ball']],
+  ['fastball', ['fast', 'ball']],
+  ['curveball', ['curve', 'ball']],
+  ['meatball', ['meat', 'ball']],
+  ['eyeball', ['eye', 'ball']],
+  ['fireball', ['fire', 'ball']],
+  ['snowman', ['snow', 'man']],
+  ['postman', ['post', 'man']],
+  ['milkman', ['milk', 'man']],
+  ['workman', ['work', 'man']],
+  ['businessman', ['bus', 'i', 'ness', 'man']],
+  ['policeman', ['po', 'lice', 'man']],
+  ['fireman', ['fire', 'man']],
+  ['superman', ['su', 'per', 'man']],
+  ['salesman', ['sales', 'man']],
+  ['gentleman', ['gen', 'tle', 'man']],
+  ['fisherman', ['fish', 'er', 'man']],
+  ['weatherman', ['weath', 'er', 'man']],
+  ['chairman', ['chair', 'man']],
+  ['doorman', ['door', 'man']],
+  ['iceman', ['ice', 'man']],
+  ['spaceman', ['space', 'man']],
+  ['caveman', ['cave', 'man']],
+  ['snowflake', ['snow', 'flake']],
+  ['earthquake', ['earth', 'quake']],
+  ['handshake', ['hand', 'shake']],
+  ['milkshake', ['milk', 'shake']],
+  ['pancake', ['pan', 'cake']],
+  ['cupcake', ['cup', 'cake']],
+  ['cheesecake', ['cheese', 'cake']],
+  ['fruitcake', ['fruit', 'cake']],
+  ['birthday', ['birth', 'day']],
+  ['everyday', ['ev', 'ery', 'day']],
+  ['someday', ['some', 'day']],
+  ['yesterday', ['yes', 'ter', 'day']],
+  ['today', ['to', 'day']],
+  ['holiday', ['hol', 'i', 'day']],
+  ['weekday', ['week', 'day']],
+  ['workday', ['work', 'day']],
+  ['payday', ['pay', 'day']],
+  ['doomsday', ['dooms', 'day']],
+  ['judgment', ['judg', 'ment']],
+  ['midnight', ['mid', 'night']],
+  ['daylight', ['day', 'light']],
+  ['moonlight', ['moon', 'light']],
+  ['sunlight', ['sun', 'light']],
+  ['flashlight', ['flash', 'light']],
+  ['spotlight', ['spot', 'light']],
+  ['headlight', ['head', 'light']],
+  ['streetlight', ['street', 'light']],
+  ['stoplight', ['stop', 'light']],
+  ['fireplace', ['fire', 'place']],
+  ['workplace', ['work', 'place']],
+  ['someplace', ['some', 'place']],
+  ['anyplace', ['an', 'y', 'place']],
+  ['marketplace', ['mar', 'ket', 'place']],
+  ['doorway', ['door', 'way']],
+  ['runway', ['run', 'way']],
+  ['hallway', ['hall', 'way']],
+  ['pathway', ['path', 'way']],
+  ['highway', ['high', 'way']],
+  ['subway', ['sub', 'way']],
+  ['halfway', ['half', 'way']],
+  ['railway', ['rail', 'way']],
+  ['walkway', ['walk', 'way']],
+  ['driveway', ['drive', 'way']],
+  ['waterway', ['wa', 'ter', 'way']],
+  ['gateway', ['gate', 'way']],
+  ['freeway', ['free', 'way']],
+  ['causeway', ['cause', 'way']],
+]);
+
 // False flag silent-e words - final "e" is pronounced, not silent
 export const FALSE_FLAG_SILENT_E_OVERRIDES = new Map<string, string[]>([
   // French-origin words (15 words) - using English spellings without diacritical marks
@@ -401,7 +515,20 @@ export class MorphologicalAnalyzer {
   getMorphologicalHints(word: string): { boundaries: number[], preservedUnits: Array<{start: number, end: number, syllables: string[]}> } {
     const lowerWord = word.toLowerCase();
 
-    // Check for R-controlled + ience words first (highest priority complete word overrides)
+    // Check for compound words first (highest priority for compound word splitting)
+    if (COMPOUND_WORDS.has(lowerWord)) {
+      const syllables = COMPOUND_WORDS.get(lowerWord)!;
+      return {
+        boundaries: [], // No boundaries needed for complete overrides
+        preservedUnits: [{
+          start: 0,
+          end: word.length,
+          syllables: [...syllables]
+        }]
+      };
+    }
+
+    // Check for R-controlled + ience words second (highest priority complete word overrides)
     if (R_CONTROLLED_IENCE_WORDS.has(lowerWord)) {
       const syllables = R_CONTROLLED_IENCE_WORDS.get(lowerWord)!;
       return {
