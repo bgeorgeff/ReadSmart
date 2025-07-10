@@ -174,6 +174,12 @@ export const R_CONTROLLED_IOUS_WORDS = new Map<string, string[]>([
   ['penurious', ['pe', 'nur', 'i', 'ous']],
 ]);
 
+// R-controlled vowel + ience words that need special handling
+export const R_CONTROLLED_IENCE_WORDS = new Map<string, string[]>([
+  ['experience', ['ex', 'per', 'i', 'ence']],
+  ['inexperience', ['in', 'ex', 'per', 'i', 'ence']],
+]);
+
 // Special eous words that are 1 syllable (override the default 2-syllable split)
 export const SINGLE_SYLLABLE_EOUS_WORDS = new Map<string, string[]>([
   ['gorgeous', ['gor', 'geous']],     // gor-geous (1 syllable ending)
@@ -213,7 +219,18 @@ export class MorphologicalAnalyzer {
   analyzeWord(word: string): Morpheme[] {
     const lowerWord = word.toLowerCase();
 
-    // Check for R-controlled + ious words first (highest priority for these specific cases)
+    // Check for R-controlled + ience words first (highest priority for these specific cases)
+    if (R_CONTROLLED_IENCE_WORDS.has(lowerWord)) {
+      const syllables = R_CONTROLLED_IENCE_WORDS.get(lowerWord)!;
+      return [{
+        text: word,
+        type: 'root',
+        position: 0,
+        syllables: [...syllables]
+      }];
+    }
+
+    // Check for R-controlled + ious words second (highest priority for these specific cases)
     if (R_CONTROLLED_IOUS_WORDS.has(lowerWord)) {
       const syllables = R_CONTROLLED_IOUS_WORDS.get(lowerWord)!;
       return [{
@@ -235,15 +252,7 @@ export class MorphologicalAnalyzer {
       }];
     }
 
-    // Check for experience-type words with R-controlled vowels (third priority)
-    if (lowerWord === 'experience') {
-      return [{
-        text: word,
-        type: 'root',
-        position: 0,
-        syllables: ['ex', 'per', 'i', 'ence']
-      }];
-    }
+    
 
     const morphemes: Morpheme[] = [];
     let remainingWord = word.toLowerCase();
@@ -330,7 +339,20 @@ export class MorphologicalAnalyzer {
   getMorphologicalHints(word: string): { boundaries: number[], preservedUnits: Array<{start: number, end: number, syllables: string[]}> } {
     const lowerWord = word.toLowerCase();
 
-    // Check for R-controlled + ious words first (highest priority complete word overrides)
+    // Check for R-controlled + ience words first (highest priority complete word overrides)
+    if (R_CONTROLLED_IENCE_WORDS.has(lowerWord)) {
+      const syllables = R_CONTROLLED_IENCE_WORDS.get(lowerWord)!;
+      return {
+        boundaries: [], // No boundaries needed for complete overrides
+        preservedUnits: [{
+          start: 0,
+          end: word.length,
+          syllables: [...syllables]
+        }]
+      };
+    }
+
+    // Check for R-controlled + ious words second (highest priority complete word overrides)
     if (R_CONTROLLED_IOUS_WORDS.has(lowerWord)) {
       const syllables = R_CONTROLLED_IOUS_WORDS.get(lowerWord)!;
       return {
@@ -343,7 +365,7 @@ export class MorphologicalAnalyzer {
       };
     }
 
-    // Check for false flag silent-e words second (high priority complete word overrides)
+    // Check for false flag silent-e words third (high priority complete word overrides)
     if (FALSE_FLAG_SILENT_E_OVERRIDES.has(lowerWord)) {
       const syllables = FALSE_FLAG_SILENT_E_OVERRIDES.get(lowerWord)!;
       return {
