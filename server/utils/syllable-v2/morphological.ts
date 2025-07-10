@@ -610,8 +610,29 @@ export class MorphologicalAnalyzer {
     /**
    * Get morphological hints for a word
    */
-  getMorphologicalHints(word: string): string[] | null {
-    return null;
+  getMorphologicalHints(word: string): { preservedUnits: any[], boundaries: number[] } {
+    const normalized = word.toLowerCase();
+    
+    // Check for complete word override first
+    const override = MORPHOLOGICAL_OVERRIDES.get(normalized);
+    if (override) {
+      const syllables = override.split('-');
+      return {
+        preservedUnits: [{
+          start: 0,
+          end: word.length,
+          syllables: syllables,
+          type: 'complete_override'
+        }],
+        boundaries: []
+      };
+    }
+    
+    // Default return with empty structure
+    return {
+      preservedUnits: [],
+      boundaries: this.detectBoundaries(word)
+    };
   }
 
   /**
