@@ -196,8 +196,8 @@ export async function processAndUpdateCompoundWords(csvFilePath: string) {
   };
 }
 
-// Command line usage
-if (require.main === module) {
+// Command line usage (ES module compatible)
+if (import.meta.url === `file://${process.argv[1]}`) {
   const csvPath = process.argv[2];
   if (!csvPath) {
     console.error('Usage: tsx process-ladec-csv.ts <path-to-csv-file>');
