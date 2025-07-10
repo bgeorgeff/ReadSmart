@@ -159,24 +159,6 @@ export default function WordDetail({ isOpen, word, onClose }: WordDetailProps) {
                   </button>
                 </div>
 
-                <div className="mb-4">
-                  <h4 className="font-['Google_Sans'] text-sm uppercase text-gray-500 mb-2">Example</h4>
-                  <div className="bg-[#34A853]/5 p-3 rounded-lg mb-1">
-                    <p className="text-gray-800">{data.exampleSentence}</p>
-                  </div>
-                  <button 
-                    className="text-[#34A853] text-xs flex items-center hover:underline mt-2"
-                    onClick={() => speak(data.exampleSentence)}
-                    aria-label="Listen to example"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                    Listen
-                  </button>
-                </div>
-
                 <p className="text-sm text-center text-gray-500 mt-4">
                   Click any listen button to hear the word, definition, or example
                 </p>

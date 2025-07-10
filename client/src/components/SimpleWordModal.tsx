@@ -105,15 +105,10 @@ export default function SimpleWordModal({ isOpen, word, onClose }: SimpleWordMod
                   Pronounce
                 </button>
                 
-                {/* Syllables Display - just the syllables without label */}
-                {data.syllables && data.syllables.length > 0 && (
-                  <div className="mt-3 text-blue-600 font-semibold text-xl">
-                    {data.syllables.join(' • ')}
-                  </div>
-                )}
               </div>
               
               <div className="mt-4">
+                <h4 className="font-['Google_Sans'] text-sm uppercase text-gray-500 mb-2">Definition</h4>
                 <div className="bg-blue-50 p-3 rounded-lg">
                   <p className="text-gray-800">{data.definition}</p>
                 </div>
@@ -126,6 +121,23 @@ export default function SimpleWordModal({ isOpen, word, onClose }: SimpleWordMod
                     <path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                   Listen to definition
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <h4 className="font-['Google_Sans'] text-sm uppercase text-gray-500 mb-2">Example</h4>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <p className="text-gray-800">{data.exampleSentence}</p>
+                </div>
+                <button
+                  onClick={() => speak(data.exampleSentence)}
+                  className="mt-2 text-sm text-green-600 hover:text-green-700 flex items-center"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
+                    <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Listen to example
                 </button>
               </div>
             </div>
