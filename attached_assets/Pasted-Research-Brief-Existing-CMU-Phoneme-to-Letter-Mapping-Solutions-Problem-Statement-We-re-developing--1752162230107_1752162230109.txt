@@ -1,0 +1,66 @@
+Research Brief: Existing CMU Phoneme-to-Letter Mapping Solutions
+Problem Statement
+We're developing an educational app that needs to divide English words into syllables. We've been working with the CMU Pronouncing Dictionary but face a key challenge: the CMU dictionary breaks sounds into individual phonemes (like Y UH R for the /er/ sound), but for educational syllabification, we want to keep r-controlled vowels like "ur", "er", "ir" together as single units.
+Core Challenge
+
+CMU phonemes: Y UH R (individual sounds)
+Educational need: "ur" (single r-controlled vowel unit)
+Question: Has someone already solved comprehensive phoneme-to-letter mapping for educational use?
+
+Current Solution (V2 System)
+We've built a working system that:
+
+Uses letter-based vowel cluster detection first
+Validates with phoneme counts second
+Handles r-controlled vowels properly: "spurious" → "spur-i-ous" ✓
+Works well but may not be comprehensive
+
+What We Need to Find
+Primary Goal: Existing libraries/systems that map CMU phonemes to educational letter patterns
+Specific Mapping Patterns Needed:
+
+R-controlled vowels: ER → "er", Y UH R → "ur", IH R → "ir"
+Vowel digraphs: EY → "ay", OW → "ow", AY → "ai"
+Complex patterns: AO → "au", OY → "oi"
+Educational vs. phonemic conflict resolution
+
+Research Targets
+Search Terms:
+
+"CMU phoneme to grapheme mapping educational"
+"ARPAbet to letter conversion syllabification"
+"educational syllable division CMU dictionary"
+"speech therapy CMU dictionary conversion"
+"phoneme to spelling pattern mapping"
+"pronunciation teaching phoneme mapping"
+
+Specific Sources to Investigate:
+
+GitHub repositories: Reading/phonics software, speech therapy applications
+Carnegie Mellon resources: Educational tools repositories, linguistic processing libraries
+Academic papers: Computational linguistics research with implementation code
+Educational software: ESL/language learning platforms, reading assessment tools
+Speech processing: Pronunciation training software, educational technology research
+
+What Would Make an Ideal Solution:
+
+Complete mapping of CMU phonemes to educational letter patterns
+R-controlled vowel handling (the main challenge)
+Vowel digraph mappings for comprehensive coverage
+Educational vs. phonemic conflict resolution
+Open-source or well-documented implementation
+Proven/tested in educational applications
+
+Current Status
+
+Our V2 system works well for tested cases
+We want to avoid reinventing the wheel if comprehensive solutions exist
+Looking for existing work to integrate or learn from
+Will continue improving our current approach while researching
+
+Research Outcome Goals
+
+Find existing phoneme-to-letter mapping libraries
+Evaluate their completeness and educational focus
+Determine if we should integrate existing solutions or enhance our current approach
+Avoid duplicating work that's already been done well
