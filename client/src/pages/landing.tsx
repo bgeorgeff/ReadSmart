@@ -11,10 +11,12 @@ export default function Landing() {
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <BookOpen className="h-8 w-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-900">ReadSmart</span>
-            </div>
+            <Link href="/">
+              <div className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity">
+                <BookOpen className="h-8 w-8 text-blue-600" />
+                <span className="text-2xl font-bold text-gray-900">ReadSmart</span>
+              </div>
+            </Link>
             <Link href="/app">
               <Button variant="outline">Get Started</Button>
             </Link>

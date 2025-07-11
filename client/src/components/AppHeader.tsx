@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import HelpModal from "./HelpModal";
 
 export default function AppHeader() {
@@ -8,10 +9,12 @@ export default function AppHeader() {
     <>
       <header className="bg-white shadow-md">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <span className="material-icons text-[#4285F4] text-3xl">menu_book</span>
-            <h1 className="font-['Google_Sans'] text-xl md:text-2xl font-bold text-gray-800">ReadSmart</h1>
-          </div>
+          <Link href="/">
+            <div className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity">
+              <span className="material-icons text-[#4285F4] text-3xl">menu_book</span>
+              <h1 className="font-['Google_Sans'] text-xl md:text-2xl font-bold text-gray-800">ReadSmart</h1>
+            </div>
+          </Link>
           <nav>
             <button 
               onClick={() => setIsHelpOpen(true)}
