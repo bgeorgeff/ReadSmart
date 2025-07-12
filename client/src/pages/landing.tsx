@@ -28,10 +28,10 @@ export default function Landing() {
       <main className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Make Any Text Easy to Read
+            Choose What <span className="text-blue-600">You</span> Want to Read!
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Transform complex texts into grade-appropriate summaries. Perfect for students, educators, and anyone who wants to understand difficult material.
+            Turn complex texts into readable chunks. Perfect for adults, teens, and educators, who want to choose their own topics of interest for reading practice.
           </p>
           <Link href="/app">
             <Button size="lg" className="text-lg px-8 py-3">
@@ -61,7 +61,7 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-semibold mb-2">Interactive Reading</h3>
               <p className="text-gray-600">
-                Click any word for instant definitions and pronunciation help. Perfect for vocabulary building.
+                Click any word for instant definitions and pronunciation help. Perfect for vocabulary building and comprehension.
               </p>
             </CardContent>
           </Card>
@@ -73,7 +73,7 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-semibold mb-2">Audio Features</h3>
               <p className="text-gray-600">
-                Listen to any text with text-to-speech or record yourself reading for practice and improvement.
+                Use text-to-speech for any words you paste in. Choose to listen at different speeds and record yourself if you want.
               </p>
             </CardContent>
           </Card>

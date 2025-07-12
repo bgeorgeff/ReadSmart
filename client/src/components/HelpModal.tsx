@@ -46,10 +46,10 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
               Getting Started
             </h3>
             <div className="space-y-2 text-gray-600">
-              <p>1. <strong>Paste or type your text</strong> in the input box on the main page.</p>
-              <p>2. <strong>Click "Process Text"</strong> to generate summaries at different reading levels.</p>
-              <p>3. <strong>Choose your grade level</strong> to see a summary that matches your reading ability.</p>
-              <p>4. <strong>Click "Continue to Reading Tools"</strong> for interactive features.</p>
+              <p>1. <strong>Paste any text</strong> in the input box on the main page.</p>
+              <p>2. <strong>Click "Summarize"</strong> to generate summaries at 12 different reading levels.</p>
+              <p>3. <strong>Choose a grade level</strong> to find a summary that feels comfortable to you. You'll work up from this level later.</p>
+              <p>4. <strong>Click "Read"</strong> for interactive features.</p>
             </div>
           </section>
 
