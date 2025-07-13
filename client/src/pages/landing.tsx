@@ -59,7 +59,14 @@ export default function Landing() {
             </span>
             <br />
             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              You Want to Read!
+              <span className="relative inline-block">
+                <span className="relative z-10 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 bg-clip-text text-transparent animate-pulse">
+                  You
+                </span>
+                <span className="absolute inset-0 bg-gradient-to-r from-amber-400/20 via-orange-500/20 to-red-500/20 blur-lg animate-pulse"></span>
+                <span className="absolute -inset-2 bg-gradient-to-r from-amber-400/10 via-orange-500/10 to-red-500/10 blur-xl animate-bounce"></span>
+              </span>
+              {' '}Want to Read!
             </span>
           </h1>
           
