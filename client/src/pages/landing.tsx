@@ -88,7 +88,7 @@ export default function Landing() {
           <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <CardContent className="p-8 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Zap className="h-8 w-8 text-blue-600" />
+                <Sparkles className="h-8 w-8 text-blue-600" />
               </div>
               <h3 className="text-xl font-semibold mb-4 text-gray-800">AI-Powered Simplification</h3>
               <p className="text-gray-600 leading-relaxed">
