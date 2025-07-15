@@ -72,7 +72,7 @@ export default function Landing() {
           
           <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
             Turn complex texts into readable chunks. Perfect for adults, teens, and educators, 
-            who want to choose their own topics of interest for reading practice.
+            who want to choose their own topics for reading practice.
           </p>
           
           <Link href="/app">
