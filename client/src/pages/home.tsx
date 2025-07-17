@@ -12,7 +12,8 @@ export default function Home() {
   const [currentStep, setCurrentStep] = useState<AppStep>(AppStep.TEXT_INPUT);
   const [inputText, setInputText] = useState<string>('');
   const [summaryId, setSummaryId] = useState<number | null>(null);
-  const [selectedGrade, setSelectedGrade] = useState<number>(5);
+  const [summaries, setSummaries] = useState<Summaries | null>(null);
+  const [selectedGrade, setSelectedGrade] = useState<GradeLevel>(5);
   const [selectedSummary, setSelectedSummary] = useState<string>('');
   const [clickedWord, setClickedWord] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
@@ -20,8 +21,13 @@ export default function Home() {
   const handleStepClick = (step: AppStep) => {
     if (step === AppStep.TEXT_INPUT) {
       setCurrentStep(AppStep.TEXT_INPUT);
-    } else if (step === AppStep.SUMMARY && summaryId) {
-      setCurrentStep(AppStep.SUMMARY);
+    } else if (step === AppStep.SUMMARY) {
+      if (summaryId) {
+        setCurrentStep(AppStep.SUMMARY);
+      } else if (inputText.trim().length > 0) {
+        // If we have input text but no summaries, trigger processing
+        setCurrentStep(AppStep.PROCESSING);
+      }
     } else if (step === AppStep.READING && selectedSummary) {
       setCurrentStep(AppStep.READING);
     }
@@ -44,6 +50,20 @@ export default function Home() {
       setCurrentStep(AppStep.SUMMARY);
     } else if (currentStep === AppStep.SUMMARY) {
       setCurrentStep(AppStep.TEXT_INPUT);
+    }
+  };
+
+  const handleProcessingComplete = (summaryId: number, summaries: Summaries) => {
+    setSummaryId(summaryId);
+    setSummaries(summaries);
+    setCurrentStep(AppStep.SUMMARY);
+  };
+
+  const handleContinueToReading = () => {
+    if (summaries) {
+      const summary = selectedGrade === 0 ? inputText : summaries[selectedGrade];
+      setSelectedSummary(summary);
+      setCurrentStep(AppStep.READING);
     }
   };
 
@@ -86,12 +106,14 @@ export default function Home() {
           <ProcessingSummary 
             inputText={inputText}
             isVisible={currentStep === AppStep.PROCESSING || currentStep === AppStep.SUMMARY}
-            setSummaryId={setSummaryId}
-            setAppStep={setCurrentStep}
-            selectedGrade={selectedGrade}
-            setSelectedGrade={setSelectedGrade}
-            selectedSummary={selectedSummary}
-            setSelectedSummary={setSelectedSummary}
+            summaryId={summaryId}
+            summaries={summaries}
+            currentGradeLevel={selectedGrade}
+            onGradeLevelChange={setSelectedGrade}
+            onWordClick={handleWordClick}
+            onContinueToReading={handleContinueToReading}
+            onNavigateBack={handleNavigateBack}
+            onProcessingComplete={handleProcessingComplete}
           />
 
           <ReadingTools 
@@ -106,14 +128,10 @@ export default function Home() {
       </main>
 
       {clickedWord && (
-        <WordDetail 
+        <SimpleWordModal 
           word={clickedWord}
           onClose={handleCloseWordDetail}
         />
-      )}
-
-      {showHelp && (
-        <HelpModal onClose={() => setShowHelp(false)} />
       )}
     </div>
   );
