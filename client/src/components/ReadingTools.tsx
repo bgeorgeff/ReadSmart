@@ -320,8 +320,6 @@ export default function ReadingTools({
             </div>
           )}
         </div>
-
-
       </div>
     </div>
   );
