@@ -28,7 +28,10 @@ export default function Home() {
         // If we have input text but no summaries, trigger processing
         setCurrentStep(AppStep.PROCESSING);
       }
-    } else if (step === AppStep.READING && selectedSummary) {
+    } else if (step === AppStep.READING && summaries) {
+      // Set the selected summary based on current grade level when navigating to reading
+      const summary = selectedGrade === 0 ? inputText : summaries[selectedGrade];
+      setSelectedSummary(summary);
       setCurrentStep(AppStep.READING);
     }
   };
