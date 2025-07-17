@@ -12,58 +12,6 @@ interface DisplayTextWithFixesProps {
 }
 
 function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) {
-  // Simple tokenization that preserves quotes and parentheses properly
-  const tokenize = (text: string): string[] => {
-    return text.split(/\s+/).filter(token => token.trim() !== '');
-  };
-  
-  const tokens = tokenize(text);
-  
-  return (
-    <div className="word-interaction-container">
-      {tokens.map((token, index) => {
-        // Check if this is a quoted phrase (starts and ends with ")
-        const isQuotedPhrase = token.startsWith('"') && token.endsWith('"');
-        
-        // For quoted phrases, preserve the entire token
-        if (isQuotedPhrase) {
-          // Remove quotes for clicking, but preserve in display
-          const cleanToken = token.substring(1, token.length - 1);
-          
-          return (
-            <span key={index} className="word-container">
-              <span className="quote-highlight">"</span>
-              <span 
-                className="word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1"
-                onClick={() => onWordClick(cleanToken)}
-              >
-                {cleanToken}
-              </span>
-              <span className="quote-highlight">"</span>
-            </span>
-          );
-        }
-        
-        // For regular words, extract just the word part (no punctuation)
-        const wordMatch = token.match(/^[^\w]*(\w+)[^\w]*$/);
-        const word = wordMatch ? wordMatch[1] : token;
-        
-        return (
-          <span 
-            key={index}
-            className="word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1"
-            onClick={() => onWordClick(word)}
-          >
-            {token}
-          </span>
-        );
-      })}
-      <span> </span>
-    </div>
-  );
-}
-
-function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) {
   const processedText = text;
 
   // Simple tokenization that preserves quotes and parentheses properly
