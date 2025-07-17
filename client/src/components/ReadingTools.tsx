@@ -22,7 +22,7 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
   const tokens = tokenize(processedText);
 
   return (
-    <div className="word-interaction-container">
+    <div className="word-interaction-container break-words">
       {tokens.map((token, index) => {
         // Check if this is a quoted phrase (starts and ends with ")
         const isQuotedPhrase = token.startsWith('"') && token.endsWith('"');
@@ -214,7 +214,7 @@ export default function ReadingTools({
 
       <div className="grid grid-cols-1 gap-6">
         <div>
-          <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
+          <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed break-words overflow-wrap-anywhere">
             {selectedSummary ? (
               <DisplayTextWithFixes 
                 text={selectedSummary}
@@ -223,7 +223,7 @@ export default function ReadingTools({
               />
             ) : (
               <p>No text available for reading practice.</p>
-            )}
+            )}</div>
           </div>
 
           {/* Reading Speed Slider */}

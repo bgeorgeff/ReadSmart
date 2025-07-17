@@ -39,3 +39,10 @@
 .recording-wave span:nth-child(3n) {
   animation-delay: 0.4s;
 }
+
+/* Ensure proper text wrapping */
+.word-interaction-container {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
