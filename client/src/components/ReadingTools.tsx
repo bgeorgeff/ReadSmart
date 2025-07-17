@@ -223,34 +223,12 @@ export default function ReadingTools({
               />
             ) : (
               <p>No text available for reading practice.</p>
-            )}</div>
+            )}
           </div>
 
           {/* Reading Speed Slider */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Choose Reading Speed: {speechRateToWPM(speechRate)} WPM
-            </label>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs text-gray-500">105 WPM</span>
-              <input
-                type="range"
-                min="0"
-                max="4"
-                step="1"
-                value={Object.values(wpmToSpeechRate).indexOf(speechRate)}
-                onChange={(e) => {
-                  const index = parseInt(e.target.value);
-                  const rates = Object.values(wpmToSpeechRate);
-                  setSpeechRate(rates[index]);
-                }}
-                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                style={{
-                  background: `linear-gradient(to right, #4285F4 0%, #4285F4 ${(Object.values(wpmToSpeechRate).indexOf(speechRate) / 4) * 100}%, #e5e7eb ${(Object.values(wpmToSpeechRate).indexOf(speechRate) / 4) * 100}%, #e5e7eb 100%)`
-                }}
-              />
-              <span className="text-xs text-gray-500">165 WPM</span>
-            </div>
+
           </div>
 
           {/* Responsive button grid */}
