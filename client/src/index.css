@@ -40,9 +40,9 @@
   animation-delay: 0.4s;
 }
 
-/* Ensure proper text wrapping */
+/* Ensure proper text wrapping without hyphenation */
 .word-interaction-container {
   word-wrap: break-word;
   overflow-wrap: break-word;
-  hyphens: auto;
+  hyphens: none;
 }
