@@ -19,7 +19,7 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
   return (
     <div className="mb-8">
       <div className="flex justify-between items-center mb-6 flex-wrap">
-        <h2 className="font-['Google_Sans'] text-2xl font-bold text-gray-800">Text Summary & Reading Aid</h2>
+        <h2 className="font-['Google_Sans'] text-2xl font-bold text-gray-800">Copy any text from the Internet</h2>
         <div className="flex mt-2 md:mt-0">
           <div className="flex items-center">
             <button 

@@ -1,25 +1,28 @@
-import { useState } from 'react';
-import AppHeader from '@/components/AppHeader';
-import ProcessSteps from '@/components/ProcessSteps';
-import TextInput from '@/components/TextInput';
-import ProcessingSummary from '@/components/ProcessingSummary';
-import ReadingTools from '@/components/ReadingTools';
-import SimpleWordModal from '@/components/SimpleWordModal';
+import { useState } from "react";
+import AppHeader from "@/components/AppHeader";
+import ProcessSteps from "@/components/ProcessSteps";
+import TextInput from "@/components/TextInput";
+import ProcessingSummary from "@/components/ProcessingSummary";
+import ReadingTools from "@/components/ReadingTools";
+import SimpleWordModal from "@/components/SimpleWordModal";
 
-import { AppStep, GradeLevel, Summaries } from '@/types';
+import { AppStep, GradeLevel, Summaries } from "@/types";
 
 export default function Home() {
   const [appStep, setAppStep] = useState<AppStep>(AppStep.TEXT_INPUT);
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
   const [summaryId, setSummaryId] = useState<number | null>(null);
   const [summaries, setSummaries] = useState<Summaries | null>(null);
   const [currentGradeLevel, setCurrentGradeLevel] = useState<GradeLevel>(5);
-  const [selectedSummary, setSelectedSummary] = useState<string>('');
+  const [selectedSummary, setSelectedSummary] = useState<string>("");
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [isWordDetailOpen, setIsWordDetailOpen] = useState(false);
 
   // Function to handle text processing completion
-  const handleProcessingComplete = (newSummaryId: number, newSummaries: Summaries) => {
+  const handleProcessingComplete = (
+    newSummaryId: number,
+    newSummaries: Summaries,
+  ) => {
     setSummaryId(newSummaryId);
     setSummaries(newSummaries);
 
@@ -67,7 +70,7 @@ export default function Home() {
   const handleBackToSummary = () => {
     setAppStep(AppStep.SUMMARY);
   };
-  
+
   // Function to handle reading tools navigation
   const handleReadingToolsNavigation = () => {
     setAppStep(AppStep.READING);
@@ -82,7 +85,7 @@ export default function Home() {
       // Reset state when going back to text input
       setSummaryId(null);
       setSummaries(null);
-      setSelectedSummary('');
+      setSelectedSummary("");
     }
   };
 
@@ -93,7 +96,7 @@ export default function Home() {
       // Reset state when going back to text input
       setSummaryId(null);
       setSummaries(null);
-      setSelectedSummary('');
+      setSelectedSummary("");
     } else if (step === AppStep.SUMMARY) {
       // If we have text but no summaries, trigger processing
       if (inputText.trim() && !summaries) {
@@ -124,14 +127,14 @@ export default function Home() {
       <AppHeader />
 
       <main className="container mx-auto px-4 py-8">
-        <ProcessSteps 
+        <ProcessSteps
           currentStep={appStep}
           onStepClick={handleStepNavigation}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Text Input Component */}
-          <TextInput 
+          <TextInput
             inputText={inputText}
             setInputText={setInputText}
             setAppStep={setAppStep}
@@ -139,8 +142,10 @@ export default function Home() {
           />
 
           {/* Summary Component */}
-          <ProcessingSummary 
-            isVisible={appStep === AppStep.SUMMARY || appStep === AppStep.PROCESSING}
+          <ProcessingSummary
+            isVisible={
+              appStep === AppStep.SUMMARY || appStep === AppStep.PROCESSING
+            }
             summaryId={summaryId}
             summaries={summaries}
             currentGradeLevel={currentGradeLevel}
@@ -155,7 +160,7 @@ export default function Home() {
         </div>
 
         {/* Reading Tools */}
-        <ReadingTools 
+        <ReadingTools
           isVisible={appStep === AppStep.READING}
           summaryId={summaryId}
           selectedSummary={selectedSummary}
@@ -166,7 +171,7 @@ export default function Home() {
         />
 
         {/* Word Detail Modal */}
-        <SimpleWordModal 
+        <SimpleWordModal
           isOpen={isWordDetailOpen}
           word={selectedWord}
           onClose={handleCloseWordDetail}
