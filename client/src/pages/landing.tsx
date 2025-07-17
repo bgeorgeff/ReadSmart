@@ -71,8 +71,7 @@ export default function Landing() {
           </h1>
           
           <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Turn complex texts into readable chunks. Perfect for adults, teens, and educators, 
-            who want to choose their own topics for reading practice.
+            Turn complex texts copied from any website or PDF into readable chunks. Perfect for adults, teens, and educators, who want to choose their own topics for reading practice.
           </p>
           
           <Link href="/app">
@@ -116,7 +115,7 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-semibold mb-4 text-gray-800">Audio Features</h3>
               <p className="text-gray-600 leading-relaxed">
-                Use text-to-speech for any words you paste in. Choose to listen at different speeds and record yourself if you want.
+                Use text-to-speech to listen at different reading speeds, and then record yourself reading if you like.
               </p>
             </CardContent>
           </Card>
@@ -126,7 +125,7 @@ export default function Landing() {
         <div className="text-center mt-20">
           <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/30 shadow-lg max-w-2xl mx-auto">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Ready to transform your reading experience?</h2>
-            <p className="text-gray-600 mb-6">Join thousands of learners who are already reading smarter with ReadSmart.</p>
+            <p className="text-gray-600 mb-6">Say goodbye to "The Man in the Tan Van" and read about whatever you want from the web or docs for work or school.</p>
             <Link href="/app">
               <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 Get Started!

@@ -37,7 +37,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <button 
-                onClick={() => handleSpeakerClick("Getting Started. 1. Paste your text in the input box on the main page. 2. Click Summarize to generate summaries at different reading levels. 3. Choose a grade level to find a summary that looks comfortable. 4. Click read for interactive features.")}
+                onClick={() => handleSpeakerClick("Getting Started. 1. Paste your text in the input box on the main page. 2. Click Summarize to generate summaries at 12 different reading levels. 3. Choose a grade level to find a summary that looks comfortable. 4. Click read for interactive features.")}
                 className="text-[#4285F4] hover:text-[#3367D6] transition-colors"
                 aria-label={isSpeaking ? "Stop reading" : "Listen to Getting Started section"}
               >
@@ -46,9 +46,9 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
               Getting Started
             </h3>
             <div className="space-y-2 text-gray-600">
-              <p>1. <strong>Paste or type your text</strong> in the input box on the main page.</p>
+              <p>1. <strong>Paste your text</strong> in the input box on the main page.</p>
               <p>2. <strong>Click "Summarize"</strong> to generate summaries at 12 different reading levels.</p>
-              <p>3. <strong>Choose a grade level</strong> to find a summary that feels comfortable to you. You'll work up from this level later.</p>
+              <p>3. <strong>Choose a grade level</strong> to find a summary that looks comfortable.</p>
               <p>4. <strong>Click "Read"</strong> for interactive features.</p>
             </div>
           </section>
