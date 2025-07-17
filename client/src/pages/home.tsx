@@ -129,6 +129,7 @@ export default function Home() {
 
       {clickedWord && (
         <SimpleWordModal 
+          isOpen={!!clickedWord}
           word={clickedWord}
           onClose={handleCloseWordDetail}
         />

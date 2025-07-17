@@ -13,28 +13,28 @@ interface DisplayTextWithFixesProps {
 
 function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: DisplayTextWithFixesProps) {
   const processedText = text;
-  
+
   // Simple tokenization that preserves quotes and parentheses properly
   const tokenize = (text: string): string[] => {
     return text.split(/\s+/).filter(token => token.trim() !== '');
   };
-  
+
   const tokens = tokenize(processedText);
-  
+
   return (
     <div className="word-interaction-container">
       {tokens.map((token, index) => {
         // Check if this is a quoted phrase (starts and ends with ")
         const isQuotedPhrase = token.startsWith('"') && token.endsWith('"');
-        
+
         // Check if this token should be highlighted during speech
         const isHighlighted = highlightedWordIndex === index;
-        
+
         // For quoted phrases, preserve the entire token
         if (isQuotedPhrase) {
           // Remove quotes for clicking, but preserve in display
           const cleanToken = token.substring(1, token.length - 1);
-          
+
           return (
             <span key={index} className="word-container">
               <span className="quote-highlight">"</span>
@@ -47,39 +47,25 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
                 {cleanToken}
               </span>
               <span className="quote-highlight">"</span>
-              {' '}
             </span>
           );
         }
-        
-        // For regular tokens, separate the word from punctuation but keep them together visually
-        let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
-        let punctuation = token.replace(cleanWord, "");
-        
-        if (cleanWord) {
-          return (
-            <span key={index} className="word-container">
-              <span 
-                className={`word-highlight px-1 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 ${
-                  isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
-                }`}
-                onClick={() => onWordClick(cleanWord)}
-              >
-                {cleanWord}
-              </span>
-              <span className="punctuation">{punctuation}</span>
-              {' '}
-            </span>
-          );
-        } else {
-          // If it's just punctuation, display it as-is
-          return (
-            <span key={index} className="word-container">
-              <span className="punctuation">{token}</span>
-              {' '}
-            </span>
-          );
-        }
+
+        // For regular words, extract just the word part (no punctuation)
+        const wordMatch = token.match(/^[^\w]*(\w+)[^\w]*$/);
+        const word = wordMatch ? wordMatch[1] : token;
+
+        return (
+          <span 
+            key={index}
+            className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
+              isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
+            }`}
+            onClick={() => onWordClick(word)}
+          >
+            {token}
+          </span>
+        );
       })}
     </div>
   );
@@ -108,7 +94,7 @@ export default function ReadingTools({
   const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
 
   const [speechRate, setSpeechRate] = useState<number>(0.65); // Default to 135 WPM
-  
+
   // WPM to speech rate mapping - final calibrated range (105-165 WPM)
   const wpmToSpeechRate = {
     105: 0.5,  // CALIBRATED: Gives ~108 WPM actual ✓
@@ -117,17 +103,17 @@ export default function ReadingTools({
     150: 1.0,  // CALIBRATED: Gives 148 WPM actual ✓
     165: 1.3   // CALIBRATED: Gives 167 WPM actual ✓
   };
-  
+
   // Convert speech rate to WPM using the mapping
   const speechRateToWPM = (rate: number): number => {
     // Find the closest WPM value in our mapping
     const wpmValues = Object.keys(wpmToSpeechRate).map(Number);
     const rates = Object.values(wpmToSpeechRate);
-    
+
     // Find the closest rate in our mapping
     let closestIndex = 0;
     let closestDiff = Math.abs(rates[0] - rate);
-    
+
     for (let i = 1; i < rates.length; i++) {
       const diff = Math.abs(rates[i] - rate);
       if (diff < closestDiff) {
@@ -135,7 +121,7 @@ export default function ReadingTools({
         closestIndex = i;
       }
     }
-    
+
     return wpmValues[closestIndex];
   };
   const { toast } = useToast();
@@ -153,16 +139,16 @@ export default function ReadingTools({
     permissionError
   } = useAudioRecorder();
   const { speak, isSpeaking, stopSpeaking } = useTextToSpeech();
-  
+
   if (!isVisible) return null;
-  
+
   // Format time for display (mm:ss)
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
-  
+
   // Handle record button click
   const handleRecordToggle = async () => {
     if (recordingState === RecordingState.INACTIVE || recordingState === RecordingState.PLAYBACK) {
@@ -179,7 +165,7 @@ export default function ReadingTools({
       }
     }
   };
-  
+
   // Handle stop recording
   const handleStopRecording = () => {
     stopRecording();
@@ -188,13 +174,13 @@ export default function ReadingTools({
       setRecordingState(RecordingState.PLAYBACK);
     }, 100);
   };
-  
+
   // Handle playback controls
   const handlePlayPauseToggle = () => {
     // Always call playRecording, it will use a fallback if needed
     playRecording();
   };
-  
+
   // Handle restart playback
   const handleRestartPlayback = () => {
     if (audioUrl) {
@@ -203,13 +189,13 @@ export default function ReadingTools({
       setRecordingState(RecordingState.INACTIVE);
     }
   };
-  
+
   // Handle delete recording
   const handleDeleteRecording = () => {
     resetRecording();
     setRecordingState(RecordingState.INACTIVE);
   };
-  
+
   // Handle listen (text-to-speech) with word highlighting
   const handleListen = () => {
     if (isSpeaking) {
@@ -221,11 +207,11 @@ export default function ReadingTools({
       }, speechRate);
     }
   };
-  
+
   return (
     <div className="col-span-1 lg:col-span-2 bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg p-6">
       <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">3. Reading Practice</h3>
-      
+
       <div className="grid grid-cols-1 gap-6">
         <div>
           <div className="bg-gray-100 p-4 rounded-lg mb-4 max-h-72 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
@@ -239,7 +225,7 @@ export default function ReadingTools({
               <p>No text available for reading practice.</p>
             )}
           </div>
-          
+
           {/* Reading Speed Slider */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -266,7 +252,7 @@ export default function ReadingTools({
               <span className="text-xs text-gray-500">165 WPM</span>
             </div>
           </div>
-          
+
           {/* Responsive button grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
             {/* Listen Button */}
@@ -277,7 +263,7 @@ export default function ReadingTools({
               <span className="material-icons text-sm mr-1">{isSpeaking ? 'stop' : 'volume_up'}</span>
               <span className="hidden sm:inline">{isSpeaking ? 'Stop' : 'Listen'}</span>
             </button>
-            
+
             {/* Record Me Button */}
             <button 
               className={`${isRecording ? 'bg-[#EA4335]' : 'bg-[#FBBC05]'} hover:bg-opacity-80 text-white py-2 px-3 rounded-lg font-['Google_Sans'] flex items-center justify-center text-sm`}
@@ -286,7 +272,7 @@ export default function ReadingTools({
               <span className="material-icons text-sm mr-1">{isRecording ? 'stop' : 'mic'}</span>
               <span className="hidden sm:inline">{isRecording ? 'Stop' : 'Record Me'}</span>
             </button>
-            
+
             {/* Play Back Button */}
             <button 
               className="bg-[#34A853] hover:bg-[#34A853]/90 text-white py-2 px-3 rounded-lg font-['Google_Sans'] flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -296,7 +282,7 @@ export default function ReadingTools({
               <span className="material-icons text-sm mr-1">{isPlaying ? 'pause' : 'play_arrow'}</span>
               <span className="hidden sm:inline">{isPlaying ? 'Pause' : 'Play'}</span>
             </button>
-            
+
             {/* Redo Button */}
             <button 
               className="bg-[#4285F4] hover:bg-[#4285F4]/90 text-white py-2 px-3 rounded-lg font-['Google_Sans'] flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -321,7 +307,7 @@ export default function ReadingTools({
               </p>
             </div>
           )}
-          
+
           {showBackButton && (
             <div className="mt-4 border-t border-gray-200 pt-4 flex justify-center">
               <button 
@@ -334,8 +320,8 @@ export default function ReadingTools({
             </div>
           )}
         </div>
-        
-        
+
+
       </div>
     </div>
   );
