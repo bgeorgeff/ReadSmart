@@ -214,7 +214,7 @@ export default function ReadingTools({
 
       <div className="grid grid-cols-1 gap-6">
         <div>
-          <div className="bg-gray-100 p-4 rounded-lg mb-4 max-h-72 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
+          <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
             {selectedSummary ? (
               <DisplayTextWithFixes 
                 text={selectedSummary}
