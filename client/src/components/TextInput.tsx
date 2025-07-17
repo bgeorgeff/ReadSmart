@@ -76,20 +76,24 @@ export default function TextInput({ inputText, setInputText, setAppStep, isVisib
             value={inputText}
           />
           <div className="absolute bottom-3 right-3">
-            <button 
-              className="text-[#4285F4] hover:bg-[#4285F4]/10 p-2 rounded-full"
-              onClick={handlePaste}
-              aria-label="Paste from clipboard"
-            >
-              <span className="material-icons">content_paste</span>
-            </button>
-            <button 
-              className="text-gray-300 hover:text-[#EA4335] hover:bg-[#EA4335]/10 p-2 rounded-full"
-              onClick={handleClear}
-              aria-label="Clear text"
-            >
-              <span className="material-icons">clear</span>
-            </button>
+            {inputText.trim().length === 0 && (
+              <button 
+                className="text-[#4285F4] hover:bg-[#4285F4]/10 p-2 rounded-full"
+                onClick={handlePaste}
+                aria-label="Paste from clipboard"
+              >
+                <span className="material-icons">content_paste</span>
+              </button>
+            )}
+            {inputText.trim().length > 0 && (
+              <button 
+                className="text-gray-300 hover:text-[#EA4335] hover:bg-[#EA4335]/10 p-2 rounded-full"
+                onClick={handleClear}
+                aria-label="Clear text"
+              >
+                <span className="material-icons">clear</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
