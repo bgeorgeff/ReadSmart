@@ -223,7 +223,7 @@ export default function ReadingTools({
   };
   
   return (
-    <div className="col-span-1 lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+    <div className="col-span-1 lg:col-span-2 bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg p-6">
       <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">3. Reading Practice</h3>
       
       <div className="grid grid-cols-1 gap-6">

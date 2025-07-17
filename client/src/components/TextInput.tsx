@@ -63,7 +63,7 @@ export default function TextInput({ inputText, setInputText, setAppStep, isVisib
   if (!isVisible) return null;
   
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg p-6">
       <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">1. Paste the text you copied</h3>
       <div className="mb-4">
         <div className="relative">

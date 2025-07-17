@@ -253,14 +253,14 @@ export default function ProcessingSummary({
   if (!isVisible) return null;
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="col-span-1 lg:col-span-2 bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg p-6">
       <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">2. AI Summaries</h3>
 
       {/* Processing State */}
       {isProcessing && (
         <div className="flex flex-col items-center justify-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4285F4] mb-4"></div>
-          
+
           {/* Progress Bar */}
           <div className="w-64 bg-gray-200 rounded-full h-2 mb-4">
             <div 
@@ -268,7 +268,7 @@ export default function ProcessingSummary({
               style={{ width: `${progressWidth}%` }}
             ></div>
           </div>
-          
+
           <p className="text-gray-500 text-sm font-['Google_Sans']">Summarizing your text for all reading levels...</p>
         </div>
       )}

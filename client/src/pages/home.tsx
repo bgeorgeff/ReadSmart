@@ -9,174 +9,112 @@ import SimpleWordModal from "@/components/SimpleWordModal";
 import { AppStep, GradeLevel, Summaries } from "@/types";
 
 export default function Home() {
-  const [appStep, setAppStep] = useState<AppStep>(AppStep.TEXT_INPUT);
-  const [inputText, setInputText] = useState("");
+  const [currentStep, setCurrentStep] = useState<AppStep>(AppStep.TEXT_INPUT);
+  const [inputText, setInputText] = useState<string>('');
   const [summaryId, setSummaryId] = useState<number | null>(null);
-  const [summaries, setSummaries] = useState<Summaries | null>(null);
-  const [currentGradeLevel, setCurrentGradeLevel] = useState<GradeLevel>(5);
-  const [selectedSummary, setSelectedSummary] = useState<string>("");
-  const [selectedWord, setSelectedWord] = useState<string | null>(null);
-  const [isWordDetailOpen, setIsWordDetailOpen] = useState(false);
+  const [selectedGrade, setSelectedGrade] = useState<number>(5);
+  const [selectedSummary, setSelectedSummary] = useState<string>('');
+  const [clickedWord, setClickedWord] = useState<string | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
 
-  // Function to handle text processing completion
-  const handleProcessingComplete = (
-    newSummaryId: number,
-    newSummaries: Summaries,
-  ) => {
-    setSummaryId(newSummaryId);
-    setSummaries(newSummaries);
-
-    // If current grade level is 0, show original text
-    if (currentGradeLevel === 0) {
-      setSelectedSummary(inputText);
-    } else {
-      setSelectedSummary(newSummaries[currentGradeLevel]);
-    }
-
-    // Check if we should go directly to reading (if user clicked step 3)
-    // Otherwise go to summary step
-    setAppStep(AppStep.SUMMARY);
-  };
-
-  // Function to handle grade level change
-  const handleGradeLevelChange = (gradeLevel: GradeLevel) => {
-    setCurrentGradeLevel(gradeLevel);
-    // If grade level is 0, show the original text
-    if (gradeLevel === 0) {
-      setSelectedSummary(inputText);
-    } else if (summaries) {
-      // Otherwise show the appropriate summary
-      setSelectedSummary(summaries[gradeLevel]);
-    }
-  };
-
-  // Function to handle word click
-  const handleWordClick = (word: string) => {
-    setSelectedWord(word);
-    setIsWordDetailOpen(true);
-  };
-
-  // Function to close word detail modal
-  const handleCloseWordDetail = () => {
-    setIsWordDetailOpen(false);
-  };
-
-  // Function to continue to reading step
-  const handleContinueToReading = () => {
-    setAppStep(AppStep.READING);
-  };
-
-  // Function to go back to summary
-  const handleBackToSummary = () => {
-    setAppStep(AppStep.SUMMARY);
-  };
-
-  // Function to handle reading tools navigation
-  const handleReadingToolsNavigation = () => {
-    setAppStep(AppStep.READING);
-  };
-
-  // Function to handle back navigation
-  const handleBackNavigation = () => {
-    if (appStep === AppStep.READING) {
-      setAppStep(AppStep.SUMMARY);
-    } else if (appStep === AppStep.SUMMARY) {
-      setAppStep(AppStep.TEXT_INPUT);
-      // Reset state when going back to text input
-      setSummaryId(null);
-      setSummaries(null);
-      setSelectedSummary("");
-    }
-  };
-
-  // Function to handle step navigation with processing logic
-  const handleStepNavigation = (step: AppStep) => {
+  const handleStepClick = (step: AppStep) => {
     if (step === AppStep.TEXT_INPUT) {
-      setAppStep(AppStep.TEXT_INPUT);
-      // Reset state when going back to text input
-      setSummaryId(null);
-      setSummaries(null);
-      setSelectedSummary("");
-    } else if (step === AppStep.SUMMARY) {
-      // If we have text but no summaries, trigger processing
-      if (inputText.trim() && !summaries) {
-        setAppStep(AppStep.PROCESSING);
-      } else if (summaries) {
-        // If we already have summaries, just navigate
-        setAppStep(AppStep.SUMMARY);
-      } else {
-        // If no text, go to text input
-        setAppStep(AppStep.TEXT_INPUT);
-      }
-    } else if (step === AppStep.READING) {
-      // Can only go to reading if we have summaries
-      if (summaries) {
-        setAppStep(AppStep.READING);
-      } else if (inputText.trim()) {
-        // If we have text but no summaries, process first
-        setAppStep(AppStep.PROCESSING);
-      } else {
-        // If no text, go to text input
-        setAppStep(AppStep.TEXT_INPUT);
-      }
+      setCurrentStep(AppStep.TEXT_INPUT);
+    } else if (step === AppStep.SUMMARY && summaryId) {
+      setCurrentStep(AppStep.SUMMARY);
+    } else if (step === AppStep.READING && selectedSummary) {
+      setCurrentStep(AppStep.READING);
+    }
+  };
+
+  const handleWordClick = (word: string) => {
+    setClickedWord(word);
+  };
+
+  const handleCloseWordDetail = () => {
+    setClickedWord(null);
+  };
+
+  const handleBackToSummary = () => {
+    setCurrentStep(AppStep.SUMMARY);
+  };
+
+  const handleNavigateBack = () => {
+    if (currentStep === AppStep.READING) {
+      setCurrentStep(AppStep.SUMMARY);
+    } else if (currentStep === AppStep.SUMMARY) {
+      setCurrentStep(AppStep.TEXT_INPUT);
     }
   };
 
   return (
-    <div className="bg-neutral-100 min-h-screen">
-      <AppHeader />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+      {/* Background Graphics */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-600/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-purple-400/20 to-pink-600/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-cyan-300/10 to-blue-500/10 rounded-full blur-3xl"></div>
 
-      <main className="container mx-auto px-4 py-8">
-        <ProcessSteps
-          currentStep={appStep}
-          onStepClick={handleStepNavigation}
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-1/4 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+        <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-indigo-500 rounded-full animate-bounce"></div>
+        <div className="absolute bottom-1/3 left-1/3 w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"></div>
+
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%236366f1%22%20fill-opacity%3D%220.03%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%221%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div>
+      </div>
+
+      {/* Header with backdrop blur */}
+      <div className="relative z-10">
+        <AppHeader onHelpClick={() => setShowHelp(true)} />
+      </div>
+
+      <main className="relative z-10 container mx-auto px-4 py-8">
+        <ProcessSteps 
+          currentStep={currentStep} 
+          onStepClick={handleStepClick}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Text Input Component */}
-          <TextInput
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <TextInput 
             inputText={inputText}
             setInputText={setInputText}
-            setAppStep={setAppStep}
-            isVisible={appStep === AppStep.TEXT_INPUT}
+            setAppStep={setCurrentStep}
+            isVisible={currentStep === AppStep.TEXT_INPUT}
           />
 
-          {/* Summary Component */}
-          <ProcessingSummary
-            isVisible={
-              appStep === AppStep.SUMMARY || appStep === AppStep.PROCESSING
-            }
-            summaryId={summaryId}
-            summaries={summaries}
-            currentGradeLevel={currentGradeLevel}
+          <ProcessingSummary 
             inputText={inputText}
-            onGradeLevelChange={handleGradeLevelChange}
+            isVisible={currentStep === AppStep.PROCESSING || currentStep === AppStep.SUMMARY}
+            setSummaryId={setSummaryId}
+            setAppStep={setCurrentStep}
+            selectedGrade={selectedGrade}
+            setSelectedGrade={setSelectedGrade}
+            selectedSummary={selectedSummary}
+            setSelectedSummary={setSelectedSummary}
+          />
+
+          <ReadingTools 
+            isVisible={currentStep === AppStep.READING}
+            summaryId={summaryId}
+            selectedSummary={selectedSummary}
             onWordClick={handleWordClick}
-            onContinueToReading={handleReadingToolsNavigation}
-            onNavigateBack={handleBackNavigation}
-            onProcessingComplete={handleProcessingComplete}
-            showBackButton={appStep !== AppStep.TEXT_INPUT}
+            onBackToSummary={handleBackToSummary}
+            onNavigateBack={handleNavigateBack}
           />
         </div>
+      </main>
 
-        {/* Reading Tools */}
-        <ReadingTools
-          isVisible={appStep === AppStep.READING}
-          summaryId={summaryId}
-          selectedSummary={selectedSummary}
-          onWordClick={handleWordClick}
-          onBackToSummary={() => setAppStep(AppStep.SUMMARY)}
-          onNavigateBack={handleBackNavigation}
-          showBackButton={appStep !== AppStep.TEXT_INPUT}
-        />
-
-        {/* Word Detail Modal */}
-        <SimpleWordModal
-          isOpen={isWordDetailOpen}
-          word={selectedWord}
+      {clickedWord && (
+        <WordDetail 
+          word={clickedWord}
           onClose={handleCloseWordDetail}
         />
-      </main>
+      )}
+
+      {showHelp && (
+        <HelpModal onClose={() => setShowHelp(false)} />
+      )}
     </div>
   );
 }
