@@ -56,14 +56,16 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
         const word = wordMatch ? wordMatch[1] : token;
 
         return (
-          <span 
-            key={index}
-            className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
-              isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
-            }`}
-            onClick={() => onWordClick(word)}
-          >
-            {token}
+          <span key={index} className="word-container">
+            <span 
+              className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
+                isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
+              }`}
+              onClick={() => onWordClick(word)}
+            >
+              {token}
+            </span>
+            {' '}
           </span>
         );
       })}
