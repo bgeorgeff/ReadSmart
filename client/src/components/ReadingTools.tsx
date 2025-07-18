@@ -229,7 +229,27 @@ export default function ReadingTools({
 
           {/* Reading Speed Slider */}
           <div className="mb-4">
-
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-gray-700 font-['Google_Sans']">
+                Reading Speed: {speechRateToWPM(speechRate)} WPM
+              </label>
+            </div>
+            <input
+              type="range"
+              min="0.5"
+              max="1.3"
+              step="0.08"
+              value={speechRate}
+              onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            />
+            <div className="flex justify-between text-xs text-gray-500 mt-1 font-['Roboto']">
+              <span>105</span>
+              <span>120</span>
+              <span>135</span>
+              <span>150</span>
+              <span>165</span>
+            </div>
           </div>
 
           {/* Responsive button grid */}
