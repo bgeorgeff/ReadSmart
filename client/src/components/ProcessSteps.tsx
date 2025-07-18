@@ -11,11 +11,11 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
     const steps = [AppStep.TEXT_INPUT, AppStep.PROCESSING, AppStep.SUMMARY, AppStep.READING];
     return steps.indexOf(step) < steps.indexOf(current);
   };
-  
+
   // For steps 2 and 3, we consider them active in different app states
   const isStep2Active = currentStep === AppStep.PROCESSING || currentStep === AppStep.SUMMARY;
   const isStep3Active = currentStep === AppStep.READING;
-  
+
   // Get header text based on current step
   const getHeaderText = () => {
     switch (currentStep) {
@@ -25,7 +25,7 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
       case AppStep.SUMMARY:
         return "Choose a level to start with";
       case AppStep.READING:
-        return "Click single words, listen to text, read and record";
+        return "Read, listen, record...";
       default:
         return "Copy any text from the Internet";
     }
@@ -33,7 +33,7 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
 
   return (
     <div className="py-4">
-      <div className="flex justify-between items-center flex-wrap">
+      <div className="flex justify-center items-center flex-wrap">
         <h2 className="font-['Google_Sans'] text-2xl font-bold text-gray-800">{getHeaderText()}</h2>
         <div className="flex mt-2 md:mt-0 ml-auto">
           <div className="flex items-center">
