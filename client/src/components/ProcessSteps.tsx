@@ -16,10 +16,25 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
   const isStep2Active = currentStep === AppStep.PROCESSING || currentStep === AppStep.SUMMARY;
   const isStep3Active = currentStep === AppStep.READING;
   
+  // Get header text based on current step
+  const getHeaderText = () => {
+    switch (currentStep) {
+      case AppStep.TEXT_INPUT:
+        return "Copy any text from the Internet";
+      case AppStep.PROCESSING:
+      case AppStep.SUMMARY:
+        return "Choose a level to start with";
+      case AppStep.READING:
+        return "Click single words, listen to text, read and record";
+      default:
+        return "Copy any text from the Internet";
+    }
+  };
+
   return (
     <div className="py-4">
       <div className="flex justify-between items-center flex-wrap">
-        <h2 className="font-['Google_Sans'] text-2xl font-bold text-gray-800">Copy any text from the Internet</h2>
+        <h2 className="font-['Google_Sans'] text-2xl font-bold text-gray-800">{getHeaderText()}</h2>
         <div className="flex mt-2 md:mt-0 ml-auto">
           <div className="flex items-center">
             <button 
