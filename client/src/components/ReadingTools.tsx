@@ -228,7 +228,7 @@ export default function ReadingTools({
           </div>
 
           {/* Reading Speed Slider */}
-          <div className="mb-4">
+          <div className="mb-4 mt-6">
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-gray-700 font-['Google_Sans']">
                 Reading Speed: {speechRateToWPM(speechRate)} WPM
@@ -236,11 +236,15 @@ export default function ReadingTools({
             </div>
             <input
               type="range"
-              min="0.5"
-              max="1.3"
-              step="0.08"
-              value={speechRate}
-              onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+              min="0"
+              max="4"
+              step="1"
+              value={Object.values(wpmToSpeechRate).indexOf(speechRate)}
+              onChange={(e) => {
+                const index = parseInt(e.target.value);
+                const rates = Object.values(wpmToSpeechRate);
+                setSpeechRate(rates[index]);
+              }}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
             />
             <div className="flex justify-between text-xs text-gray-500 mt-1 font-['Roboto']">
