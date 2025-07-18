@@ -98,7 +98,7 @@ export default function Home() {
           onStepClick={handleStepClick}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="max-w-4xl mx-auto">
           <TextInput 
             inputText={inputText}
             setInputText={setInputText}
