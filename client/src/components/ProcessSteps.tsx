@@ -17,10 +17,10 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
   const isStep3Active = currentStep === AppStep.READING;
   
   return (
-    <div className="mb-8">
-      <div className="flex justify-between items-center mb-6 flex-wrap">
+    <div className="py-4">
+      <div className="flex justify-between items-center flex-wrap">
         <h2 className="font-['Google_Sans'] text-2xl font-bold text-gray-800">Copy any text from the Internet</h2>
-        <div className="flex mt-2 md:mt-0">
+        <div className="flex mt-2 md:mt-0 ml-auto">
           <div className="flex items-center">
             <button 
               className={`h-8 w-8 rounded-full flex items-center justify-center font-bold mr-2 transition-colors hover:opacity-80 ${

@@ -90,13 +90,17 @@ export default function Home() {
       {/* Header with backdrop blur */}
       <div className="relative z-10">
         <AppHeader onHelpClick={() => setShowHelp(true)} />
+        <div className="bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm">
+          <div className="container mx-auto px-4">
+            <ProcessSteps 
+              currentStep={currentStep} 
+              onStepClick={handleStepClick}
+            />
+          </div>
+        </div>
       </div>
 
       <main className="relative z-10 container mx-auto px-4 py-8">
-        <ProcessSteps 
-          currentStep={currentStep} 
-          onStepClick={handleStepClick}
-        />
 
         <div className="max-w-4xl mx-auto">
           <TextInput 
