@@ -1,3 +1,4 @@
+
 import { AppStep } from '@/types';
 
 interface ProcessStepsProps {
@@ -20,22 +21,22 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
   const getHeaderText = () => {
     switch (currentStep) {
       case AppStep.TEXT_INPUT:
-        return "Copy any text from the Internet";
+        return "Copy/Paste any text...";
       case AppStep.PROCESSING:
       case AppStep.SUMMARY:
-        return "Choose a level to start with";
+        return "Choose a level...";
       case AppStep.READING:
         return "Read, listen, record...";
       default:
-        return "Copy any text from the Internet";
+        return "Copy/Paste any text...";
     }
   };
 
   return (
     <div className="py-4">
-      <div className="flex justify-center items-center flex-wrap">
+      <div className="flex justify-center items-center gap-4">
         <h2 className="font-['Google_Sans'] text-2xl font-bold text-gray-800">{getHeaderText()}</h2>
-        <div className="flex mt-2 md:mt-0 ml-auto">
+        <div className="flex">
           <div className="flex items-center">
             <button 
               className={`h-8 w-8 rounded-full flex items-center justify-center font-bold mr-2 transition-colors hover:opacity-80 ${
