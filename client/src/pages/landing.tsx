@@ -103,7 +103,7 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-semibold mb-4 text-gray-800">Interactive Reading</h3>
               <p className="text-gray-600 leading-relaxed">
-                Click any word for instant definitions and pronunciation help. Perfect for vocabulary building and comprehension.
+                Click any word to hear it, along with a definition and example sentence. Grow your vocabulary and comprehension!
               </p>
             </CardContent>
           </Card>
