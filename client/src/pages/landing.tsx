@@ -71,7 +71,7 @@ export default function Landing() {
           </h1>
           
           <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Turn complex texts copied from any website or PDF into readable chunks. Perfect for adults, teens, and educators, who want to choose their own topics for reading practice.
+            Turn complex texts from any website or PDF into readable chunks. Perfect for dyslexic adults/teens who want to practice their reading skills. Teachers and tutors also love it for helping older students.
           </p>
           
           <Link href="/app">
@@ -91,7 +91,7 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-semibold mb-4 text-gray-800">AI-Powered Simplification</h3>
               <p className="text-gray-600 leading-relaxed">
-                Advanced AI creates 12 different grade-level versions of any text, from 1st grade to 12th grade complexity.
+                Advanced AI creates 12 different grade-level versions of any text, from 1st to 12th grade level.
               </p>
             </CardContent>
           </Card>
