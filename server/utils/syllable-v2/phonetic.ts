@@ -92,7 +92,7 @@ export class PhoneticProcessor {
     const twoLetters = word.slice(position, position + 2).toLowerCase();
     
     // Check special combinations
-    if (SPECIAL_COMBINATIONS[twoLetters]) {
+    if (SPECIAL_COMBINATIONS[twoLetters as keyof typeof SPECIAL_COMBINATIONS]) {
       // If we have phoneme data, verify the sound
       if (phonemes && phonemes.length > 0) {
         // This would need phoneme mapping logic
