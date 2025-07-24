@@ -35,7 +35,7 @@ export default function Landing() {
               </div>
             </Link>
             <Link href="/app">
-              <Button variant="outline" className="bg-white/80 backdrop-blur-sm border-blue-500 hover:bg-white/90 transition-all duration-300">
+              <Button variant="outline" className="bg-white/80 backdrop-blur-sm border-blue-500 hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 hover:-translate-y-1">
                 Get Started
               </Button>
             </Link>
