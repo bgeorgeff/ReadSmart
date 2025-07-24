@@ -46,7 +46,7 @@ export default function Landing() {
       {/* Hero Section */}
       <main className="relative z-10 container mx-auto px-4 py-20">
         <div className="text-center mb-20">
-          <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center justify-center mb-4">
             <div className="flex items-center justify-center space-x-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30 shadow-lg">
               <Sparkles className="h-4 w-4 text-blue-500" />
               <span className="text-sm font-medium text-gray-700">AI-Powered Reading Assistant</span>
