@@ -87,7 +87,7 @@ export default function Landing() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
-                src="/assets/Motocross-Racing-Tips_1753657072049.jpg" 
+                src="/assets/Motocross_1753657398829.jpg" 
                 alt="Motocross Racing Tips - Example of complex text that can be simplified"
                 className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300"
               />
@@ -95,7 +95,7 @@ export default function Landing() {
             
             <div className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
-                src="/assets/Classic-Literature_1753657072050.jpg" 
+                src="/assets/Literature_1753657393784.jpg" 
                 alt="Classic Literature - Pride and Prejudice text that can be simplified"
                 className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300"
               />
