@@ -82,8 +82,44 @@ export default function Landing() {
           </Link>
         </div>
 
+        {/* Example Images */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+            ReadSmart Works With Any Text
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <img 
+                src="/attached_assets/MotocrossRacingTips_1753655042576.jpg" 
+                alt="Motocross Racing Tips - Example of technical text that can be simplified"
+                className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-4 left-4 text-white">
+                  <p className="text-sm font-medium">Technical Sports Content</p>
+                  <p className="text-xs opacity-90">Perfect for simplification</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <img 
+                src="/attached_assets/ClassicLiterature_1753655042577.jpg" 
+                alt="Pride and Prejudice - Example of classic literature that can be simplified"
+                className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-4 left-4 text-white">
+                  <p className="text-sm font-medium">Classic Literature</p>
+                  <p className="text-xs opacity-90">Make it accessible</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"></div>
           <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <CardContent className="p-8 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
