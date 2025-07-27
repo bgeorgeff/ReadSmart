@@ -91,9 +91,6 @@ export default function Landing() {
                 alt="Motocross Racing Tips - Example of complex text that can be simplified"
                 className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300"
               />
-              <div className="p-4">
-                <h4 className="text-sm font-medium text-gray-700 text-center">Sports Articles Made Simple</h4>
-              </div>
             </div>
             
             <div className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
@@ -102,9 +99,6 @@ export default function Landing() {
                 alt="Classic Literature - Pride and Prejudice text that can be simplified"
                 className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300"
               />
-              <div className="p-4">
-                <h4 className="text-sm font-medium text-gray-700 text-center">Classic Literature Accessible</h4>
-              </div>
             </div>
           </div>
         </div>
