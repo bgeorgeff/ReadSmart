@@ -82,7 +82,32 @@ export default function Landing() {
           </Link>
         </div>
 
-        
+        {/* Example Images */}
+        <div className="mb-16 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
+              <img 
+                src="/assets/MotocrossRacingTips_1753655618807.jpg" 
+                alt="Motocross Racing Tips - Example of complex text that can be simplified"
+                className="w-full h-48 md:h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="p-4">
+                <h4 className="text-sm font-medium text-gray-700 text-center">Sports Articles Made Simple</h4>
+              </div>
+            </div>
+            
+            <div className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
+              <img 
+                src="/assets/ClassicLiterature_1753655618807.jpg" 
+                alt="Classic Literature - Pride and Prejudice text that can be simplified"
+                className="w-full h-48 md:h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="p-4">
+                <h4 className="text-sm font-medium text-gray-700 text-center">Classic Literature Accessible</h4>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Features */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
