@@ -119,7 +119,7 @@ export default function Landing() {
         </div>
 
         {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"></div>
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <CardContent className="p-8 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
