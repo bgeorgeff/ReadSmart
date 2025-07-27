@@ -87,7 +87,7 @@ export default function Landing() {
           <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
             ReadSmart Works With Any Text
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto"></div>
             <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
               <img 
                 src="/attached_assets/MotocrossRacingTips_1753655042576.jpg" 
