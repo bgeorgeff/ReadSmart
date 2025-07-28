@@ -220,15 +220,34 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
 function ensureCompleteWords(text: string): string {
   if (!text) return text;
   
+  // First, check if the text ends with incomplete words by looking at the last few words
+  const words = text.trim().split(/\s+/);
+  if (words.length === 0) return text;
+  
+  // Check the last word - if it's suspiciously short and doesn't end with punctuation,
+  // it might be truncated
+  const lastWord = words[words.length - 1];
+  const cleanLastWord = lastWord.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+  
+  // If the last word is very short (1-3 chars) and doesn't look like a complete word,
+  // remove it and find a better ending point
+  if (cleanLastWord.length <= 3 && !['a', 'an', 'be', 'by', 'do', 'go', 'he', 'I', 'if', 'in', 'is', 'it', 'me', 'my', 'no', 'of', 'on', 'or', 'so', 'to', 'up', 'us', 'we', 'and', 'are', 'but', 'can', 'did', 'for', 'had', 'has', 'her', 'him', 'his', 'how', 'its', 'may', 'new', 'not', 'now', 'old', 'one', 'our', 'out', 'own', 'say', 'she', 'too', 'two', 'use', 'was', 'way', 'who', 'why', 'you'].includes(cleanLastWord.toLowerCase())) {
+    // Remove the last word and try again
+    const textWithoutLastWord = words.slice(0, -1).join(' ');
+    if (textWithoutLastWord.length > 0) {
+      return ensureCompleteWords(textWithoutLastWord);
+    }
+  }
+  
   // Find the last complete sentence that ends with proper punctuation
   const sentenceEnders = /[.!?]/g;
   let lastValidEnd = -1;
   let match;
   
   while ((match = sentenceEnders.exec(text)) !== null) {
-    // Check if there's only whitespace after this punctuation mark
+    // Check if there's reasonable content after this punctuation mark
     const afterPunctuation = text.substring(match.index + 1).trim();
-    if (afterPunctuation === '' || afterPunctuation.length < 3) {
+    if (afterPunctuation === '' || afterPunctuation.length < 10) {
       lastValidEnd = match.index + 1;
       break;
     }
