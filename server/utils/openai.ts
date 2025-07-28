@@ -206,6 +206,115 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
   }
 }
 
+// Function to generate text for a specific grade level and output type
+export async function generateSingleGradeLevelText(
+  text: string, 
+  gradeLevel: number, 
+  outputType: 'summary' | 'retelling'
+): Promise<string> {
+  try {
+    // Define the system prompt for the model
+    const systemPrompt = `
+      You are an educational AI assistant that specializes in creating age-appropriate content for dyslexic adults.
+      
+      CRITICAL: You are writing for ADULTS who read at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level, NOT for children. 
+      The content should be:
+      - Appropriate for adult interests and maturity
+      - Written at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade reading level
+      - Respectful and dignified for adult readers
+      - Free of condescending or childish language
+      
+      Your task is to create a ${outputType} of the provided text.
+      
+      ${outputType === 'summary' ? 
+        'A SUMMARY should condense the key points and main ideas into a shorter version while maintaining the essential information.' :
+        'A RETELLING should present the full narrative or content in simpler language appropriate for the grade level, maintaining all important details and the complete story/information.'
+      }
+      
+      For ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level:
+      ${getGradeLevelGuidelines(gradeLevel)}
+      
+      IMPORTANT: When handling technical terms, proper nouns, or specialized vocabulary:
+      - Keep the terms exactly as written in the original text
+      - You may add simple explanations after the term if needed for lower grades
+      - Never duplicate or modify the terms themselves
+      - Maintain the dignity and adult-appropriate nature of the content
+      
+      Respond with only the ${outputType}, no additional commentary or explanation.
+    `;
+
+    // Define the model to use based on available API keys
+    const model = process.env.OPENROUTER_API_KEY ? "openai/gpt-4-turbo" : "gpt-4";
+
+    // Make the API request
+    const response = await openai.chat.completions.create({
+      model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: text }
+      ],
+      temperature: 0.7,
+      max_tokens: 1500
+    });
+
+    // Get the generated content
+    const content = response.choices[0].message.content;
+    if (!content) {
+      throw new Error("Empty response from API");
+    }
+
+    // Normalize quote characters
+    return content
+      .replace(/[""]/g, '"')  // Replace smart double quotes with regular double quotes
+      .replace(/['']/g, "'"); // Replace smart single quotes with regular single quotes
+      
+  } catch (error) {
+    console.error("Error generating single grade level text:", error);
+    throw error;
+  }
+}
+
+// Helper function to get grade suffix (1st, 2nd, 3rd, etc.)
+function getGradeSuffix(grade: number): string {
+  if (grade === 1) return 'st';
+  if (grade === 2) return 'nd';
+  if (grade === 3) return 'rd';
+  return 'th';
+}
+
+// Helper function to get grade-level specific guidelines
+function getGradeLevelGuidelines(grade: number): string {
+  if (grade <= 3) {
+    return `
+      - Use simple, common words (avoid words longer than 2-3 syllables when possible)
+      - Keep sentences short (10-15 words maximum)
+      - Focus on concrete concepts and actions
+      - Use simple sentence structures (subject-verb-object)
+    `;
+  } else if (grade <= 6) {
+    return `
+      - Use moderately complex vocabulary with some longer words
+      - Sentences can be 15-20 words
+      - Include some compound sentences
+      - Introduce more abstract concepts with concrete examples
+    `;
+  } else if (grade <= 9) {
+    return `
+      - Use grade-appropriate vocabulary including some advanced terms
+      - Sentences can be 20-25 words
+      - Use complex sentence structures including dependent clauses
+      - Handle abstract concepts and nuanced ideas
+    `;
+  } else {
+    return `
+      - Use sophisticated vocabulary appropriate for the content
+      - Sentences can be longer and more complex
+      - Include advanced sentence structures and rhetorical devices
+      - Handle complex abstract concepts and nuanced analysis
+    `;
+  }
+}
+
 // Function to test the API connection
 export async function testApiConnection() {
   try {

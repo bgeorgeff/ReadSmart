@@ -8,7 +8,8 @@ export type Summaries = Record<GradeLevel, string>;
 export interface ProcessTextResponse {
   success: boolean;
   summaryId: number;
-  summaries: Summaries;
+  summaries?: Summaries; // Made optional for backward compatibility
+  processedText?: string; // New single text output
   message?: string;
 }
 

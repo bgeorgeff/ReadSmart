@@ -7,9 +7,22 @@ interface TextInputProps {
   setInputText: (text: string) => void;
   setAppStep: (step: AppStep) => void;
   isVisible: boolean;
+  selectedGradeLevel: number;
+  setSelectedGradeLevel: (level: number) => void;
+  outputType: 'summary' | 'retelling';
+  setOutputType: (type: 'summary' | 'retelling') => void;
 }
 
-export default function TextInput({ inputText, setInputText, setAppStep, isVisible }: TextInputProps) {
+export default function TextInput({ 
+  inputText, 
+  setInputText, 
+  setAppStep, 
+  isVisible, 
+  selectedGradeLevel, 
+  setSelectedGradeLevel,
+  outputType,
+  setOutputType 
+}: TextInputProps) {
   const [characterCount, setCharacterCount] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
@@ -97,6 +110,64 @@ export default function TextInput({ inputText, setInputText, setAppStep, isVisib
           </div>
         </div>
       </div>
+      
+      {/* Grade Level Selection */}
+      <div className="mb-4">
+        <label htmlFor="grade-level" className="block text-sm font-medium text-gray-700 mb-2">
+          Select Reading Level:
+        </label>
+        <select 
+          id="grade-level"
+          value={selectedGradeLevel}
+          onChange={(e) => setSelectedGradeLevel(parseInt(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4285F4] font-['Roboto']"
+        >
+          <option value={1}>1st Grade (Age 6-7)</option>
+          <option value={2}>2nd Grade (Age 7-8)</option>
+          <option value={3}>3rd Grade (Age 8-9)</option>
+          <option value={4}>4th Grade (Age 9-10)</option>
+          <option value={5}>5th Grade (Age 10-11)</option>
+          <option value={6}>6th Grade (Age 11-12)</option>
+          <option value={7}>7th Grade (Age 12-13)</option>
+          <option value={8}>8th Grade (Age 13-14)</option>
+          <option value={9}>9th Grade (Age 14-15)</option>
+          <option value={10}>10th Grade (Age 15-16)</option>
+          <option value={11}>11th Grade (Age 16-17)</option>
+          <option value={12}>12th Grade (Age 17-18)</option>
+        </select>
+      </div>
+
+      {/* Output Type Selection */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Choose Output Type:
+        </label>
+        <div className="flex space-x-4">
+          <label className="flex items-center">
+            <input
+              type="radio"
+              name="outputType"
+              value="summary"
+              checked={outputType === 'summary'}
+              onChange={(e) => setOutputType(e.target.value as 'summary' | 'retelling')}
+              className="mr-2 text-[#4285F4] focus:ring-[#4285F4]"
+            />
+            <span className="text-sm text-gray-700">Summary</span>
+          </label>
+          <label className="flex items-center">
+            <input
+              type="radio"
+              name="outputType"
+              value="retelling"
+              checked={outputType === 'retelling'}
+              onChange={(e) => setOutputType(e.target.value as 'summary' | 'retelling')}
+              className="mr-2 text-[#4285F4] focus:ring-[#4285F4]"
+            />
+            <span className="text-sm text-gray-700">Retelling</span>
+          </label>
+        </div>
+      </div>
+
       <div className="flex justify-between items-center">
         <span className="text-sm text-gray-400 font-['Roboto']">
           {characterCount} characters
@@ -107,7 +178,7 @@ export default function TextInput({ inputText, setInputText, setAppStep, isVisib
           disabled={characterCount === 0}
         >
           <span className="material-icons mr-1">auto_fix_high</span>
-          Summarize Text
+          Process Text
         </button>
       </div>
     </div>
