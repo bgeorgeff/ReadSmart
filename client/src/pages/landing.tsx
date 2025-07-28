@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, Volume2, Zap, ArrowRight, Sparkles } from "lucide-react";
-import pasteInterfaceImage from "@assets/image_1753676474814.png";
+import pasteInterfaceImage from "@assets/image_1753676536229.png";
 import readingPracticeImage from "@assets/image_1753673154787.png";
 import originalTextImage from "@assets/image_1753674877843.png";
 
