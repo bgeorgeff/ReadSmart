@@ -25,47 +25,54 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
   // Debug logging to trace the duplication issue
   // Advanced tokenization that preserves quoted phrases and handles complex dialogue
   const tokenize = (text: string): string[] => {
+    // First, clean up any remaining duplications that might have slipped through
+    const cleanText = text
+      .replace(/\b(\w+)\s+\1\b/gi, '$1') // Remove word duplications like "said said"
+      .replace(/\b(\w+)\s+\1([.,!?;:])/gi, '$1$2') // Remove duplications with punctuation
+      .replace(/\s+/g, ' ') // Normalize multiple spaces
+      .trim();
+    
     const tokens: string[] = [];
     let i = 0;
     
-    while (i < text.length) {
+    while (i < cleanText.length) {
       // Skip whitespace
-      while (i < text.length && text[i] === ' ') {
+      while (i < cleanText.length && cleanText[i] === ' ') {
         i++;
       }
       
-      if (i >= text.length) break;
+      if (i >= cleanText.length) break;
       
       let token = '';
       
       // Check if we're starting a quoted phrase
-      if (text[i] === '"') {
-        token += text[i]; // Add opening quote
+      if (cleanText[i] === '"') {
+        token += cleanText[i]; // Add opening quote
         i++;
         
         // Collect everything until the closing quote
-        while (i < text.length && text[i] !== '"') {
-          token += text[i];
+        while (i < cleanText.length && cleanText[i] !== '"') {
+          token += cleanText[i];
           i++;
         }
         
         // Add closing quote if found
-        if (i < text.length && text[i] === '"') {
-          token += text[i];
+        if (i < cleanText.length && cleanText[i] === '"') {
+          token += cleanText[i];
           i++;
         }
         
         // Check for punctuation immediately after the quote
-        while (i < text.length && /[.,!?;:]/.test(text[i])) {
-          token += text[i];
+        while (i < cleanText.length && /[.,!?;:]/.test(cleanText[i])) {
+          token += cleanText[i];
           i++;
         }
         
         tokens.push(token);
       } else {
         // Collect a regular word (letters, numbers, punctuation)
-        while (i < text.length && text[i] !== ' ' && text[i] !== '"') {
-          token += text[i];
+        while (i < cleanText.length && cleanText[i] !== ' ' && cleanText[i] !== '"') {
+          token += cleanText[i];
           i++;
         }
         
