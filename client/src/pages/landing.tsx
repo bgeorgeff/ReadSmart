@@ -101,6 +101,17 @@ export default function Landing() {
               />
             </div>
           </div>
+          
+          {/* Mobile-only ReadSmart interface image */}
+          <div className="md:hidden mt-8">
+            <div className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
+              <img 
+                src="/assets/image_1753663461766.png" 
+                alt="ReadSmart application interface showing text simplification"
+                className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Features */}
