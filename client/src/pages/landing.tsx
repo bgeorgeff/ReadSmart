@@ -168,7 +168,7 @@ export default function Landing() {
             {/* Reading Practice Interface */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
-                src="/assets/image_1753673047169.png" 
+                src="/assets/image_1753673154787.png" 
                 alt="Reading practice interface with simplified text and audio controls"
                 className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
               />
