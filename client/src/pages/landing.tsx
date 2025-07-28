@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, Volume2, Zap, ArrowRight, Sparkles } from "lucide-react";
+import pasteInterfaceImage from "@assets/image_1753675924132.png";
 import readingPracticeImage from "@assets/image_1753673154787.png";
 import originalTextImage from "@assets/image_1753674877843.png";
 
@@ -152,7 +153,7 @@ export default function Landing() {
             {/* Text Input & Paste Interface */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
-                src="/assets/1 Paste_1753665491901.jpg" 
+                src={pasteInterfaceImage} 
                 alt="ReadSmart text input and paste interface"
                 className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
               />
