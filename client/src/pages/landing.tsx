@@ -83,6 +83,10 @@ export default function Landing() {
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
           </Link>
+          
+          <p className="text-xl text-gray-600 mt-6 max-w-3xl mx-auto leading-relaxed">
+            Grab text from any web site you're interested in and paste it into ReadSmart...it doesn't matter if the topic is motorcycle racing or classic literature.
+          </p>
         </div>
 
         {/* Example Images */}
