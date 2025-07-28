@@ -153,16 +153,15 @@ export default function Landing() {
           </Card>
         </div>
 
-        {/* Feature Interface Screenshots - 2x2 Grid */}
-        <div className="mt-16 max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Top Row */}
+        {/* Feature Interface Screenshots - Responsive Layout */}
+        <div className="mt-16 max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {/* Text Input & Paste Interface */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
                 src="/assets/1 Paste_1753665491901.jpg" 
                 alt="ReadSmart text input and paste interface"
-                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+                className="w-full h-auto object-cover md:object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
 
@@ -171,17 +170,16 @@ export default function Landing() {
               <img 
                 src="/assets/image_1753663593950.png" 
                 alt="ReadSmart grade level selection interface"
-                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+                className="w-full h-auto object-cover md:object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
 
-            {/* Bottom Row */}
             {/* Audio Interface */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
                 src="/assets/image_1753663914143.png" 
                 alt="Audio features with reading speed controls"
-                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+                className="w-full h-auto object-cover md:object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
 
@@ -190,7 +188,7 @@ export default function Landing() {
               <img 
                 src="/assets/4 Vocabulary_1753663842527.jpg" 
                 alt="Word details popup for vocabulary learning"
-                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+                className="w-full h-auto object-cover md:object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
           </div>
