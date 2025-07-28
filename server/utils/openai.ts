@@ -153,7 +153,13 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       Aim for approximately ${Math.floor(maxWords * 0.9)}-${maxWords} words to retain maximum detail while staying within limits.
       Focus on removing redundant phrases, overly descriptive language, and less critical supporting details while keeping all essential information intact.
 
-      IMPORTANT: Ensure every sentence ends properly with complete words and punctuation. Do not cut off words or leave sentences incomplete.
+      CRITICAL WORD PRESERVATION RULES:
+      - Every word must be complete and spelled correctly
+      - Never truncate or cut off any part of a word, especially before punctuation
+      - Abbreviations like "Mr.", "Mrs.", "Dr." must remain complete
+      - Words before periods must be fully spelled out (example: "wife." not "wif.")
+      - All technical terms and proper nouns must remain exactly as written
+      - Ensure every sentence ends properly with complete words and punctuation
 
       Return only the shortened text without any explanation or commentary.
     `;
@@ -191,7 +197,12 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
         Aim for ${Math.floor(maxWords * 0.95)}-${maxWords} words to maximize detail retention while meeting the requirements.
         Keep as much essential information as possible while staying within limits.
         
-        CRITICAL: Always end sentences with complete words and proper punctuation. NEVER truncate words mid-character.
+        CRITICAL WORD PRESERVATION RULES:
+        - Every word must be complete and spelled correctly before ANY punctuation
+        - Never truncate words before periods (example: write "wife." not "wif.")
+        - Abbreviations like "Mr.", "Mrs." must remain complete
+        - Always end sentences with complete words and proper punctuation
+        - NEVER truncate words mid-character under any circumstances
 
         Text to shorten further: ${shortenedText}
       `;
