@@ -22,67 +22,9 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) {
   const processedText = text;
 
-  // Debug logging to trace the duplication issue
-  // Advanced tokenization that preserves quoted phrases and handles complex dialogue
+  // Simple word-based tokenization that preserves all characters
   const tokenize = (text: string): string[] => {
-    // First, clean up any remaining duplications that might have slipped through
-    const cleanText = text
-      .replace(/\b(\w+)\s+\1\b/gi, '$1') // Remove word duplications like "said said"
-      .replace(/\b(\w+)\s+\1([.,!?;:])/gi, '$1$2') // Remove duplications with punctuation
-      .replace(/\s+/g, ' ') // Normalize multiple spaces
-      .trim();
-    
-    const tokens: string[] = [];
-    let i = 0;
-    
-    while (i < cleanText.length) {
-      // Skip whitespace
-      while (i < cleanText.length && cleanText[i] === ' ') {
-        i++;
-      }
-      
-      if (i >= cleanText.length) break;
-      
-      let token = '';
-      
-      // Check if we're starting a quoted phrase
-      if (cleanText[i] === '"') {
-        token += cleanText[i]; // Add opening quote
-        i++;
-        
-        // Collect everything until the closing quote
-        while (i < cleanText.length && cleanText[i] !== '"') {
-          token += cleanText[i];
-          i++;
-        }
-        
-        // Add closing quote if found
-        if (i < cleanText.length && cleanText[i] === '"') {
-          token += cleanText[i];
-          i++;
-        }
-        
-        // Check for punctuation immediately after the quote
-        while (i < cleanText.length && /[.,!?;:]/.test(cleanText[i])) {
-          token += cleanText[i];
-          i++;
-        }
-        
-        tokens.push(token);
-      } else {
-        // Collect a regular word (letters, numbers, punctuation)
-        while (i < cleanText.length && cleanText[i] !== ' ' && cleanText[i] !== '"') {
-          token += cleanText[i];
-          i++;
-        }
-        
-        if (token) {
-          tokens.push(token);
-        }
-      }
-    }
-    
-    return tokens;
+    return text.split(/\s+/).filter(token => token.trim() !== '');
   };
 
   const tokens = tokenize(processedText);
@@ -91,53 +33,56 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
     <div className="word-interaction-container">
       {tokens.map((token, index) => {
         // Check if this is a quoted phrase (starts and ends with ")
-        const isQuotedPhrase = token.startsWith('"') && token.endsWith('"');
+        const isQuotedPhrase = token.startsWith('"') && token.endsWith('"') && token.length > 2;
 
-        // For quoted phrases, preserve the entire token
         if (isQuotedPhrase) {
           // Remove quotes for clicking, but preserve in display
           const cleanToken = token.substring(1, token.length - 1);
 
           return (
-            <span key={index} className="word-container">
-              <span className="quote-highlight">"</span>
-              <span 
-                className="word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
+            <span key={index}>
+              <span
+                className="clickable-word cursor-pointer hover:bg-yellow-200 rounded px-1"
                 onClick={() => onWordClick(cleanToken)}
               >
-                {cleanToken}
+                {token}
               </span>
-              <span className="quote-highlight">"</span>
-              {' '}
-            </span>
-          );
-        }
-
-        // For regular tokens, separate the word from punctuation but keep them together visually
-        let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
-        let punctuation = token.replace(cleanWord, "");
-
-        if (cleanWord) {
-          return (
-            <span key={index} className="word-container">
-              <span 
-                className="word-highlight px-0.5 py-0.5 hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer"
-                onClick={() => onWordClick(cleanWord)}
-              >
-                {cleanWord}
-              </span>
-              <span className="punctuation">{punctuation}</span>
-              {' '}
+              {index < tokens.length - 1 && ' '}
             </span>
           );
         } else {
-          // If it's just punctuation, display it as-is
-          return (
-            <span key={index} className="word-container">
-              <span className="punctuation">{token}</span>
-              {' '}
-            </span>
-          );
+          // Regular token - separate word from punctuation
+          const match = token.match(/^([a-zA-Z]+)([^a-zA-Z]*)$/);
+          if (match) {
+            const word = match[1];
+            const punctuation = match[2];
+
+            return (
+              <span key={index}>
+                <span
+                  className="clickable-word cursor-pointer hover:bg-yellow-200 rounded px-1"
+                  onClick={() => onWordClick(word)}
+                >
+                  {word}
+                </span>
+                {punctuation && <span>{punctuation}</span>}
+                {index < tokens.length - 1 && ' '}
+              </span>
+            );
+          } else {
+            // Fallback for tokens that don't match expected pattern
+            return (
+              <span key={index}>
+                <span
+                  className="clickable-word cursor-pointer hover:bg-yellow-200 rounded px-1"
+                  onClick={() => onWordClick(token)}
+                >
+                  {token}
+                </span>
+                {index < tokens.length - 1 && ' '}
+              </span>
+            );
+          }
         }
       })}
     </div>
