@@ -152,7 +152,7 @@ export default function Landing() {
         </div>
 
         {/* Feature Interface Screenshots - Responsive Layout */}
-        <div className="mt-16 max-w-6xl mx-auto px-4">
+        <div className="mt-8 md:mt-16 max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {/* Text Input & Paste Interface */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
