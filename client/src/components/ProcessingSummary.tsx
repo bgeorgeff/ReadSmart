@@ -23,31 +23,56 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
   const processedText = text;
 
   // Debug logging to trace the duplication issue
-  // Advanced tokenization that preserves quoted phrases properly
+  // Advanced tokenization that preserves quoted phrases and handles complex dialogue
   const tokenize = (text: string): string[] => {
     const tokens: string[] = [];
-    let currentToken = '';
-    let insideQuotes = false;
+    let i = 0;
     
-    for (let i = 0; i < text.length; i++) {
-      const char = text[i];
-      
-      if (char === '"') {
-        insideQuotes = !insideQuotes;
-        currentToken += char;
-      } else if (char === ' ' && !insideQuotes) {
-        if (currentToken.trim()) {
-          tokens.push(currentToken.trim());
-          currentToken = '';
-        }
-      } else {
-        currentToken += char;
+    while (i < text.length) {
+      // Skip whitespace
+      while (i < text.length && text[i] === ' ') {
+        i++;
       }
-    }
-    
-    // Add the last token if it exists
-    if (currentToken.trim()) {
-      tokens.push(currentToken.trim());
+      
+      if (i >= text.length) break;
+      
+      let token = '';
+      
+      // Check if we're starting a quoted phrase
+      if (text[i] === '"') {
+        token += text[i]; // Add opening quote
+        i++;
+        
+        // Collect everything until the closing quote
+        while (i < text.length && text[i] !== '"') {
+          token += text[i];
+          i++;
+        }
+        
+        // Add closing quote if found
+        if (i < text.length && text[i] === '"') {
+          token += text[i];
+          i++;
+        }
+        
+        // Check for punctuation immediately after the quote
+        while (i < text.length && /[.,!?;:]/.test(text[i])) {
+          token += text[i];
+          i++;
+        }
+        
+        tokens.push(token);
+      } else {
+        // Collect a regular word (letters, numbers, punctuation)
+        while (i < text.length && text[i] !== ' ' && text[i] !== '"') {
+          token += text[i];
+          i++;
+        }
+        
+        if (token) {
+          tokens.push(token);
+        }
+      }
     }
     
     return tokens;
