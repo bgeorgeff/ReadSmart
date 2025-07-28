@@ -246,10 +246,19 @@ export async function generateSingleGradeLevelText(
       - Keep the natural narrative flow rather than creating a report-style summary
       - Adapt vocabulary and sentence complexity to the grade level while preserving the story structure
       - Insert double line breaks (\\n\\n) between distinct paragraphs and sections to preserve readable formatting
-      - FORMAT DIALOGUE PROPERLY: Each speaker should be on a separate line with proper line breaks between different speakers
-      - When one character finishes speaking and another begins, always insert a line break
-      - Preserve all dialogue using quotation marks, but simplify the vocabulary to match the grade level
+      
+      CRITICAL DIALOGUE FORMATTING RULES:
+      - ALWAYS preserve dialogue with quotation marks: "Hello," she said.
+      - Put each speaker's dialogue on a separate line with line breaks between speakers
+      - When dialogue switches between characters, insert a line break before the new speaker
+      - Example format:
+        Mrs. Bennet said, "We have a new neighbor!"
+        
+        Mr. Bennet replied, "That is interesting news."
+        
+        "He is very rich," she continued.
       - Maintain the conversational flow and natural dialogue structure throughout the text
+      - Never combine multiple speakers' dialogue into one paragraph without line breaks
 
       Respond with only the ${outputType}, no additional commentary or explanation.
     `;
