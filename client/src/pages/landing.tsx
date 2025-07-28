@@ -150,6 +150,17 @@ export default function Landing() {
               </p>
             </CardContent>
           </Card>
+          
+          {/* Word Details Interface - underneath Interactive Reading */}
+          <div className="md:col-span-3 mt-8">
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden max-w-md mx-auto">
+              <img 
+                src="/assets/4 Vocabulary_1753663842527.jpg" 
+                alt="Word details popup showing definition and example for vocabulary learning"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          </div>
 
           <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <CardContent className="p-8 text-center">
