@@ -77,12 +77,12 @@ export default function Landing() {
             Turn complex texts from any website or PDF into readable chunks. Perfect for dyslexic adults/teens who want to practice their reading skills. Teachers and tutors also love it for helping older students.
           </p>
           
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
             Grab text from any web site you're interested in and paste it into ReadSmart...it doesn't matter if the topic is motorcycle racing or classic literature.
           </p>
           
           <Link href="/app">
-            <Button size="lg" className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-lg px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 mb-8">
+            <Button size="lg" className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-lg px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
               Start Reading Smarter
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
