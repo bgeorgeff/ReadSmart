@@ -6,6 +6,8 @@ import { BookOpen, Volume2, Zap, ArrowRight, Sparkles } from "lucide-react";
 import pasteInterfaceImage from "@assets/image_1753676610184.png";
 import readingPracticeImage from "@assets/image_1753673154787.png";
 import originalTextImage from "@assets/image_1753674877843.png";
+import use1Image from "@assets/image_1753725494609.png";
+import use2Image from "@assets/image_1753725505752.png";
 
 export default function Landing() {
   return (
@@ -116,7 +118,7 @@ export default function Landing() {
             {/* Use Case 1 - Left */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
-                src="/assets/image_1753725494609.png" 
+                src={use1Image} 
                 alt="ReadSmart reading practice interface showing word definitions and audio controls"
                 className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
               />
@@ -125,7 +127,7 @@ export default function Landing() {
             {/* Use Case 2 - Right */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
-                src="/assets/image_1753725505752.png" 
+                src={use2Image} 
                 alt="ReadSmart AI summaries interface with grade level selection and interactive text"
                 className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
               />
