@@ -127,17 +127,6 @@ export default function Landing() {
               </p>
             </CardContent>
           </Card>
-          
-          {/* Grade Selection Interface - underneath AI-Powered Simplification */}
-          <div className="md:col-span-3 mt-8">
-            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden max-w-2xl mx-auto">
-              <img 
-                src="/assets/image_1753663593950.png" 
-                alt="ReadSmart grade level selection interface showing different complexity options"
-                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          </div>
 
           <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <CardContent className="p-8 text-center">
@@ -150,17 +139,6 @@ export default function Landing() {
               </p>
             </CardContent>
           </Card>
-          
-          {/* Word Details Interface - underneath Interactive Reading */}
-          <div className="md:col-span-3 mt-8">
-            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden max-w-md mx-auto">
-              <img 
-                src="/assets/4 Vocabulary_1753663842527.jpg" 
-                alt="Word details popup showing definition and example for vocabulary learning"
-                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          </div>
 
           <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <CardContent className="p-8 text-center">
@@ -173,13 +151,34 @@ export default function Landing() {
               </p>
             </CardContent>
           </Card>
-          
-          {/* Audio Interface - underneath Audio Features */}
-          <div className="md:col-span-3 mt-8">
-            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden max-w-2xl mx-auto">
+        </div>
+
+        {/* Feature Interface Screenshots */}
+        <div className="mt-16 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Grade Selection Interface */}
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
+              <img 
+                src="/assets/image_1753663593950.png" 
+                alt="ReadSmart grade level selection interface"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+
+            {/* Word Details Interface */}
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
+              <img 
+                src="/assets/4 Vocabulary_1753663842527.jpg" 
+                alt="Word details popup for vocabulary learning"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+
+            {/* Audio Interface */}
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
                 src="/assets/image_1753663914143.png" 
-                alt="Audio features interface showing reading speed controls and play/record buttons"
+                alt="Audio features with reading speed controls"
                 className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
