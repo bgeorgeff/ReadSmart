@@ -156,11 +156,11 @@ export default function Landing() {
               />
             </div>
 
-            {/* Grade Selection Interface */}
+            {/* AI Summaries Interface */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
-                src="/assets/image_1753663593950.png" 
-                alt="ReadSmart grade level selection interface"
+                src="/assets/image_1753668381629.png" 
+                alt="AI summaries interface showing grade selection and simplified text"
                 className="w-full h-auto object-cover md:object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
