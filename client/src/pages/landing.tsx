@@ -173,6 +173,17 @@ export default function Landing() {
               </p>
             </CardContent>
           </Card>
+          
+          {/* Audio Interface - underneath Audio Features */}
+          <div className="md:col-span-3 mt-8">
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden max-w-2xl mx-auto">
+              <img 
+                src="/assets/image_1753663914143.png" 
+                alt="Audio features interface showing reading speed controls and play/record buttons"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Bottom CTA */}
