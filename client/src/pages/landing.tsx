@@ -157,11 +157,11 @@ export default function Landing() {
         <div className="mt-16 max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Top Row */}
-            {/* Text Input & Processing Interface */}
+            {/* Text Input & Paste Interface */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
-                src="/assets/image_1753665173373.png" 
-                alt="ReadSmart text input and processing interface"
+                src="/assets/1 Paste_1753665491901.jpg" 
+                alt="ReadSmart text input and paste interface"
                 className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
