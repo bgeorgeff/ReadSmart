@@ -5,6 +5,14 @@ import { useToast } from '@/hooks/use-toast';
 import { useTextToSpeech } from '@/hooks/use-text-to-speech';
 import { GradeLevel, Summaries, ProcessTextResponse } from '@/types';
 
+// Helper function to get grade suffix (1st, 2nd, 3rd, etc.)
+function getGradeSuffix(grade: number): string {
+  if (grade === 1) return 'st';
+  if (grade === 2) return 'nd';
+  if (grade === 3) return 'rd';
+  return 'th';
+}
+
 // Component to display text with fixes for duplications
 interface DisplayTextWithFixesProps {
   text: string;
@@ -85,6 +93,8 @@ interface ProcessingSummaryProps {
   summaries: Summaries | null;
   currentGradeLevel: GradeLevel;
   inputText: string;
+  selectedGradeLevel: number;
+  outputType: 'summary' | 'retelling';
   onGradeLevelChange: (level: GradeLevel) => void;
   onWordClick: (word: string) => void;
   onContinueToReading: () => void;
@@ -99,6 +109,8 @@ export default function ProcessingSummary({
   summaries, 
   currentGradeLevel, 
   inputText,
+  selectedGradeLevel,
+  outputType,
   onGradeLevelChange, 
   onWordClick, 
   onContinueToReading,
@@ -119,7 +131,11 @@ export default function ProcessingSummary({
   // Process text mutation
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('POST', '/api/process-text', { text: inputText });
+      const response = await apiRequest('POST', '/api/process-text', { 
+        text: inputText,
+        gradeLevel: selectedGradeLevel,
+        outputType: outputType
+      });
       return await response.json() as ProcessTextResponse;
     },
     onSuccess: (data) => {
@@ -277,31 +293,10 @@ export default function ProcessingSummary({
       {!isPending && summaries && (
         <div>
           <div className="mb-4">
-            <label htmlFor="grade-level" className="block text-base font-medium text-[#4285F4] mb-1">Select a grade level:</label>
-            <div className="relative">
-              <select 
-                id="grade-level" 
-                className="appearance-none block w-full px-4 py-2 border-2 border-[#4285F4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4285F4] font-['Roboto']"
-                onChange={handleGradeLevelChange}
-                value={currentGradeLevel}
-              >
-                <option value="0">Original Paste</option>
-                <option value="1">1st Grade (Age 6-7)</option>
-                <option value="2">2nd Grade (Age 7-8)</option>
-                <option value="3">3rd Grade (Age 8-9)</option>
-                <option value="4">4th Grade (Age 9-10)</option>
-                <option value="5">5th Grade (Age 10-11)</option>
-                <option value="6">6th Grade (Age 11-12)</option>
-                <option value="7">7th Grade (Age 12-13)</option>
-                <option value="8">8th Grade (Age 13-14)</option>
-                <option value="9">9th Grade (Age 14-15)</option>
-                <option value="10">10th Grade (Age 15-16)</option>
-                <option value="11">11th Grade (Age 16-17)</option>
-                <option value="12">12th Grade (Age 17-18)</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                <span className="material-icons">expand_more</span>
-              </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-700 font-medium">
+                Generated {outputType} for {selectedGradeLevel}{getGradeSuffix(selectedGradeLevel)} grade reading level
+              </p>
             </div>
           </div>
 
@@ -326,30 +321,13 @@ export default function ProcessingSummary({
           </div>
 
           <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
-            {selectedSummary && currentGradeLevel === 0 && inputText ? (
-              // For Original Paste, show user's original text with simple word splitting
-              <div className="text-base leading-relaxed text-gray-800">
-                {inputText.split(/\s+/).map((word, index) => (
-                  <span key={index} className="word-container">
-                    <button
-                      onClick={() => onWordClick(word.replace(/[^\w]/g, ''))}
-                      className="hover:bg-blue-100 hover:text-blue-600 px-1 py-0.5 rounded transition-colors duration-200 cursor-pointer"
-                    >
-                      {word}
-                    </button>
-                    {index < inputText.split(/\s+/).length - 1 && ' '}
-                  </span>
-                ))}
-              </div>
-            ) : selectedSummary ? (
-              // Otherwise, display the selected summary
+            {summaries[selectedGradeLevel] ? (
               <DisplayTextWithFixes 
-                text={selectedSummary}
+                text={summaries[selectedGradeLevel]}
                 onWordClick={onWordClick}
               />
             ) : (
-              // Fallback if no summary is available
-              <p>No summary available for this grade level.</p>
+              <p>No {outputType} available.</p>
             )}
           </div>
 

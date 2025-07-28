@@ -53,7 +53,9 @@ export type Recording = typeof recordings.$inferSelect;
 
 // Schema for validating text processing request
 export const processTextSchema = z.object({
-  text: z.string().min(1, "Text is required"),
+  text: z.string().min(1, "Text cannot be empty"),
+  gradeLevel: z.number().min(1).max(12).optional(),
+  outputType: z.enum(['summary', 'retelling']).optional()
 });
 
 // Schema for grade level summary response

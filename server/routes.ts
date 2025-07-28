@@ -244,10 +244,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
-  // Process text and generate summaries for all grade levels
+  // Process text and generate single grade level summary or retelling
   app.post("/api/process-text", async (req, res) => {
     try {
-      const { text } = processTextSchema.parse(req.body);
+      const { text, gradeLevel, outputType } = req.body;
+
+      if (!text || typeof text !== 'string' || text.trim().length === 0) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Text is required and cannot be empty" 
+        });
+      }
+
+      if (typeof gradeLevel !== 'number' || gradeLevel < 1 || gradeLevel > 12) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Grade level must be a number between 1 and 12" 
+        });
+      }
+
+      if (!outputType || (outputType !== 'summary' && outputType !== 'retelling')) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Output type must be either 'summary' or 'retelling'" 
+        });
+      }
 
       // Check text length and automatically shorten if needed
       const wordCount = text.split(/\s+/).length;
@@ -267,10 +288,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Text shortened to ${newWordCount} words, ${newCharCount} chars`);
       }
 
-      // Generate summaries for all grade levels using the processed text
-      const summaries = await generateGradeLevelSummaries(processedText);
+      // Generate single grade level text using the processed text
+      const processedOutput = await generateSingleGradeLevelText(processedText, gradeLevel, outputType);
 
-      // Save the summaries with the processed text (not the original if it was shortened)
+      // Create a summaries object with just the requested grade level
+      const summaries: Record<number, string> = {};
+      summaries[gradeLevel] = processedOutput;
+
+      // Save the single summary with the processed text
       const textSummary = await storage.saveTextSummary({
         originalText: processedText,
         summaries: summaries,
@@ -280,19 +305,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         success: true,
         summaryId: textSummary.id,
-        summaries: summaries
+        summaries: summaries,
+        processedText: processedOutput
       });
     } catch (error) {
-      if (error.name === "ZodError") {
-        const validationError = fromZodError(error);
-        res.status(400).json({ success: false, message: validationError.message });
-      } else {
-        console.error("Error processing text:", error);
-        res.status(500).json({ 
-          success: false, 
-          message: "Error processing text: " + (error instanceof Error ? error.message : String(error))
-        });
-      }
+      console.error("Error processing text:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error processing text: " + (error instanceof Error ? error.message : String(error))
+      });
     }
   });
 

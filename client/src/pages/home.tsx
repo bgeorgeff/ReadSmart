@@ -122,6 +122,8 @@ export default function Home() {
             summaryId={summaryId}
             summaries={summaries}
             currentGradeLevel={selectedGrade}
+            selectedGradeLevel={selectedGradeLevel}
+            outputType={outputType}
             onGradeLevelChange={setSelectedGrade}
             onWordClick={handleWordClick}
             onContinueToReading={handleContinueToReading}
