@@ -175,8 +175,8 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       throw new Error("Empty response from text shortening API");
     }
 
-    // Post-process to ensure complete words and sentences
-    shortenedText = ensureCompleteWords(shortenedText);
+    // Post-processing temporarily disabled for testing
+    // shortenedText = ensureCompleteWords(shortenedText);
 
     // Verify the shortened text meets our requirements
     const shortWordCount = shortenedText.split(/\s+/).length;
@@ -207,12 +207,12 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       });
 
       let finalText = aggressiveResponse.choices[0].message.content?.trim() || shortenedText;
-      return ensureCompleteWords(finalText);
+      return finalText;
     }
   } catch (error) {
     console.error("Error shortening text:", error);
-    // If shortening fails, truncate to character limit as fallback but ensure complete words
-    return ensureCompleteWords(text.substring(0, maxChars));
+    // If shortening fails, truncate to character limit as fallback
+    return text.substring(0, maxChars);
   }
 }
 
