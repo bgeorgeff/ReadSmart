@@ -228,17 +228,23 @@ export async function generateSingleGradeLevelText(
       
       ${outputType === 'summary' ? 
         'A SUMMARY should condense the key points and main ideas into a shorter version while maintaining the essential information.' :
-        'A RETELLING should present the full narrative or content in simpler language appropriate for the grade level, maintaining all important details and the complete story/information.'
+        'A RETELLING should present the complete narrative or content adapted to the reading level, NOT as a summary or book report. Preserve the original structure including:\n- All dialogue exactly as spoken, but simplified to the appropriate grade level\n- Original paragraph breaks and line spacing\n- The natural flow and pacing of the original text\n- Maintain the story/narrative format rather than "this happened, then this happened" reporting style'
       }
       
       For ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level:
       ${getGradeLevelGuidelines(gradeLevel)}
       
-      IMPORTANT: When handling technical terms, proper nouns, or specialized vocabulary:
-      - Keep the terms exactly as written in the original text
-      - You may add simple explanations after the term if needed for lower grades
+      IMPORTANT FORMATTING AND CONTENT RULES:
+      - When handling technical terms, proper nouns, or specialized vocabulary: keep them exactly as written
+      - You may add simple explanations after technical terms if needed for lower grades
       - Never duplicate or modify the terms themselves
       - Maintain the dignity and adult-appropriate nature of the content
+      
+      FOR RETELLINGS SPECIFICALLY:
+      - Preserve all dialogue using quotation marks exactly as in the original
+      - Maintain paragraph breaks and line spacing from the original text
+      - Keep the natural narrative flow rather than creating a report-style summary
+      - Adapt vocabulary and sentence complexity to the grade level while preserving the story structure
       
       Respond with only the ${outputType}, no additional commentary or explanation.
     `;
