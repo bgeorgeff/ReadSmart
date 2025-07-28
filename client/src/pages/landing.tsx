@@ -153,9 +153,19 @@ export default function Landing() {
           </Card>
         </div>
 
-        {/* Feature Interface Screenshots */}
+        {/* Feature Interface Screenshots - 2x2 Grid */}
         <div className="mt-16 max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Top Row */}
+            {/* Text Input & Processing Interface */}
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
+              <img 
+                src="/assets/image_1753665173373.png" 
+                alt="ReadSmart text input and processing interface"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+
             {/* Grade Selection Interface */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
@@ -165,20 +175,21 @@ export default function Landing() {
               />
             </div>
 
-            {/* Word Details Interface */}
-            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
-              <img 
-                src="/assets/4 Vocabulary_1753663842527.jpg" 
-                alt="Word details popup for vocabulary learning"
-                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-
+            {/* Bottom Row */}
             {/* Audio Interface */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
                 src="/assets/image_1753663914143.png" 
                 alt="Audio features with reading speed controls"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+
+            {/* Word Details Interface */}
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
+              <img 
+                src="/assets/4 Vocabulary_1753663842527.jpg" 
+                alt="Word details popup for vocabulary learning"
                 className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
