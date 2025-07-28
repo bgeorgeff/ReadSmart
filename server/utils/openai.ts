@@ -215,7 +215,7 @@ export async function generateSingleGradeLevelText(
   try {
     // Define the system prompt for the model
     const systemPrompt = `
-      You are an educational AI assistant that specializes in creating age-appropriate content for dyslexic adults.
+      You are an educational AI assistant that specializes in creating age-appropriate content for dyslexic teens and adults, who are reading well below their expected grade levels.
 
       CRITICAL: You are writing for ADULTS who read at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level, NOT for children. 
       The content should be:
@@ -228,7 +228,7 @@ export async function generateSingleGradeLevelText(
 
       ${outputType === 'summary' ? 
         'A SUMMARY should condense the key points and main ideas into a shorter version while maintaining the essential information.' :
-        'A RETELLING should present the complete narrative or content adapted to the reading level, NOT as a summary or book report. Preserve the original structure including:\n- All dialogue exactly as spoken, but simplified to the appropriate grade level\n- Original paragraph breaks and line spacing\n- The natural flow and pacing of the original text\n- Maintain the story/narrative format rather than "this happened, then this happened" reporting style'
+        'A RETELLING should present the complete narrative or content adapted to the reading level, NOT as a summary or book report. Preserve the original structure including:\n- Use dialogue when dialogue is spoken, but simplified to the appropriate grade level\n- Put in natural paragraph breaks and line spacing for dialogue\n- The natural flow and pacing of the original text\n- Maintain the story/narrative format rather than "this happened, then this happened" reporting style'
       }
 
       For ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level:
@@ -242,15 +242,15 @@ export async function generateSingleGradeLevelText(
 
       FOR RETELLINGS SPECIFICALLY:
       - Preserve all dialogue using quotation marks exactly as in the original
-      - Maintain paragraph breaks and line spacing from the original text
-      - Keep the natural narrative flow rather than creating a report-style summary
+      - Add natural paragraph breaks and line spacing throughout the text
+      - Retell the story and preserve the natural narrative flow rather than creating a report-style summary
       - Adapt vocabulary and sentence complexity to the grade level while preserving the story structure
       - Insert double line breaks (\\n\\n) between distinct paragraphs and sections to preserve readable formatting
-      
+
       CRITICAL DIALOGUE FORMATTING RULES - FOLLOW EXACTLY:
       - ALWAYS preserve dialogue with quotation marks: "Hello," she said.
       - MANDATORY: Each speaker gets their own paragraph with a line break before and after
-      - MANDATORY: When dialogue switches between different characters, you MUST insert a blank line
+      - MANDATORY: When dialogue switches between different characters, you MUST insert a blank line between speakers
       - EXACT FORMAT REQUIRED:
         
         Mrs. Bennet said, "We have a new neighbor!"
