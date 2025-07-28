@@ -110,6 +110,29 @@ export default function Landing() {
 
         </div>
 
+        {/* Use Case Screenshots - 1x2 Grid */}
+        <div className="mt-8 mb-12 max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            {/* Use Case 1 - Left */}
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
+              <img 
+                src="/assets/image_1753725494609.png" 
+                alt="ReadSmart reading practice interface showing word definitions and audio controls"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+
+            {/* Use Case 2 - Right */}
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
+              <img 
+                src="/assets/image_1753725505752.png" 
+                alt="ReadSmart AI summaries interface with grade level selection and interactive text"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Features */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-6 md:mb-0">
           <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
