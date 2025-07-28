@@ -7,7 +7,7 @@ import pasteInterfaceImage from "@assets/image_1753676610184.png";
 import readingPracticeImage from "@assets/image_1753673154787.png";
 import originalTextImage from "@assets/image_1753674877843.png";
 import use1Image from "@assets/image_1753725494609.png";
-import use2Image from "@assets/image_1753725505752.png";
+import use2Image from "@assets/image_1753726759558.png";
 
 export default function Landing() {
   return (
