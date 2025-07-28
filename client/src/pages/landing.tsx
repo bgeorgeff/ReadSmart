@@ -174,11 +174,11 @@ export default function Landing() {
               />
             </div>
 
-            {/* Word Details Interface */}
+            {/* Reading Practice Interface */}
             <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
-                src="/assets/4 Vocabulary_1753663842527.jpg" 
-                alt="Word details popup for vocabulary learning"
+                src="/assets/image_1753667623891.png" 
+                alt="Reading practice interface with simplified text and audio controls"
                 className="w-full h-auto object-cover md:object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
