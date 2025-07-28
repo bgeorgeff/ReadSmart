@@ -148,9 +148,9 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       6. CRITICAL: Always end sentences with complete words and proper punctuation
       7. NEVER truncate words mid-character or leave incomplete sentences
 
-      The shortened text should be close to but not exceed ${maxWords} words and ${maxChars} characters (including spaces and punctuation).
+      The shortened text should not exceed ${maxWords} words.
 
-      Aim for approximately ${Math.floor(maxWords * 0.9)}-${maxWords} words to retain maximum detail while staying within limits.
+      Aim for approximately ${Math.floor(maxWords * 0.9)}-${maxWords} words to retain maximum detail while staying within the word limit.
       Focus on removing redundant phrases, overly descriptive language, and less critical supporting details while keeping all essential information intact.
 
       CRITICAL WORD PRESERVATION RULES:
@@ -193,8 +193,8 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
     } else {
       // If still too long, do a more precise shortening
       const aggressivePrompt = `
-        The previous shortening was still too long. Please shorten this text to exactly ${maxWords} words or fewer and ${maxChars} characters or fewer.
-        Aim for ${Math.floor(maxWords * 0.95)}-${maxWords} words to maximize detail retention while meeting the requirements.
+        The previous shortening was still too long. Please shorten this text to exactly ${maxWords} words or fewer.
+        Aim for ${Math.floor(maxWords * 0.95)}-${maxWords} words to maximize detail retention while meeting the word limit.
         Keep as much essential information as possible while staying within limits.
         
         CRITICAL WORD PRESERVATION RULES:
