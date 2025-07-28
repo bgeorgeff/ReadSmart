@@ -83,10 +83,11 @@ export default function TextInput({
           <textarea 
             ref={textareaRef}
             rows={12} 
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4285F4] font-['Roboto']"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4285F4] font-['Roboto'] whitespace-pre-wrap"
             placeholder="Paste your text here..."
             onChange={handleInputChange}
             value={inputText}
+            style={{ whiteSpace: 'pre-wrap' }}
           />
           <div className="absolute bottom-3 right-3">
             {inputText.trim().length === 0 && (
