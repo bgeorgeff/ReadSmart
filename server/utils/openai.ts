@@ -39,7 +39,7 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
     `;
 
     // Define the model to use based on available API keys
-    const model = process.env.OPENROUTER_API_KEY ? "openai/gpt-4-turbo" : "gpt-4";
+    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-sonnet-4" : "gpt-4";
 
     // Make the API request
     const response = await openai.chat.completions.create({
@@ -252,13 +252,13 @@ export async function generateSingleGradeLevelText(
       - MANDATORY: Each speaker gets their own paragraph with a line break before and after
       - MANDATORY: When dialogue switches between different characters, you MUST insert a blank line between speakers
       - EXACT FORMAT REQUIRED:
-        
+
         Mrs. Bennet said, "We have a new neighbor!"
-        
+
         Mr. Bennet replied, "That is interesting news."
-        
+
         "He is very rich," she continued.
-        
+
       - NEVER put two different speakers' dialogue in the same paragraph
       - ALWAYS add line breaks (\\n\\n) before each new speaker
       - Each line of dialogue should be separated by double line breaks for readability
@@ -267,7 +267,7 @@ export async function generateSingleGradeLevelText(
     `;
 
     // Define the model to use based on available API keys
-    const model = process.env.OPENROUTER_API_KEY ? "openai/gpt-4-turbo" : "gpt-4";
+    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-sonnet-4" : "gpt-4";
 
     // Make the API request
     const response = await openai.chat.completions.create({
