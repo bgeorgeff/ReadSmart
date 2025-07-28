@@ -26,10 +26,33 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
   console.log('DisplayTextWithFixes - Original text:', text);
   console.log('DisplayTextWithFixes - Processed text:', processedText);
 
-  // Simple tokenization that preserves quotes and parentheses properly
+  // Advanced tokenization that preserves quoted phrases properly
   const tokenize = (text: string): string[] => {
-    // Split by spaces and filter empty tokens
-    const tokens = text.split(/\s+/).filter(token => token.trim() !== '');
+    const tokens: string[] = [];
+    let currentToken = '';
+    let insideQuotes = false;
+    
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      
+      if (char === '"') {
+        insideQuotes = !insideQuotes;
+        currentToken += char;
+      } else if (char === ' ' && !insideQuotes) {
+        if (currentToken.trim()) {
+          tokens.push(currentToken.trim());
+          currentToken = '';
+        }
+      } else {
+        currentToken += char;
+      }
+    }
+    
+    // Add the last token if it exists
+    if (currentToken.trim()) {
+      tokens.push(currentToken.trim());
+    }
+    
     console.log('DisplayTextWithFixes - Tokenized:', tokens);
     return tokens;
   };
