@@ -23,9 +23,6 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
   const processedText = text;
 
   // Debug logging to trace the duplication issue
-  console.log('DisplayTextWithFixes - Original text:', text);
-  console.log('DisplayTextWithFixes - Processed text:', processedText);
-
   // Advanced tokenization that preserves quoted phrases properly
   const tokenize = (text: string): string[] => {
     const tokens: string[] = [];
@@ -53,25 +50,14 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
       tokens.push(currentToken.trim());
     }
     
-    console.log('DisplayTextWithFixes - Tokenized:', tokens);
     return tokens;
   };
 
   const tokens = tokenize(processedText);
 
-  // Log any tokens that might contain duplications
-  tokens.forEach((token, index) => {
-    if (token.includes('"') && token.length > 10) {
-      console.log(`DisplayTextWithFixes - Suspicious token [${index}]:`, token);
-    }
-  });
-
   return (
     <div className="word-interaction-container">
       {tokens.map((token, index) => {
-        // Debug each token being processed
-        console.log(`DisplayTextWithFixes - Processing token [${index}]:`, token);
-
         // Check if this is a quoted phrase (starts and ends with ")
         const isQuotedPhrase = token.startsWith('"') && token.endsWith('"');
 
@@ -79,7 +65,6 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
         if (isQuotedPhrase) {
           // Remove quotes for clicking, but preserve in display
           const cleanToken = token.substring(1, token.length - 1);
-          console.log(`DisplayTextWithFixes - Quoted phrase [${index}]: "${cleanToken}"`);
 
           return (
             <span key={index} className="word-container">
@@ -99,8 +84,6 @@ function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) 
         // For regular tokens, separate the word from punctuation but keep them together visually
         let cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\`~]/g, "");
         let punctuation = token.replace(cleanWord, "");
-
-        console.log(`DisplayTextWithFixes - Regular token [${index}]: word="${cleanWord}", punctuation="${punctuation}"`);
 
         if (cleanWord) {
           return (
