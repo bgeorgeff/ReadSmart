@@ -247,18 +247,21 @@ export async function generateSingleGradeLevelText(
       - Adapt vocabulary and sentence complexity to the grade level while preserving the story structure
       - Insert double line breaks (\\n\\n) between distinct paragraphs and sections to preserve readable formatting
       
-      CRITICAL DIALOGUE FORMATTING RULES:
+      CRITICAL DIALOGUE FORMATTING RULES - FOLLOW EXACTLY:
       - ALWAYS preserve dialogue with quotation marks: "Hello," she said.
-      - Put each speaker's dialogue on a separate line with line breaks between speakers
-      - When dialogue switches between characters, insert a line break before the new speaker
-      - Example format:
+      - MANDATORY: Each speaker gets their own paragraph with a line break before and after
+      - MANDATORY: When dialogue switches between different characters, you MUST insert a blank line
+      - EXACT FORMAT REQUIRED:
+        
         Mrs. Bennet said, "We have a new neighbor!"
         
         Mr. Bennet replied, "That is interesting news."
         
         "He is very rich," she continued.
-      - Maintain the conversational flow and natural dialogue structure throughout the text
-      - Never combine multiple speakers' dialogue into one paragraph without line breaks
+        
+      - NEVER put two different speakers' dialogue in the same paragraph
+      - ALWAYS add line breaks (\\n\\n) before each new speaker
+      - Each line of dialogue should be separated by double line breaks for readability
 
       Respond with only the ${outputType}, no additional commentary or explanation.
     `;
@@ -283,10 +286,28 @@ export async function generateSingleGradeLevelText(
       throw new Error("Empty response from API");
     }
 
-    // Normalize quote characters
-    return content
+    // Clean up word duplications and normalize quotes
+    let cleanedContent = content
       .replace(/[""]/g, '"')  // Replace smart double quotes with regular double quotes
-      .replace(/['']/g, "'"); // Replace smart single quotes with regular single quotes
+      .replace(/['']/g, "'") // Replace smart single quotes with regular single quotes
+      // Fix word duplications like "wife"wife, → "wife",
+      .replace(/"([^"]+)"([A-Za-z]+),/g, (match, quote, duplicate) => {
+        const lastWordInQuote = quote.split(/\s+/).pop()?.toLowerCase();
+        if (lastWordInQuote === duplicate.toLowerCase()) {
+          return `"${quote}",`;
+        }
+        return match;
+      })
+      // Fix word duplications like "Bennet"Bennet, → "Bennet",
+      .replace(/"([^"]+)"([A-Za-z]+),/g, (match, quote, duplicate) => {
+        const lastWordInQuote = quote.split(/\s+/).pop()?.toLowerCase();
+        if (lastWordInQuote === duplicate.toLowerCase()) {
+          return `"${quote}",`;
+        }
+        return match;
+      });
+
+    return cleanedContent;
 
   } catch (error) {
     console.error("Error generating single grade level text:", error);
