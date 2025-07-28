@@ -185,17 +185,6 @@ export default function Landing() {
               />
             </div>
           </div>
-          
-          {/* Advanced Reading - Original Text Interface */}
-          <div className="mt-12 max-w-3xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
-              <img 
-                src="/assets/image_1753669960163.png" 
-                alt="Advanced reading interface showing original text with grade level options"
-                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          </div>
         </div>
 
         {/* Bottom CTA */}
