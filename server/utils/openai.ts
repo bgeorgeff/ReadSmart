@@ -145,11 +145,15 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       3. Keeping the same tone, voice, and technical vocabulary
       4. Ensuring the shortened text flows naturally and coherently
       5. Maintaining any technical terms, proper nouns, or specialized language exactly as written
+      6. CRITICAL: Always end sentences with complete words and proper punctuation
+      7. NEVER truncate words mid-character or leave incomplete sentences
 
       The shortened text should be close to but not exceed ${maxWords} words and ${maxChars} characters (including spaces and punctuation).
 
       Aim for approximately ${Math.floor(maxWords * 0.9)}-${maxWords} words to retain maximum detail while staying within limits.
       Focus on removing redundant phrases, overly descriptive language, and less critical supporting details while keeping all essential information intact.
+
+      IMPORTANT: Ensure every sentence ends properly with complete words and punctuation. Do not cut off words or leave sentences incomplete.
 
       Return only the shortened text without any explanation or commentary.
     `;
@@ -166,10 +170,13 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       max_tokens: Math.min(2000, maxWords * 2) // Ensure we don't exceed reasonable token limits
     });
 
-    const shortenedText = response.choices[0].message.content?.trim();
+    let shortenedText = response.choices[0].message.content?.trim();
     if (!shortenedText) {
       throw new Error("Empty response from text shortening API");
     }
+
+    // Post-process to ensure complete words and sentences
+    shortenedText = ensureCompleteWords(shortenedText);
 
     // Verify the shortened text meets our requirements
     const shortWordCount = shortenedText.split(/\s+/).length;
@@ -183,6 +190,8 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
         The previous shortening was still too long. Please shorten this text to exactly ${maxWords} words or fewer and ${maxChars} characters or fewer.
         Aim for ${Math.floor(maxWords * 0.95)}-${maxWords} words to maximize detail retention while meeting the requirements.
         Keep as much essential information as possible while staying within limits.
+        
+        CRITICAL: Always end sentences with complete words and proper punctuation. NEVER truncate words mid-character.
 
         Text to shorten further: ${shortenedText}
       `;
@@ -197,13 +206,52 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
         max_tokens: Math.min(1500, maxWords * 1.5)
       });
 
-      return aggressiveResponse.choices[0].message.content?.trim() || shortenedText;
+      let finalText = aggressiveResponse.choices[0].message.content?.trim() || shortenedText;
+      return ensureCompleteWords(finalText);
     }
   } catch (error) {
     console.error("Error shortening text:", error);
-    // If shortening fails, truncate to character limit as fallback
-    return text.substring(0, maxChars).trim();
+    // If shortening fails, truncate to character limit as fallback but ensure complete words
+    return ensureCompleteWords(text.substring(0, maxChars));
   }
+}
+
+// Helper function to ensure text ends with complete words and proper punctuation
+function ensureCompleteWords(text: string): string {
+  if (!text) return text;
+  
+  // Find the last complete sentence that ends with proper punctuation
+  const sentenceEnders = /[.!?]/g;
+  let lastValidEnd = -1;
+  let match;
+  
+  while ((match = sentenceEnders.exec(text)) !== null) {
+    // Check if there's only whitespace after this punctuation mark
+    const afterPunctuation = text.substring(match.index + 1).trim();
+    if (afterPunctuation === '' || afterPunctuation.length < 3) {
+      lastValidEnd = match.index + 1;
+      break;
+    }
+    lastValidEnd = match.index + 1;
+  }
+  
+  // If we found a valid sentence ending, use it
+  if (lastValidEnd > 0) {
+    return text.substring(0, lastValidEnd).trim();
+  }
+  
+  // Otherwise, find the last complete word
+  const lastSpaceIndex = text.lastIndexOf(' ');
+  if (lastSpaceIndex > 0) {
+    const truncatedToWord = text.substring(0, lastSpaceIndex).trim();
+    // Add a period if it doesn't end with punctuation
+    if (!/[.!?]$/.test(truncatedToWord)) {
+      return truncatedToWord + '.';
+    }
+    return truncatedToWord;
+  }
+  
+  return text;
 }
 
 // Function to generate text for a specific grade level and output type
