@@ -114,7 +114,7 @@ export default function TextInput({
       {/* Grade Level Selection */}
       <div className="mb-4">
         <label htmlFor="grade-level" className="block text-sm font-medium text-gray-700 mb-2">
-          Select Reading Level:
+          Select Desired Reading Level:
         </label>
         <select 
           id="grade-level"
