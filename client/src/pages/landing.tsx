@@ -146,40 +146,40 @@ export default function Landing() {
 
         {/* Feature Interface Screenshots - Responsive Layout */}
         <div className="mt-16 max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 md:grid-rows-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {/* Text Input & Paste Interface */}
-            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden h-fit md:h-full">
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
                 src="/assets/1 Paste_1753665491901.jpg" 
                 alt="ReadSmart text input and paste interface"
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
 
             {/* AI Summaries Interface */}
-            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden h-fit md:h-full">
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
                 src="/assets/image_1753668381629.png" 
                 alt="AI summaries interface showing grade selection and simplified text"
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
 
             {/* Reading Practice Interface */}
-            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden h-fit md:h-full">
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
                 src="/assets/image_1753668791404.png" 
                 alt="Reading practice interface with simplified text and audio controls"
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
 
             {/* Word Details Interface */}
-            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden h-fit md:h-full">
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
               <img 
                 src="/assets/image_1753668563880.png" 
                 alt="Word details popup showing definition and example for sarcasm"
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
               />
             </div>
           </div>
