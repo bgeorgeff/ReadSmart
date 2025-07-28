@@ -170,12 +170,12 @@ export default function Landing() {
               <img 
                 src="/assets/image_1753668791404.png" 
                 alt="Reading practice interface with simplified text and audio controls"
-                className="w-full h-auto object-contain hover:scale-105 transition-transform duration-300"
+                className="w-full h-auto object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
 
             {/* Word Details Interface */}
-            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden">
+            <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-2xl overflow-hidden flex items-center justify-center">
               <img 
                 src="/assets/image_1753672187886.png" 
                 alt="Word details popup showing definition and example for sarcasm"
