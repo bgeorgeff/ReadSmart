@@ -23,18 +23,18 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       For lower grades (1-3), use simple words, short sentences, and focus on concrete concepts.
       For middle grades (4-8), gradually introduce more complex vocabulary and sentence structures, while still maintaining clarity.
       For higher grades (9-12), include more abstract concepts, sophisticated vocabulary, and nuanced explanations.
-      
+
       IMPORTANT: When handling technical terms (like "null", "undefined", "true", "false", HTTP codes, etc.):
       - Keep the technical term exactly as written in the original text (same case, no quotes)
       - For lower grades, you may add simple explanations AFTER the term, but never duplicate or modify the term itself
       - Never wrap technical terms in quotes unless they were already quoted in the original
       - Example: "undefined" should stay "undefined", not become "'undefined'" or "undefined undefined"
-      
+
       Ensure each summary is accurate, educational, and tailored appropriately for the cognitive and reading abilities of students at that grade level.
-      
+
       CRITICAL: You must provide complete summaries for ALL 12 grade levels (1 through 12). Do not truncate or leave any summaries incomplete.
       Each summary should be 2-4 sentences long to ensure they fit within token limits while being complete.
-      
+
       Respond with a valid JSON object where the keys are grade level numbers (1-12) and the values are the corresponding complete summaries.
     `;
 
@@ -63,13 +63,13 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
     try {
       // Clean up the response to ensure valid JSON
       let jsonContent = content;
-      
+
       // Extract JSON object if wrapped in other text
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         jsonContent = jsonMatch[0];
       }
-      
+
       // Handle incomplete JSON by trying to fix common truncation issues
       if (!jsonContent.endsWith('}')) {
         // Find the last complete entry and close the JSON
@@ -80,10 +80,10 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
           jsonContent += '}';
         }
       }
-      
+
       // Parse the JSON response
       const summaries = JSON.parse(jsonContent);
-      
+
       // Normalize quote characters in all summaries
       Object.keys(summaries).forEach(key => {
         if (typeof summaries[key] === 'string') {
@@ -92,32 +92,32 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
             .replace(/['']/g, "'"); // Replace smart single quotes with regular single quotes
         }
       });
-      
+
       // Validate the structure of the response - ensure we have all grade levels
       const expectedGradeLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
       const missingLevels = expectedGradeLevels.filter(level => !summaries[level]);
-      
+
       if (missingLevels.length > 0) {
         console.warn(`API response missing grade levels: ${missingLevels.join(', ')}`);
-        
+
         // Fill in missing levels with placeholders to prevent app crashes
         missingLevels.forEach(level => {
           summaries[level] = `Summary for grade ${level} is being generated...`;
         });
       }
-      
+
       return summaries;
     } catch (error) {
       const jsonError = error as Error;
       console.error("Error parsing JSON response:", jsonError);
       console.error("Response content:", content);
-      
+
       // Generate a fallback response to prevent application crash
       const fallbackSummaries: Record<number, string> = {};
       for (let i = 1; i <= 12; i++) {
         fallbackSummaries[i] = "We encountered an issue generating this summary. Please try again with a different text.";
       }
-      
+
       // Return the fallback summaries
       return fallbackSummaries;
     }
@@ -132,12 +132,12 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
   try {
     const wordCount = text.split(/\s+/).length;
     const charCount = text.length;
-    
+
     // If text is within limits, return as-is
     if (wordCount <= maxWords && charCount <= maxChars) {
       return text;
     }
-    
+
     const systemPrompt = `
       You are an expert text editor. Your task is to shorten the provided text while:
       1. Maintaining the original reading level and writing style
@@ -145,12 +145,12 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       3. Keeping the same tone, voice, and technical vocabulary
       4. Ensuring the shortened text flows naturally and coherently
       5. Maintaining any technical terms, proper nouns, or specialized language exactly as written
-      
+
       The shortened text should be close to but not exceed ${maxWords} words and ${maxChars} characters (including spaces and punctuation).
-      
+
       Aim for approximately ${Math.floor(maxWords * 0.9)}-${maxWords} words to retain maximum detail while staying within limits.
       Focus on removing redundant phrases, overly descriptive language, and less critical supporting details while keeping all essential information intact.
-      
+
       Return only the shortened text without any explanation or commentary.
     `;
 
@@ -174,7 +174,7 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
     // Verify the shortened text meets our requirements
     const shortWordCount = shortenedText.split(/\s+/).length;
     const shortCharCount = shortenedText.length;
-    
+
     if (shortWordCount <= maxWords && shortCharCount <= maxChars) {
       return shortenedText;
     } else {
@@ -183,10 +183,10 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
         The previous shortening was still too long. Please shorten this text to exactly ${maxWords} words or fewer and ${maxChars} characters or fewer.
         Aim for ${Math.floor(maxWords * 0.95)}-${maxWords} words to maximize detail retention while meeting the requirements.
         Keep as much essential information as possible while staying within limits.
-        
+
         Text to shorten further: ${shortenedText}
       `;
-      
+
       const aggressiveResponse = await openai.chat.completions.create({
         model,
         messages: [
@@ -196,7 +196,7 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
         temperature: 0.3,
         max_tokens: Math.min(1500, maxWords * 1.5)
       });
-      
+
       return aggressiveResponse.choices[0].message.content?.trim() || shortenedText;
     }
   } catch (error) {
@@ -216,36 +216,41 @@ export async function generateSingleGradeLevelText(
     // Define the system prompt for the model
     const systemPrompt = `
       You are an educational AI assistant that specializes in creating age-appropriate content for dyslexic adults.
-      
+
       CRITICAL: You are writing for ADULTS who read at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level, NOT for children. 
       The content should be:
       - Appropriate for adult interests and maturity
       - Written at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade reading level
       - Respectful and dignified for adult readers
       - Free of condescending or childish language
-      
+
       Your task is to create a ${outputType} of the provided text.
-      
+
       ${outputType === 'summary' ? 
         'A SUMMARY should condense the key points and main ideas into a shorter version while maintaining the essential information.' :
         'A RETELLING should present the complete narrative or content adapted to the reading level, NOT as a summary or book report. Preserve the original structure including:\n- All dialogue exactly as spoken, but simplified to the appropriate grade level\n- Original paragraph breaks and line spacing\n- The natural flow and pacing of the original text\n- Maintain the story/narrative format rather than "this happened, then this happened" reporting style'
       }
-      
+
       For ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level:
       ${getGradeLevelGuidelines(gradeLevel)}
-      
+
       IMPORTANT FORMATTING AND CONTENT RULES:
       - When handling technical terms, proper nouns, or specialized vocabulary: keep them exactly as written
       - You may add simple explanations after technical terms if needed for lower grades
       - Never duplicate or modify the terms themselves
       - Maintain the dignity and adult-appropriate nature of the content
-      
+
       FOR RETELLINGS SPECIFICALLY:
       - Preserve all dialogue using quotation marks exactly as in the original
       - Maintain paragraph breaks and line spacing from the original text
       - Keep the natural narrative flow rather than creating a report-style summary
       - Adapt vocabulary and sentence complexity to the grade level while preserving the story structure
-      
+      - Insert double line breaks (\\n\\n) between distinct paragraphs and sections to preserve readable formatting
+      - FORMAT DIALOGUE PROPERLY: Each speaker should be on a separate line with proper line breaks between different speakers
+      - When one character finishes speaking and another begins, always insert a line break
+      - Preserve all dialogue using quotation marks, but simplify the vocabulary to match the grade level
+      - Maintain the conversational flow and natural dialogue structure throughout the text
+
       Respond with only the ${outputType}, no additional commentary or explanation.
     `;
 
@@ -273,7 +278,7 @@ export async function generateSingleGradeLevelText(
     return content
       .replace(/[""]/g, '"')  // Replace smart double quotes with regular double quotes
       .replace(/['']/g, "'"); // Replace smart single quotes with regular single quotes
-      
+
   } catch (error) {
     console.error("Error generating single grade level text:", error);
     throw error;
@@ -331,7 +336,7 @@ export async function testApiConnection() {
       ],
       max_tokens: 10
     });
-    
+
     return {
       status: "success",
       model: response.model,
