@@ -562,15 +562,7 @@ export async function generateSingleGradeLevelText(
     let cleanedContent = content
       .replace(/[""]/g, '"')  // Replace smart double quotes with regular double quotes
       .replace(/['']/g, "'") // Replace smart single quotes with regular single quotes
-      // Fix merged words like "said Mrssaid" → "said Mrs."
-      .replace(/\b(\w+)\s+(\w+)(\w+)\./g, (match, word1, word2, word3) => {
-        // Check if word2+word3 contains word2 at the start (like "Mrssaid" contains "Mrs")
-        const combined = word2 + word3;
-        if (combined.toLowerCase().startsWith(word2.toLowerCase()) && combined.length > word2.length) {
-          return `${word1} ${word2}.`;
-        }
-        return match;
-      })
+
       // Fix word duplications like "daughters daughters" → "daughters"
       .replace(/\b(\w+)\s+\1\b/gi, '$1')
       // Fix word duplications with punctuation like "asked asked." → "asked."
