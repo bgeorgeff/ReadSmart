@@ -524,24 +524,24 @@ export async function generateSingleGradeLevelText(
       - Each new idea, scene change, or speaker change gets a new paragraph
       - Never run paragraphs together without breaks
       
-      2. DIALOGUE FORMATTING:
-      - ALWAYS preserve dialogue with quotation marks: "Hello," she said.
-      - MANDATORY: Each speaker gets their own paragraph with a double line break before and after
-      - MANDATORY: When dialogue switches between different characters, you MUST insert a blank line between speakers
-      - EXACT FORMAT REQUIRED:
+      2. DIALOGUE FORMATTING - ABSOLUTELY MANDATORY:
+      - KEEP DIALOGUE AND PUNCTUATION TOGETHER: "Hello," she said.
+      - NEVER separate ending quotes from the words: Write "But it is true!" NOT "But it is true!\\n"
+      - MANDATORY: Each speaker gets their own paragraph with a double line break before
+      - EXACT FORMAT REQUIRED (copy this structure exactly):
 
-        Mrs. Bennet came to her husband with exciting news.
+Mrs. Bennet came to her husband with exciting news.
 
-        "My dear Mr. Bennet," she said, "have you heard? Someone has rented Netherfield Park!"
+"My dear Mr. Bennet," she said, "have you heard? Someone has rented Netherfield Park!"
 
-        Mr. Bennet looked up from his book. "I have not heard this news."
+Mr. Bennet looked up from his book. "I have not heard this news."
 
-        "But it is true!" she replied excitedly. "Mrs. Long just told me all about it."
+"But it is true!" she replied excitedly. "Mrs. Long just told me all about it."
 
-      - NEVER put two different speakers' dialogue in the same paragraph
-      - ALWAYS add double line breaks (\\n\\n) before each new speaker
-      - Each line of dialogue should be separated by double line breaks for readability
-      - Include narrative description between dialogue when needed for clarity
+      - CRITICAL: The closing quotation mark MUST stay on the same line as the dialogue
+      - NEVER write dialogue like this: "Hello\\n" (WRONG)
+      - ALWAYS write dialogue like this: "Hello," she said. (CORRECT)
+      - Each paragraph of dialogue should be complete with its quotation marks intact
 
       FINAL REMINDER: Before responding, verify that EVERY SINGLE WORD is complete and properly spelled. No truncated words like "wif", "sai", "hea", "wan", "aske" are allowed.
       
@@ -588,14 +588,10 @@ export async function generateSingleGradeLevelText(
         return match;
       });
 
-    // Ensure proper paragraph breaks and formatting
+    // Clean up formatting while preserving line breaks
     cleanedContent = cleanedContent
       // Normalize multiple line breaks to consistent double breaks
       .replace(/\n{3,}/g, '\n\n')
-      // Ensure dialogue gets proper paragraph breaks
-      .replace(/([.!?])\s*"/g, '$1\n\n"')
-      // Ensure line breaks before dialogue tags
-      .replace(/"\s*([A-Z][^"]*(?:said|asked|replied|answered|continued|exclaimed)[^"]*)\./g, '"\n\n$1.')
       // Clean up extra spaces but preserve line breaks
       .replace(/[ \t]+/g, ' ')  // Only normalize spaces and tabs, not newlines
       .replace(/\n[ \t]+\n/g, '\n\n')  // Clean up spaces between line breaks
