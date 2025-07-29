@@ -596,9 +596,9 @@ export async function generateSingleGradeLevelText(
       .replace(/([.!?])\s*"/g, '$1\n\n"')
       // Ensure line breaks before dialogue tags
       .replace(/"\s*([A-Z][^"]*(?:said|asked|replied|answered|continued|exclaimed)[^"]*)\./g, '"\n\n$1.')
-      // Clean up any extra spaces
-      .replace(/\s+/g, ' ')
-      .replace(/\n\s+\n/g, '\n\n')
+      // Clean up extra spaces but preserve line breaks
+      .replace(/[ \t]+/g, ' ')  // Only normalize spaces and tabs, not newlines
+      .replace(/\n[ \t]+\n/g, '\n\n')  // Clean up spaces between line breaks
       .trim();
 
     return cleanedContent;
