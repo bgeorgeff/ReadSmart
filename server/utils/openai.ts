@@ -468,36 +468,56 @@ function ensureCompleteWords(text: string): string {
   return text;
 }
 
-// Function to generate text for a specific grade level and output type
+// Function to generate text for a specific grade level and output type  
 export async function generateSingleGradeLevelText(
   text: string, 
   gradeLevel: number, 
   outputType: 'summary' | 'retelling'
 ): Promise<string> {
   try {
-    // Simplified system prompt to prevent API timeouts
-    const systemPrompt = `You are creating a ${outputType} for adults reading at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level.
+    // Restore the original working system prompt
+    const systemPrompt = `
+      You are an educational AI assistant that specializes in creating age-appropriate content for dyslexic teens and adults, who are reading well below their expected grade levels.
 
-Requirements:
-- Adult-appropriate content at ${gradeLevel}${getGradeSuffix(gradeLevel)} grade reading level
-- ${outputType === 'summary' ? 'Condense main points while keeping essential details' : 'Retell the story maintaining original sequence and details'}
-- Use vocabulary and sentences appropriate for this grade level
-- Add paragraph breaks (\\n\\n) between sections
-- Preserve dialogue with proper quotation marks
-- Keep all words complete and properly spelled
-- Start directly with content, no introductions
+      CRITICAL: You are writing for ADULTS who read at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level, NOT for children. 
+      The content should be:
+      - Appropriate for adult interests and maturity
+      - Written at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade reading level
+      - Respectful and dignified for adult readers
+      - Free of condescending or childish language
 
-Respond with only the ${outputType}.`;
+      Your task is to create a ${outputType} of the provided text.
+
+      For this ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level, create a ${outputType} that:
+      - Uses vocabulary and sentence structures appropriate for that grade level
+      - Maintains the same factual content and key information from the original text
+      - Follows age-appropriate complexity patterns for comprehension
+      - Uses shorter sentences and simpler words for lower grades, longer sentences and advanced vocabulary for higher grades
+      - Starts directly with the content - DO NOT include titles, headers, or introductory phrases like "Here is a summary..." or "This is a retelling..."
+
+      ${outputType === 'summary' ? 'Focus on condensing the main points while keeping essential details.' : 'Focus on retelling the story or information in a clear, engaging way that maintains the original sequence and important details.'}
+
+      IMPORTANT: When handling technical terms (like "null", "undefined", "true", "false", HTTP codes, etc.):
+      - Keep the technical term exactly as written
+      - You may add simple explanations after technical terms if needed for lower grades
+      - Never duplicate or modify the terms themselves
+      - Maintain the dignity and adult-appropriate nature of the content
+
+      FOR RETELLINGS SPECIFICALLY:
+      - Preserve all dialogue using quotation marks exactly as in the original
+      - Add natural paragraph breaks and line spacing throughout the text
+      - Retell the story and preserve the natural narrative flow rather than creating a report-style summary
+      - Adapt vocabulary and sentence complexity to the grade level while preserving the story structure
+      - Insert double line breaks (\\n\\n) between distinct paragraphs and sections to preserve readable formatting
+
+      Respond with only the ${outputType}, no additional commentary or explanation.
+    `;
 
     // Define the model to use based on available API keys
     const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-4";
 
-    // Make the API request with timeout handling
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('API request timeout after 30 seconds')), 30000)
-    );
-    
-    const apiPromise = openai.chat.completions.create({
+    // Make the API request
+    const response = await openai.chat.completions.create({
       model,
       messages: [
         { role: "system", content: systemPrompt },
@@ -506,8 +526,6 @@ Respond with only the ${outputType}.`;
       temperature: 0.7,
       max_tokens: 1500
     });
-
-    const response = await Promise.race([apiPromise, timeoutPromise]) as any;
 
     // Get the generated content
     const content = response.choices[0].message.content;

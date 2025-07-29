@@ -151,25 +151,13 @@ export default function ProcessingSummary({
         outputType 
       });
       
-      const response = await apiRequest('/api/process-text', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          text: inputText,
-          gradeLevel: selectedGradeLevel,
-          outputType: outputType
-        }),
+      const response = await apiRequest('POST', '/api/process-text', { 
+        text: inputText,
+        gradeLevel: selectedGradeLevel,
+        outputType: outputType
       });
 
       console.log('API response status:', response.status);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('API error:', errorData);
-        throw new Error(errorData.message || 'Failed to process text');
-      }
 
       const result = await response.json();
       console.log('API success:', result);
@@ -193,7 +181,7 @@ export default function ProcessingSummary({
     if (isProcessing && !summaryId) {
       processTextMutation.mutate();
     }
-  }, [isProcessing, processTextMutation, summaryId]);
+  }, [isProcessing, summaryId]); // Removed processTextMutation from deps to prevent infinite loop
 
   // Animation for the progress bar with faster, more responsive pacing
   useEffect(() => {
