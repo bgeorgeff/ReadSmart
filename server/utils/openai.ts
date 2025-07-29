@@ -39,7 +39,7 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
     `;
 
     // Define the model to use based on available API keys
-    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-sonnet-4" : "gpt-4";
+    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-4";
 
     // Make the API request
     const response = await openai.chat.completions.create({
@@ -539,7 +539,7 @@ export async function generateSingleGradeLevelText(
     `;
 
     // Define the model to use based on available API keys
-    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-sonnet-4" : "gpt-4";
+    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-4";
 
     // Make the API request
     const response = await openai.chat.completions.create({
