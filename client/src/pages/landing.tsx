@@ -176,22 +176,26 @@ export default function Landing() {
 
 
 
-        {/* Bottom CTA */}
-        <div className="flex justify-center mt-10">
-          <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 max-w-md">
+        {/* Bottom CTA - Fourth Card */}
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-10">
+          <div></div> {/* Empty space */}
+          <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <CardContent className="p-8 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <ArrowRight className="h-8 w-8 text-indigo-600" />
               </div>
               <h3 className="text-xl font-semibold mb-4 text-gray-800">Ready to transform your reading experience?</h3>
-              <p className="text-gray-600 leading-relaxed mb-6">Say goodbye to "The Man in the Tan Van" and read about whatever you want from the web or docs from school or work.</p>
-              <Link href="/app">
-                <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
-                  Get Started!
-                </Button>
-              </Link>
+              <p className="text-gray-600 leading-relaxed">Say goodbye to "The Man in the Tan Van" and read about whatever you want from the web or docs from school or work.</p>
+              <div className="mt-6">
+                <Link href="/app">
+                  <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                    Get Started!
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
+          <div></div> {/* Empty space */}
         </div>
       </main>
     </div>
