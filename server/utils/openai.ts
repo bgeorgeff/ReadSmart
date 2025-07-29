@@ -496,6 +496,14 @@ export async function generateSingleGradeLevelText(
       For ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level:
       ${getGradeLevelGuidelines(gradeLevel)}
 
+      CRITICAL WORD COMPLETION RULES - ABSOLUTELY MANDATORY:
+      - NEVER truncate or shorten ANY words - every word must be complete and properly spelled
+      - NEVER write "wif" instead of "wife", "sai" instead of "said", "hea" instead of "heard"
+      - NEVER cut off word endings - every word must end with complete letters
+      - ALL words must be fully spelled out with no missing letters or characters
+      - If a word seems too complex for the grade level, use a simpler COMPLETE word instead
+      - DOUBLE-CHECK every word ends completely before moving to the next word
+
       IMPORTANT FORMATTING AND CONTENT RULES:
       - When handling technical terms, proper nouns, or specialized vocabulary: keep them exactly as written
       - You may add simple explanations after technical terms if needed for lower grades
@@ -525,6 +533,8 @@ export async function generateSingleGradeLevelText(
       - ALWAYS add line breaks (\\n\\n) before each new speaker
       - Each line of dialogue should be separated by double line breaks for readability
 
+      FINAL REMINDER: Before responding, verify that EVERY SINGLE WORD is complete and properly spelled. No truncated words like "wif", "sai", "hea", "wan", "aske" are allowed.
+      
       Respond with only the ${outputType}, no additional commentary or explanation.
     `;
 
