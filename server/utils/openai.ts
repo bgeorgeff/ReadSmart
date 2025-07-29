@@ -181,8 +181,8 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       throw new Error("Empty response from text shortening API");
     }
 
-    // Post-processing temporarily disabled for testing
-    // shortenedText = ensureCompleteWords(shortenedText);
+    // Apply post-processing regex fixes for truncated words before periods
+    shortenedText = fixTruncatedWordsBeforePeriods(shortenedText);
 
     // Verify the shortened text meets our requirements
     const shortWordCount = shortenedText.split(/\s+/).length;
@@ -218,6 +218,10 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       });
 
       let finalText = aggressiveResponse.choices[0].message.content?.trim() || shortenedText;
+      
+      // Apply post-processing regex fixes for truncated words before periods
+      finalText = fixTruncatedWordsBeforePeriods(finalText);
+      
       return finalText;
     }
   } catch (error) {
@@ -225,6 +229,89 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
     // If shortening fails, truncate to character limit as fallback
     return text.substring(0, maxChars);
   }
+}
+
+// Helper function to fix truncated words before periods using regex patterns
+function fixTruncatedWordsBeforePeriods(text: string): string {
+  if (!text) return text;
+  
+  // Common patterns of truncated words before periods
+  const fixes = [
+    // Fix common truncated words
+    { pattern: /\bwif\./g, replacement: 'wife.' },
+    { pattern: /\bMr\./g, replacement: 'Mr.' }, // This should already be correct, but ensure consistency
+    { pattern: /\bMrs\./g, replacement: 'Mrs.' },
+    { pattern: /\bDr\./g, replacement: 'Dr.' },
+    { pattern: /\bProf\./g, replacement: 'Prof.' },
+    { pattern: /\bSt\./g, replacement: 'St.' },
+    
+    // Fix truncated common words before periods
+    { pattern: /\bsai\./g, replacement: 'said.' },
+    { pattern: /\bask\./g, replacement: 'asked.' },
+    { pattern: /\brepl\./g, replacement: 'replied.' },
+    { pattern: /\banswer\./g, replacement: 'answered.' },
+    { pattern: /\bcontinue\./g, replacement: 'continued.' },
+    { pattern: /\bexplain\./g, replacement: 'explained.' },
+    { pattern: /\bstat\./g, replacement: 'stated.' },
+    { pattern: /\bdeclar\./g, replacement: 'declared.' },
+    { pattern: /\bannounce\./g, replacement: 'announced.' },
+    { pattern: /\bwisper\./g, replacement: 'whispered.' },
+    { pattern: /\bshou\./g, replacement: 'shouted.' },
+    { pattern: /\bmutter\./g, replacement: 'muttered.' },
+    
+    // Fix truncated words that commonly appear before periods
+    { pattern: /\bhou\./g, replacement: 'house.' },
+    { pattern: /\bplac\./g, replacement: 'place.' },
+    { pattern: /\btim\./g, replacement: 'time.' },
+    { pattern: /\bwa\./g, replacement: 'way.' },
+    { pattern: /\bda\./g, replacement: 'day.' },
+    { pattern: /\byea\./g, replacement: 'year.' },
+    { pattern: /\bwor\./g, replacement: 'work.' },
+    { pattern: /\bhan\./g, replacement: 'hand.' },
+    { pattern: /\bhe\./g, replacement: 'head.' },
+    { pattern: /\bey\./g, replacement: 'eyes.' },
+    { pattern: /\bfac\./g, replacement: 'face.' },
+    { pattern: /\bvoic\./g, replacement: 'voice.' },
+    { pattern: /\bwor\./g, replacement: 'words.' },
+    { pattern: /\bmone\./g, replacement: 'money.' },
+    { pattern: /\bfamil\./g, replacement: 'family.' },
+    { pattern: /\bfrien\./g, replacement: 'friend.' },
+    { pattern: /\bneighbo\./g, replacement: 'neighbor.' },
+    
+    // Generic pattern for any word that looks truncated before a period
+    // This catches cases where a word is cut off right before punctuation
+    { pattern: /\b([a-z]{1,2})\./g, replacement: (match, p1) => {
+      // Only fix if it's likely a truncated word (very short and doesn't look complete)
+      const shortWords = ['a', 'I', 'be', 'do', 'go', 'he', 'if', 'in', 'is', 'it', 'me', 'my', 'no', 'of', 'on', 'or', 'so', 'to', 'up', 'us', 'we'];
+      if (shortWords.includes(p1.toLowerCase())) {
+        return match; // Keep valid short words
+      }
+      // For other very short words, they're likely truncated
+      return match; // For now, leave as-is to avoid false positives
+    }},
+    
+    // Fix specific quote + truncation patterns
+    { pattern: /"([^"]+)"([A-Za-z]+)\./g, replacement: (match, quote, duplicate) => {
+      const lastWordInQuote = quote.split(/\s+/).pop()?.toLowerCase();
+      if (lastWordInQuote === duplicate.toLowerCase()) {
+        return `"${quote}".`;
+      }
+      return match;
+    }}
+  ];
+  
+  let fixedText = text;
+  
+  // Apply all fixes
+  fixes.forEach(fix => {
+    if (typeof fix.replacement === 'function') {
+      fixedText = fixedText.replace(fix.pattern, fix.replacement);
+    } else {
+      fixedText = fixedText.replace(fix.pattern, fix.replacement);
+    }
+  });
+  
+  return fixedText;
 }
 
 // Helper function to ensure text ends with complete words and proper punctuation
