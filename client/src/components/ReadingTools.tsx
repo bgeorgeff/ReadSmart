@@ -14,59 +14,94 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: DisplayTextWithFixesProps) {
   const processedText = text;
 
-  // Simple tokenization that preserves quotes and parentheses properly
-  const tokenize = (text: string): string[] => {
-    return text.split(/\s+/).filter(token => token.trim() !== '');
-  };
-
-  const tokens = tokenize(processedText);
+  // Split text into paragraphs and then tokenize each paragraph
+  const paragraphs = processedText.split('\n');
+  
+  // Keep a running total of tokens across all paragraphs for highlighting
+  let totalTokenIndex = 0;
 
   return (
     <div className="word-interaction-container">
-      {tokens.map((token, index) => {
-        // Check if this is a quoted phrase (starts and ends with ")
-        const isQuotedPhrase = token.startsWith('"') && token.endsWith('"');
-
-        // Check if this token should be highlighted during speech
-        const isHighlighted = highlightedWordIndex === index;
-
-        // For quoted phrases, preserve the entire token
-        if (isQuotedPhrase) {
-          // Remove quotes for clicking, but preserve in display
-          const cleanToken = token.substring(1, token.length - 1);
-
-          return (
-            <span key={index} className="word-container">
-              <span className="quote-highlight">"</span>
-              <span 
-                className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
-                  isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
-                }`}
-                onClick={() => onWordClick(cleanToken)}
-              >
-                {cleanToken}
-              </span>
-              <span className="quote-highlight">"</span>
-            </span>
-          );
+      {paragraphs.map((paragraph, paragraphIndex) => {
+        if (paragraph.trim() === '') {
+          // Empty paragraph creates a line break
+          return <div key={`para-${paragraphIndex}`} className="h-4"></div>;
         }
 
-        // For regular words, extract just the word part (no punctuation)
-        const wordMatch = token.match(/^[^\w]*(\w+)[^\w]*$/);
-        const word = wordMatch ? wordMatch[1] : token;
+        // Tokenize each paragraph
+        const tokens = paragraph.split(/(\s+)/).filter(token => token !== '');
 
         return (
-          <span key={index} className="word-container">
-            <span 
-              className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
-                isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
-              }`}
-              onClick={() => onWordClick(word)}
-            >
-              {token}
-            </span>
-            {' '}
-          </span>
+          <div key={`para-${paragraphIndex}`} className="mb-4">
+            {tokens.map((token, tokenIndex) => {
+              // If token is just whitespace, render as space
+              if (/^\s+$/.test(token)) {
+                return <span key={`${paragraphIndex}-${tokenIndex}`}> </span>;
+              }
+
+              // Check if this token should be highlighted during speech
+              const isHighlighted = highlightedWordIndex === totalTokenIndex;
+              totalTokenIndex++; // Increment for next word
+
+              // Check if this is a quoted phrase (starts and ends with ")
+              const isQuotedPhrase = token.startsWith('"') && token.endsWith('"') && token.length > 2;
+
+              if (isQuotedPhrase) {
+                // Remove quotes for clicking, but preserve in display
+                const cleanToken = token.substring(1, token.length - 1);
+
+                return (
+                  <span key={`${paragraphIndex}-${tokenIndex}`}>
+                    <span className="quote-highlight">"</span>
+                    <span 
+                      className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
+                        isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
+                      }`}
+                      onClick={() => onWordClick(cleanToken)}
+                    >
+                      {cleanToken}
+                    </span>
+                    <span className="quote-highlight">"</span>
+                  </span>
+                );
+              } else {
+                // Regular token - separate word from punctuation
+                const match = token.match(/^([a-zA-Z]+)([^a-zA-Z]*)$/);
+                if (match) {
+                  const word = match[1];
+                  const punctuation = match[2];
+
+                  return (
+                    <span key={`${paragraphIndex}-${tokenIndex}`}>
+                      <span
+                        className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
+                          isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
+                        }`}
+                        onClick={() => onWordClick(word)}
+                      >
+                        {word}
+                      </span>
+                      {punctuation && <span>{punctuation}</span>}
+                    </span>
+                  );
+                } else {
+                  // Fallback for tokens that don't match expected pattern
+                  return (
+                    <span key={`${paragraphIndex}-${tokenIndex}`}>
+                      <span
+                        className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
+                          isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
+                        }`}
+                        onClick={() => onWordClick(token)}
+                      >
+                        {token}
+                      </span>
+                    </span>
+                  );
+                }
+              }
+            })}
+          </div>
         );
       })}
     </div>
