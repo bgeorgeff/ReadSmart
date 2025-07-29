@@ -14,7 +14,10 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: DisplayTextWithFixesProps) {
   const processedText = text;
 
-  // Split text into paragraphs and then tokenize each paragraph
+  // Create a simple token array that matches the text-to-speech tokenization
+  const allTokens = processedText.split(/\s+/).filter(token => token.trim() !== '');
+  
+  // Split text into paragraphs for display formatting
   const paragraphs = processedText.split('\n');
   
   // Keep a running total of tokens across all paragraphs for highlighting
@@ -28,17 +31,12 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
           return <div key={`para-${paragraphIndex}`} className="h-4"></div>;
         }
 
-        // Tokenize each paragraph
-        const tokens = paragraph.split(/(\s+)/).filter(token => token !== '');
+        // Get the tokens for this paragraph using the same simple method as text-to-speech
+        const paragraphTokens = paragraph.split(/\s+/).filter(token => token.trim() !== '');
 
         return (
           <div key={`para-${paragraphIndex}`} className="mb-4">
-            {tokens.map((token, tokenIndex) => {
-              // If token is just whitespace, render as space
-              if (/^\s+$/.test(token)) {
-                return <span key={`${paragraphIndex}-${tokenIndex}`}> </span>;
-              }
-
+            {paragraphTokens.map((token, tokenIndex) => {
               // Check if this token should be highlighted during speech
               const isHighlighted = highlightedWordIndex === totalTokenIndex;
               totalTokenIndex++; // Increment for next word
@@ -62,6 +60,7 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
                       {cleanToken}
                     </span>
                     <span className="quote-highlight">"</span>
+                    {' '}
                   </span>
                 );
               } else {
@@ -82,6 +81,7 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
                         {word}
                       </span>
                       {punctuation && <span>{punctuation}</span>}
+                      {' '}
                     </span>
                   );
                 } else {
@@ -96,6 +96,7 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
                       >
                         {token}
                       </span>
+                      {' '}
                     </span>
                   );
                 }
