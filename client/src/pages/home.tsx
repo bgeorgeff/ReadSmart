@@ -31,9 +31,9 @@ export default function Home() {
         setCurrentStep(AppStep.PROCESSING);
       }
     } else if (step === AppStep.READING && summaries) {
-      // Set the selected summary based on current grade level when navigating to reading
-      const summary = selectedGrade === 0 ? inputText : summaries[selectedGrade];
-      setSelectedSummary(summary);
+      // Set the selected summary based on the grade level used for processing
+      const summary = summaries[selectedGradeLevel];
+      setSelectedSummary(summary || '');
       setCurrentStep(AppStep.READING);
     }
   };
@@ -66,8 +66,9 @@ export default function Home() {
 
   const handleContinueToReading = () => {
     if (summaries) {
-      const summary = selectedGrade === 0 ? inputText : summaries[selectedGrade];
-      setSelectedSummary(summary);
+      // In the new single-grade system, use the selectedGradeLevel that was used for processing
+      const summary = summaries[selectedGradeLevel];
+      setSelectedSummary(summary || '');
       setCurrentStep(AppStep.READING);
     }
   };
