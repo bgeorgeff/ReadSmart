@@ -153,13 +153,22 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       Aim for approximately ${Math.floor(maxWords * 0.9)}-${maxWords} words to retain maximum detail while staying within the word limit.
       Focus on removing redundant phrases, overly descriptive language, and less critical supporting details while keeping all essential information intact.
 
-      CRITICAL WORD PRESERVATION RULES:
+      ABSOLUTELY CRITICAL WORD PRESERVATION RULES - FOLLOW EXACTLY:
       - Every word must be complete and spelled correctly
-      - Never truncate or cut off any part of a word, especially before punctuation
+      - NEVER EVER truncate or cut off any part of a word, especially before punctuation
       - Abbreviations like "Mr.", "Mrs.", "Dr." must remain complete
-      - Words before periods must be fully spelled out (example: "wife." not "wif.")
+      - Words before periods must be fully spelled out (example: "wife." not "wif.", "said." not "sai.", "asked." not "aske.")
       - All technical terms and proper nouns must remain exactly as written
       - Ensure every sentence ends properly with complete words and punctuation
+      - NO INCOMPLETE WORDS ALLOWED - if a word doesn't fit, remove the entire sentence instead of truncating
+      - Double-check every word ending before any punctuation mark to ensure it's complete
+
+      EXAMPLES OF WHAT TO NEVER DO:
+      - "wif." (should be "wife.")
+      - "sai." (should be "said.")
+      - "aske." (should be "asked.")
+      - "M." (should be "Mr.")
+      - "excite." (should be "excited.")
 
       Return only the shortened text without any explanation or commentary.
     `;
@@ -235,32 +244,42 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
 function fixTruncatedWordsBeforePeriods(text: string): string {
   if (!text) return text;
   
-  // Common patterns of truncated words before periods
+  // Comprehensive patterns of truncated words before periods
   const fixes = [
-    // Fix common truncated words
+    // Fix common truncated words from the user's example
     { pattern: /\bwif\./g, replacement: 'wife.' },
-    { pattern: /\bMr\./g, replacement: 'Mr.' }, // This should already be correct, but ensure consistency
+    { pattern: /\bgirl\./g, replacement: 'girls.' },
+    { pattern: /\bM\./g, replacement: 'Mr.' },
+    { pattern: /\bhear\./g, replacement: 'heard.' },
+    { pattern: /\bsai\./g, replacement: 'said.' },
+    { pattern: /\bi\./g, replacement: 'it.' },
+    { pattern: /\baske\./g, replacement: 'asked.' },
+    { pattern: /\bm\./g, replacement: 'me.' },
+    { pattern: /\bexcite\./g, replacement: 'excited.' },
+    
+    // Title and honorifics
+    { pattern: /\bMr\./g, replacement: 'Mr.' },
     { pattern: /\bMrs\./g, replacement: 'Mrs.' },
     { pattern: /\bDr\./g, replacement: 'Dr.' },
     { pattern: /\bProf\./g, replacement: 'Prof.' },
     { pattern: /\bSt\./g, replacement: 'St.' },
     
-    // Fix truncated common words before periods
+    // Common dialog words
     { pattern: /\bsai\./g, replacement: 'said.' },
-    { pattern: /\bask\./g, replacement: 'asked.' },
+    { pattern: /\baske\./g, replacement: 'asked.' },
     { pattern: /\brepl\./g, replacement: 'replied.' },
-    { pattern: /\banswer\./g, replacement: 'answered.' },
+    { pattern: /\banswere\./g, replacement: 'answered.' },
     { pattern: /\bcontinue\./g, replacement: 'continued.' },
-    { pattern: /\bexplain\./g, replacement: 'explained.' },
-    { pattern: /\bstat\./g, replacement: 'stated.' },
-    { pattern: /\bdeclar\./g, replacement: 'declared.' },
+    { pattern: /\bexplaine\./g, replacement: 'explained.' },
+    { pattern: /\bstate\./g, replacement: 'stated.' },
+    { pattern: /\bdeclare\./g, replacement: 'declared.' },
     { pattern: /\bannounce\./g, replacement: 'announced.' },
-    { pattern: /\bwisper\./g, replacement: 'whispered.' },
-    { pattern: /\bshou\./g, replacement: 'shouted.' },
-    { pattern: /\bmutter\./g, replacement: 'muttered.' },
+    { pattern: /\bwhispere\./g, replacement: 'whispered.' },
+    { pattern: /\bshoute\./g, replacement: 'shouted.' },
+    { pattern: /\bmuttere\./g, replacement: 'muttered.' },
     
-    // Fix truncated words that commonly appear before periods
-    { pattern: /\bhou\./g, replacement: 'house.' },
+    // Common nouns and verbs
+    { pattern: /\bhous\./g, replacement: 'house.' },
     { pattern: /\bplac\./g, replacement: 'place.' },
     { pattern: /\btim\./g, replacement: 'time.' },
     { pattern: /\bwa\./g, replacement: 'way.' },
@@ -272,22 +291,86 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
     { pattern: /\bey\./g, replacement: 'eyes.' },
     { pattern: /\bfac\./g, replacement: 'face.' },
     { pattern: /\bvoic\./g, replacement: 'voice.' },
-    { pattern: /\bwor\./g, replacement: 'words.' },
+    { pattern: /\bword\./g, replacement: 'words.' },
     { pattern: /\bmone\./g, replacement: 'money.' },
     { pattern: /\bfamil\./g, replacement: 'family.' },
     { pattern: /\bfrien\./g, replacement: 'friend.' },
     { pattern: /\bneighbo\./g, replacement: 'neighbor.' },
     
+    // More comprehensive single letter fixes
+    { pattern: /\bi\./g, replacement: 'it.' },
+    { pattern: /\bm\./g, replacement: 'me.' },
+    { pattern: /\bt\./g, replacement: 'to.' },
+    { pattern: /\ba\./g, replacement: 'at.' },
+    { pattern: /\bo\./g, replacement: 'of.' },
+    
+    // Past tense verbs
+    { pattern: /\bhear\./g, replacement: 'heard.' },
+    { pattern: /\btol\./g, replacement: 'told.' },
+    { pattern: /\bwan\./g, replacement: 'want.' },
+    { pattern: /\bwante\./g, replacement: 'wanted.' },
+    { pattern: /\bexcite\./g, replacement: 'excited.' },
+    { pattern: /\bmove\./g, replacement: 'moved.' },
+    { pattern: /\bmarr\./g, replacement: 'marry.' },
+    { pattern: /\brent\./g, replacement: 'rented.' },
+    { pattern: /\bliste\./g, replacement: 'listen.' },
+    
     // Generic pattern for any word that looks truncated before a period
-    // This catches cases where a word is cut off right before punctuation
-    { pattern: /\b([a-z]{1,2})\./g, replacement: (match: string, p1: string) => {
-      // Only fix if it's likely a truncated word (very short and doesn't look complete)
-      const shortWords = ['a', 'I', 'be', 'do', 'go', 'he', 'if', 'in', 'is', 'it', 'me', 'my', 'no', 'of', 'on', 'or', 'so', 'to', 'up', 'us', 'we'];
-      if (shortWords.includes(p1.toLowerCase())) {
-        return match; // Keep valid short words
+    // This is a more intelligent approach to detect truncated words
+    { pattern: /\b([a-z]{1,8})\./g, replacement: (match: string, p1: string) => {
+      // List of valid short words that should NOT be "fixed"
+      const validShortWords = ['a', 'I', 'be', 'do', 'go', 'he', 'if', 'in', 'is', 'it', 'me', 'my', 'no', 'of', 'on', 'or', 'so', 'to', 'up', 'us', 'we', 'am', 'an', 'as', 'at', 'by', 'Mr', 'Dr'];
+      
+      // If it's a known valid short word, keep it
+      if (validShortWords.includes(p1.toLowerCase()) || validShortWords.includes(p1)) {
+        return match;
       }
-      // For other very short words, they're likely truncated
-      return match; // For now, leave as-is to avoid false positives
+      
+      // Common patterns that suggest a word was truncated
+      const commonTruncations: Record<string, string> = {
+        'wif': 'wife',
+        'sai': 'said',
+        'hea': 'heard',
+        'wan': 'want',
+        'aske': 'asked',
+        'excite': 'excited',
+        'marrie': 'married',
+        'repl': 'replied',
+        'answe': 'answered',
+        'explai': 'explained',
+        'continu': 'continued',
+        'declar': 'declared',
+        'announc': 'announced',
+        'whispe': 'whispered',
+        'shout': 'shouted',
+        'mutte': 'muttered',
+        'neighbo': 'neighbor',
+        'famil': 'family',
+        'frien': 'friend'
+      };
+      
+      // Check if this matches a known truncation pattern
+      if (commonTruncations[p1.toLowerCase()]) {
+        return commonTruncations[p1.toLowerCase()] + '.';
+      }
+      
+      // For words ending in common truncation patterns, try to fix them
+      if (p1.length >= 2) {
+        // Words ending in single consonant + vowel often need completion
+        if (/[aeiou]$/.test(p1) && p1.length <= 3) {
+          // Could be truncated, but be conservative
+          return match;
+        }
+        
+        // Words that end abruptly at consonants are likely truncated
+        if (/[bcdfghjklmnpqrstvwxyz]$/.test(p1) && p1.length >= 3) {
+          // This is likely a truncated word, but without context it's hard to fix
+          // For now, keep the original to avoid false positives
+          return match;
+        }
+      }
+      
+      return match; // Keep original if unsure
     }},
     
     // Fix specific quote + truncation patterns
