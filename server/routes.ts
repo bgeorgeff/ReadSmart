@@ -270,34 +270,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Check text length and automatically shorten if needed
-      const wordCount = text.split(/\s+/).length;
-      const charCount = text.length;
-      const maxWords = 650;
-      const maxChars = 3772;
-
-      let processedText = text;
-
-      // If text exceeds limits, shorten it transparently
-      if (wordCount > maxWords || charCount > maxChars) {
-        console.log(`Text exceeds limits (${wordCount} words, ${charCount} chars). Shortening automatically...`);
-        processedText = await shortenText(text, maxWords, maxChars);
-
-        const newWordCount = processedText.split(/\s+/).length;
-        const newCharCount = processedText.length;
-        console.log(`Text shortened to ${newWordCount} words, ${newCharCount} chars`);
-      }
-
-      // Generate single grade level text using the processed text
-      const processedOutput = await generateSingleGradeLevelText(processedText, gradeLevel, outputType);
+      // Generate single grade level text using the original text (no automatic shortening)
+      const processedOutput = await generateSingleGradeLevelText(text, gradeLevel, outputType);
 
       // Create a summaries object with just the requested grade level
       const summaries: Record<number, string> = {};
       summaries[gradeLevel] = processedOutput;
 
-      // Save the single summary with the processed text
+      // Save the single summary with the original text
       const textSummary = await storage.saveTextSummary({
-        originalText: processedText,
+        originalText: text,
         summaries: summaries,
         createdAt: new Date().toISOString()
       });
