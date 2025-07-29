@@ -84,20 +84,51 @@ export function useTextToSpeech(): TextToSpeechHook {
         // Use the industry-standard boundary event approach with character-position mapping
         if (onWordHighlight) {
           // Pre-tokenize the text exactly as the display component does
-          const tokens = text.split(/\s+/).filter(token => token.trim() !== '');
+          // Split into paragraphs first, then tokenize each paragraph
+          const paragraphs = text.split('\n');
+          const allTokens: string[] = [];
           const tokenMap: { start: number; end: number; index: number }[] = [];
           
-          // Build a precise character-to-token mapping
-          let searchStart = 0;
-          for (let i = 0; i < tokens.length; i++) {
-            const tokenStart = text.indexOf(tokens[i], searchStart);
-            if (tokenStart !== -1) {
-              tokenMap.push({
-                start: tokenStart,
-                end: tokenStart + tokens[i].length,
-                index: i
-              });
-              searchStart = tokenStart + tokens[i].length;
+          // Process each paragraph to build token list and mapping
+          let currentCharIndex = 0;
+          let tokenIndex = 0;
+          
+          for (let paragraphIndex = 0; paragraphIndex < paragraphs.length; paragraphIndex++) {
+            const paragraph = paragraphs[paragraphIndex];
+            
+            if (paragraph.trim() === '') {
+              // Empty paragraph - just advance character index for the newline
+              currentCharIndex += 1; // for the \n character
+              continue;
+            }
+            
+            // Tokenize paragraph exactly like DisplayTextWithFixes
+            const tokens = paragraph.split(/(\s+)/).filter(token => token !== '');
+            
+            for (const token of tokens) {
+              // Skip whitespace tokens for highlighting purposes
+              if (/^\s+$/.test(token)) {
+                currentCharIndex += token.length;
+                continue;
+              }
+              
+              // Find this token's position in the original text
+              const tokenStart = text.indexOf(token, currentCharIndex);
+              if (tokenStart !== -1) {
+                allTokens.push(token);
+                tokenMap.push({
+                  start: tokenStart,
+                  end: tokenStart + token.length,
+                  index: tokenIndex
+                });
+                tokenIndex++;
+                currentCharIndex = tokenStart + token.length;
+              }
+            }
+            
+            // Account for newline character between paragraphs
+            if (paragraphIndex < paragraphs.length - 1) {
+              currentCharIndex += 1;
             }
           }
           
