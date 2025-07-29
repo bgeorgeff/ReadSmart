@@ -177,16 +177,21 @@ export default function Landing() {
 
 
         {/* Bottom CTA */}
-        <div className="text-center mt-10">
-          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/30 shadow-lg max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Ready to transform your reading experience?</h2>
-            <p className="text-gray-600 mb-6">Say goodbye to "The Man in the Tan Van" and read about whatever you want from the web or docs from school or work.</p>
-            <Link href="/app">
-              <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-                Get Started!
-              </Button>
-            </Link>
-          </div>
+        <div className="flex justify-center mt-10">
+          <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 max-w-md">
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <ArrowRight className="h-8 w-8 text-indigo-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">Ready to transform your reading experience?</h3>
+              <p className="text-gray-600 leading-relaxed mb-6">Say goodbye to "The Man in the Tan Van" and read about whatever you want from the web or docs from school or work.</p>
+              <Link href="/app">
+                <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                  Get Started!
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
