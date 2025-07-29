@@ -15,6 +15,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Debug endpoint to test API connectivity
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   // Serve the syllable test page
   app.get("/syllable-test.html", (req, res) => {
     const filePath = path.join(__dirname, "..", "syllable-test.html");
