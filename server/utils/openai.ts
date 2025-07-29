@@ -205,7 +205,7 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
         The previous shortening was still too long. Please shorten this text to exactly ${maxWords} words or fewer.
         Aim for ${Math.floor(maxWords * 0.95)}-${maxWords} words to maximize detail retention while meeting the word limit.
         Keep as much essential information as possible while staying within limits.
-        
+
         CRITICAL WORD PRESERVATION RULES:
         - Every word must be complete and spelled correctly before ANY punctuation
         - Never truncate words before periods (example: write "wife." not "wif.")
@@ -227,10 +227,10 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       });
 
       let finalText = aggressiveResponse.choices[0].message.content?.trim() || shortenedText;
-      
+
       // Apply post-processing regex fixes for truncated words before periods
       finalText = fixTruncatedWordsBeforePeriods(finalText);
-      
+
       return finalText;
     }
   } catch (error) {
@@ -243,7 +243,7 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
 // Helper function to fix truncated words before periods using regex patterns
 function fixTruncatedWordsBeforePeriods(text: string): string {
   if (!text) return text;
-  
+
   // Comprehensive patterns of truncated words before periods
   const fixes = [
     // Fix common truncated words from the user's example
@@ -256,14 +256,14 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
     { pattern: /\baske\./g, replacement: 'asked.' },
     { pattern: /\bm\./g, replacement: 'me.' },
     { pattern: /\bexcite\./g, replacement: 'excited.' },
-    
+
     // Title and honorifics
     { pattern: /\bMr\./g, replacement: 'Mr.' },
     { pattern: /\bMrs\./g, replacement: 'Mrs.' },
     { pattern: /\bDr\./g, replacement: 'Dr.' },
     { pattern: /\bProf\./g, replacement: 'Prof.' },
     { pattern: /\bSt\./g, replacement: 'St.' },
-    
+
     // Common dialog words
     { pattern: /\bsai\./g, replacement: 'said.' },
     { pattern: /\baske\./g, replacement: 'asked.' },
@@ -277,7 +277,7 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
     { pattern: /\bwhispere\./g, replacement: 'whispered.' },
     { pattern: /\bshoute\./g, replacement: 'shouted.' },
     { pattern: /\bmuttere\./g, replacement: 'muttered.' },
-    
+
     // Common nouns and verbs
     { pattern: /\bhous\./g, replacement: 'house.' },
     { pattern: /\bplac\./g, replacement: 'place.' },
@@ -296,14 +296,14 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
     { pattern: /\bfamil\./g, replacement: 'family.' },
     { pattern: /\bfrien\./g, replacement: 'friend.' },
     { pattern: /\bneighbo\./g, replacement: 'neighbor.' },
-    
+
     // More comprehensive single letter fixes
     { pattern: /\bi\./g, replacement: 'it.' },
     { pattern: /\bm\./g, replacement: 'me.' },
     { pattern: /\bt\./g, replacement: 'to.' },
     { pattern: /\ba\./g, replacement: 'at.' },
     { pattern: /\bo\./g, replacement: 'of.' },
-    
+
     // Past tense verbs
     { pattern: /\bhear\./g, replacement: 'heard.' },
     { pattern: /\btol\./g, replacement: 'told.' },
@@ -314,18 +314,18 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
     { pattern: /\bmarr\./g, replacement: 'marry.' },
     { pattern: /\brent\./g, replacement: 'rented.' },
     { pattern: /\bliste\./g, replacement: 'listen.' },
-    
+
     // Generic pattern for any word that looks truncated before a period
     // This is a more intelligent approach to detect truncated words
     { pattern: /\b([a-z]{1,8})\./g, replacement: (match: string, p1: string) => {
       // List of valid short words that should NOT be "fixed"
       const validShortWords = ['a', 'I', 'be', 'do', 'go', 'he', 'if', 'in', 'is', 'it', 'me', 'my', 'no', 'of', 'on', 'or', 'so', 'to', 'up', 'us', 'we', 'am', 'an', 'as', 'at', 'by', 'Mr', 'Dr'];
-      
+
       // If it's a known valid short word, keep it
       if (validShortWords.includes(p1.toLowerCase()) || validShortWords.includes(p1)) {
         return match;
       }
-      
+
       // Common patterns that suggest a word was truncated
       const commonTruncations: Record<string, string> = {
         'wif': 'wife',
@@ -348,12 +348,12 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
         'famil': 'family',
         'frien': 'friend'
       };
-      
+
       // Check if this matches a known truncation pattern
       if (commonTruncations[p1.toLowerCase()]) {
         return commonTruncations[p1.toLowerCase()] + '.';
       }
-      
+
       // For words ending in common truncation patterns, try to fix them
       if (p1.length >= 2) {
         // Words ending in single consonant + vowel often need completion
@@ -361,7 +361,7 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
           // Could be truncated, but be conservative
           return match;
         }
-        
+
         // Words that end abruptly at consonants are likely truncated
         if (/[bcdfghjklmnpqrstvwxyz]$/.test(p1) && p1.length >= 3) {
           // This is likely a truncated word, but without context it's hard to fix
@@ -369,10 +369,10 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
           return match;
         }
       }
-      
+
       return match; // Keep original if unsure
     }},
-    
+
     // Fix specific quote + truncation patterns
     { pattern: /"([^"]+)"([A-Za-z]+)\./g, replacement: (match: string, quote: string, duplicate: string) => {
       const lastWordInQuote = quote.split(/\s+/).pop()?.toLowerCase();
@@ -382,9 +382,9 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
       return match;
     }}
   ];
-  
+
   let fixedText = text;
-  
+
   // Apply all fixes
   fixes.forEach(fix => {
     if (typeof fix.replacement === 'function') {
@@ -393,34 +393,34 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
       fixedText = fixedText.replace(fix.pattern, fix.replacement);
     }
   });
-  
+
   return fixedText;
 }
 
 // Helper function to ensure text ends with complete words and proper punctuation
 function ensureCompleteWords(text: string): string {
   if (!text) return text;
-  
+
   // Split into words and check each one for truncation
   const words = text.trim().split(/\s+/);
   if (words.length === 0) return text;
-  
+
   // Common English word endings that indicate complete words
   const validEndings = /[aeiou]s$|ed$|ing$|ly$|er$|est$|tion$|sion$|ment$|ness$|able$|ible$|ful$|less$/i;
-  
+
   // Check each word from the end backwards for truncation
   for (let i = words.length - 1; i >= 0; i--) {
     const word = words[i];
     const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-    
+
     // Skip if it's a known complete short word
     if (['a', 'an', 'be', 'by', 'do', 'go', 'he', 'I', 'if', 'in', 'is', 'it', 'me', 'my', 'no', 'of', 'on', 'or', 'so', 'to', 'up', 'us', 'we', 'and', 'are', 'but', 'can', 'did', 'for', 'had', 'has', 'her', 'him', 'his', 'how', 'its', 'may', 'new', 'not', 'now', 'old', 'one', 'our', 'out', 'own', 'say', 'she', 'too', 'two', 'use', 'was', 'way', 'who', 'why', 'you', 'the', 'all', 'any', 'get', 'got', 'see', 'saw', 'big', 'old', 'run', 'ran', 'sit', 'sat', 'put', 'cut', 'let', 'set', 'win', 'won', 'eat', 'ate', 'top', 'end', 'far', 'off', 'own', 'add', 'ask', 'buy', 'try', 'yet', 'yes', 'how', 'now', 'new'].includes(cleanWord.toLowerCase())) {
       continue;
     }
-    
+
     // Check if word looks truncated
     const looksComplete = cleanWord.length >= 4 || validEndings.test(cleanWord) || /[aeiou][bcdfghjklmnpqrstvwxyz]$/.test(cleanWord);
-    
+
     if (!looksComplete) {
       // This word looks truncated, remove it and everything after
       const validText = words.slice(0, i).join(' ');
@@ -433,12 +433,12 @@ function ensureCompleteWords(text: string): string {
       }
     }
   }
-  
+
   // If no truncated words found, find the last complete sentence
   const sentenceEnders = /[.!?]/g;
   let lastValidEnd = -1;
   let match;
-  
+
   while ((match = sentenceEnders.exec(text)) !== null) {
     // Check if there's reasonable content after this punctuation mark
     const afterPunctuation = text.substring(match.index + 1).trim();
@@ -448,12 +448,12 @@ function ensureCompleteWords(text: string): string {
     }
     lastValidEnd = match.index + 1;
   }
-  
+
   // If we found a valid sentence ending, use it
   if (lastValidEnd > 0) {
     return text.substring(0, lastValidEnd).trim();
   }
-  
+
   // Otherwise, find the last complete word
   const lastSpaceIndex = text.lastIndexOf(' ');
   if (lastSpaceIndex > 0) {
@@ -464,7 +464,7 @@ function ensureCompleteWords(text: string): string {
     }
     return truncatedToWord;
   }
-  
+
   return text;
 }
 
@@ -488,24 +488,17 @@ export async function generateSingleGradeLevelText(
 
       Your task is to create a ${outputType} of the provided text.
 
-      ${outputType === 'summary' ? 
-        'A SUMMARY should condense the key points and main ideas into a shorter version while maintaining the essential information.' :
-        'A RETELLING should present the complete narrative or content adapted to the reading level, NOT as a summary or book report. Preserve the original structure including:\n- Use dialogue when dialogue is spoken, but simplified to the appropriate grade level\n- Put in natural paragraph breaks and line spacing for dialogue\n- The natural flow and pacing of the original text\n- Maintain the story/narrative format rather than "this happened, then this happened" reporting style'
-      }
+      For each grade level (1-12), create a ${outputType} that:
+      - Uses vocabulary and sentence structures appropriate for that grade level
+      - Maintains the same factual content and key information from the original text
+      - Follows age-appropriate complexity patterns for comprehension
+      - Uses shorter sentences and simpler words for lower grades, longer sentences and advanced vocabulary for higher grades
+      - Starts directly with the content - DO NOT include titles, headers, or introductory phrases like "Here is a summary..." or "This is a retelling..."
 
-      For ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level:
-      ${getGradeLevelGuidelines(gradeLevel)}
+      ${outputType === 'summary' ? 'Focus on condensing the main points while keeping essential details.' : 'Focus on retelling the story or information in a clear, engaging way that maintains the original sequence and important details.'}
 
-      CRITICAL WORD COMPLETION RULES - ABSOLUTELY MANDATORY:
-      - NEVER truncate or shorten ANY words - every word must be complete and properly spelled
-      - NEVER write "wif" instead of "wife", "sai" instead of "said", "hea" instead of "heard"
-      - NEVER cut off word endings - every word must end with complete letters
-      - ALL words must be fully spelled out with no missing letters or characters
-      - If a word seems too complex for the grade level, use a simpler COMPLETE word instead
-      - DOUBLE-CHECK every word ends completely before moving to the next word
-
-      IMPORTANT FORMATTING AND CONTENT RULES:
-      - When handling technical terms, proper nouns, or specialized vocabulary: keep them exactly as written
+      IMPORTANT: When handling technical terms (like "null", "undefined", "true", "false", HTTP codes, etc.):
+      - Keep the technical term exactly as written
       - You may add simple explanations after technical terms if needed for lower grades
       - Never duplicate or modify the terms themselves
       - Maintain the dignity and adult-appropriate nature of the content
@@ -518,12 +511,12 @@ export async function generateSingleGradeLevelText(
       - Insert double line breaks (\\n\\n) between distinct paragraphs and sections to preserve readable formatting
 
       CRITICAL PARAGRAPH AND DIALOGUE FORMATTING RULES - FOLLOW EXACTLY:
-      
+
       1. PARAGRAPH BREAKS:
       - Insert double line breaks (\\n\\n) between every paragraph
       - Each new idea, scene change, or speaker change gets a new paragraph
       - Never run paragraphs together without breaks
-      
+
       2. DIALOGUE FORMATTING - ABSOLUTELY MANDATORY:
       - KEEP DIALOGUE AND PUNCTUATION TOGETHER: "Hello," she said.
       - NEVER separate ending quotes from the words: Write "But it is true!" NOT "But it is true!\\n"
@@ -544,7 +537,7 @@ Mr. Bennet looked up from his book. "I have not heard this news."
       - Each paragraph of dialogue should be complete with its quotation marks intact
 
       FINAL REMINDER: Before responding, verify that EVERY SINGLE WORD is complete and properly spelled. No truncated words like "wif", "sai", "hea", "wan", "aske" are allowed.
-      
+
       Respond with only the ${outputType}, no additional commentary or explanation.
     `;
 
