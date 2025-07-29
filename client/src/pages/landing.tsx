@@ -177,8 +177,7 @@ export default function Landing() {
 
 
         {/* Bottom CTA - Fourth Card */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-10">
-          <div></div> {/* Empty space */}
+        <div className="max-w-6xl mx-auto mt-10">
           <Card className="group bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <CardContent className="p-8 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
@@ -195,7 +194,6 @@ export default function Landing() {
               </div>
             </CardContent>
           </Card>
-          <div></div> {/* Empty space */}
         </div>
       </main>
     </div>
