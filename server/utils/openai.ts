@@ -475,77 +475,29 @@ export async function generateSingleGradeLevelText(
   outputType: 'summary' | 'retelling'
 ): Promise<string> {
   try {
-    // Define the system prompt for the model
-    const systemPrompt = `
-      You are an educational AI assistant that specializes in creating age-appropriate content for dyslexic teens and adults, who are reading well below their expected grade levels.
+    // Simplified system prompt to prevent API timeouts
+    const systemPrompt = `You are creating a ${outputType} for adults reading at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level.
 
-      CRITICAL: You are writing for ADULTS who read at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade level, NOT for children. 
-      The content should be:
-      - Appropriate for adult interests and maturity
-      - Written at a ${gradeLevel}${getGradeSuffix(gradeLevel)} grade reading level
-      - Respectful and dignified for adult readers
-      - Free of condescending or childish language
+Requirements:
+- Adult-appropriate content at ${gradeLevel}${getGradeSuffix(gradeLevel)} grade reading level
+- ${outputType === 'summary' ? 'Condense main points while keeping essential details' : 'Retell the story maintaining original sequence and details'}
+- Use vocabulary and sentences appropriate for this grade level
+- Add paragraph breaks (\\n\\n) between sections
+- Preserve dialogue with proper quotation marks
+- Keep all words complete and properly spelled
+- Start directly with content, no introductions
 
-      Your task is to create a ${outputType} of the provided text.
-
-      For each grade level (1-12), create a ${outputType} that:
-      - Uses vocabulary and sentence structures appropriate for that grade level
-      - Maintains the same factual content and key information from the original text
-      - Follows age-appropriate complexity patterns for comprehension
-      - Uses shorter sentences and simpler words for lower grades, longer sentences and advanced vocabulary for higher grades
-      - Starts directly with the content - DO NOT include titles, headers, or introductory phrases like "Here is a summary..." or "This is a retelling..."
-
-      ${outputType === 'summary' ? 'Focus on condensing the main points while keeping essential details.' : 'Focus on retelling the story or information in a clear, engaging way that maintains the original sequence and important details.'}
-
-      IMPORTANT: When handling technical terms (like "null", "undefined", "true", "false", HTTP codes, etc.):
-      - Keep the technical term exactly as written
-      - You may add simple explanations after technical terms if needed for lower grades
-      - Never duplicate or modify the terms themselves
-      - Maintain the dignity and adult-appropriate nature of the content
-
-      FOR RETELLINGS SPECIFICALLY:
-      - Preserve all dialogue using quotation marks exactly as in the original
-      - Add natural paragraph breaks and line spacing throughout the text
-      - Retell the story and preserve the natural narrative flow rather than creating a report-style summary
-      - Adapt vocabulary and sentence complexity to the grade level while preserving the story structure
-      - Insert double line breaks (\\n\\n) between distinct paragraphs and sections to preserve readable formatting
-
-      CRITICAL PARAGRAPH AND DIALOGUE FORMATTING RULES - FOLLOW EXACTLY:
-
-      1. PARAGRAPH BREAKS:
-      - Insert double line breaks (\\n\\n) between every paragraph
-      - Each new idea, scene change, or speaker change gets a new paragraph
-      - Never run paragraphs together without breaks
-
-      2. DIALOGUE FORMATTING - ABSOLUTELY MANDATORY:
-      - KEEP DIALOGUE AND PUNCTUATION TOGETHER: "Hello," she said.
-      - NEVER separate ending quotes from the words: Write "But it is true!" NOT "But it is true!\\n"
-      - MANDATORY: Each speaker gets their own paragraph with a double line break before
-      - EXACT FORMAT REQUIRED (copy this structure exactly):
-
-Mrs. Bennet came to her husband with exciting news.
-
-"My dear Mr. Bennet," she said, "have you heard? Someone has rented Netherfield Park!"
-
-Mr. Bennet looked up from his book. "I have not heard this news."
-
-"But it is true!" she replied excitedly. "Mrs. Long just told me all about it."
-
-      - CRITICAL: The closing quotation mark MUST stay on the same line as the dialogue
-      - NEVER write dialogue like this: "Hello\\n" (WRONG)
-      - ALWAYS write dialogue like this: "Hello," she said. (CORRECT)
-      - Each paragraph of dialogue should be complete with its quotation marks intact
-
-      FINAL REMINDER: Before responding, verify that EVERY SINGLE WORD is complete and properly spelled. No truncated words like "wif", "sai", "hea", "wan", "aske" are allowed.
-
-      Respond with only the ${outputType}, no additional commentary or explanation.
-    `;
+Respond with only the ${outputType}.`;
 
     // Define the model to use based on available API keys
     const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-4";
 
-    // Make the API request
-    const response = await openai.chat.completions.create({
+    // Make the API request with timeout handling
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('API request timeout after 30 seconds')), 30000)
+    );
+    
+    const apiPromise = openai.chat.completions.create({
       model,
       messages: [
         { role: "system", content: systemPrompt },
@@ -554,6 +506,8 @@ Mr. Bennet looked up from his book. "I have not heard this news."
       temperature: 0.7,
       max_tokens: 1500
     });
+
+    const response = await Promise.race([apiPromise, timeoutPromise]) as any;
 
     // Get the generated content
     const content = response.choices[0].message.content;
@@ -573,7 +527,7 @@ Mr. Bennet looked up from his book. "I have not heard this news."
       // Fix word duplications around dialogue like "said said." → "said."
       .replace(/\b(said|asked|replied|answered)\s+\1([.,!?;:])/gi, '$1$2')
       // Fix quote-related duplications like "Bennet"Bennet → "Bennet"
-      .replace(/"([^"]+)"([A-Za-z]+)/g, (match, quote, duplicate) => {
+      .replace(/"([^"]+)"([A-Za-z]+)/g, (match: string, quote: string, duplicate: string) => {
         const lastWordInQuote = quote.split(/\s+/).pop()?.toLowerCase();
         if (lastWordInQuote === duplicate.toLowerCase()) {
           return `"${quote}"`;
