@@ -91,7 +91,7 @@ export default function Home() {
 
       {/* Header with backdrop blur */}
       <div className="relative z-10">
-        <AppHeader onHelpClick={() => setShowHelp(true)} />
+        <AppHeader />
         <div className="bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm">
           <div className="container mx-auto px-4">
             <ProcessSteps 

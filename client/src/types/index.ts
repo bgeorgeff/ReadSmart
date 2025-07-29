@@ -2,7 +2,7 @@
 export type GradeLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 // Summaries object containing all grade levels
-export type Summaries = Record<GradeLevel, string>;
+export type Summaries = Record<number, string>;
 
 // API responses
 export interface ProcessTextResponse {

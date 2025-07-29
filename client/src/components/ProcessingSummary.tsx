@@ -142,7 +142,7 @@ export default function ProcessingSummary({
     },
     onSuccess: (data) => {
       if (data.success) {
-        onProcessingComplete(data.summaryId, data.summaries);
+        onProcessingComplete(data.summaryId, data.summaries || {});
       } else {
         toast({
           title: 'Error',

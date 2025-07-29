@@ -332,7 +332,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ success: false, message: "Summary not found" });
       }
 
-      const gradeLevelSummary = textSummary.summaries[result.gradeLevel];
+      const summariesData = textSummary.summaries as Record<number, string>;
+      const gradeLevelSummary = summariesData[result.gradeLevel];
 
       if (!gradeLevelSummary) {
         return res.status(404).json({ success: false, message: "Grade level summary not found" });
@@ -344,8 +345,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         gradeLevel: result.gradeLevel
       });
     } catch (error) {
-      if (error.name === "ZodError") {
-        const validationError = fromZodError(error);
+      if (error instanceof Error && error.name === "ZodError") {
+        const validationError = fromZodError(error as any);
         res.status(400).json({ success: false, message: validationError.message });
       } else {
         console.error("Error fetching summary:", error);
@@ -407,8 +408,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           messages: [{ role: "user", content: prompt }],
           response_format: { type: "json_object" }
         });
+        
+        const messageContent = response.choices[0].message.content;
+        if (!messageContent) {
+          throw new Error("No response content received from OpenAI");
+        }
 
-        const result = JSON.parse(response.choices[0].message.content);
+        const result = JSON.parse(messageContent);
         definition = result.definition;
         exampleSentence = result.exampleSentence;
       } catch (apiError) {
@@ -434,15 +440,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[Word Detail] Successfully processed: "${word}"`);
       res.json(wordDetail);
     } catch (error) {
-      if (error.name === "ZodError") {
-        const validationError = fromZodError(error);
+      if (error instanceof Error && error.name === "ZodError") {
+        const validationError = fromZodError(error as any);
         res.status(400).json({ success: false, message: validationError.message });
       } else {
         console.error('[Word Detail] Error:', error);
         res.status(500).json({
           success: false,
           message: 'Failed to fetch word details. Please try again.',
-          error: process.env.NODE_ENV === 'development' ? error.message : undefined
+          error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
         });
       }
     }
@@ -499,8 +505,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         recordingId: recording.id
       });
     } catch (error) {
-      if (error.name === "ZodError") {
-        const validationError = fromZodError(error);
+      if (error instanceof Error && error.name === "ZodError") {
+        const validationError = fromZodError(error as any);
         res.status(400).json({ success: false, message: validationError.message });
       } else {
         console.error("Error saving recording:", error);

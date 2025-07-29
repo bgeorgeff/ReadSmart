@@ -280,7 +280,7 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
     
     // Generic pattern for any word that looks truncated before a period
     // This catches cases where a word is cut off right before punctuation
-    { pattern: /\b([a-z]{1,2})\./g, replacement: (match, p1) => {
+    { pattern: /\b([a-z]{1,2})\./g, replacement: (match: string, p1: string) => {
       // Only fix if it's likely a truncated word (very short and doesn't look complete)
       const shortWords = ['a', 'I', 'be', 'do', 'go', 'he', 'if', 'in', 'is', 'it', 'me', 'my', 'no', 'of', 'on', 'or', 'so', 'to', 'up', 'us', 'we'];
       if (shortWords.includes(p1.toLowerCase())) {
@@ -291,7 +291,7 @@ function fixTruncatedWordsBeforePeriods(text: string): string {
     }},
     
     // Fix specific quote + truncation patterns
-    { pattern: /"([^"]+)"([A-Za-z]+)\./g, replacement: (match, quote, duplicate) => {
+    { pattern: /"([^"]+)"([A-Za-z]+)\./g, replacement: (match: string, quote: string, duplicate: string) => {
       const lastWordInQuote = quote.split(/\s+/).pop()?.toLowerCase();
       if (lastWordInQuote === duplicate.toLowerCase()) {
         return `"${quote}".`;
