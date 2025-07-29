@@ -517,21 +517,31 @@ export async function generateSingleGradeLevelText(
       - Adapt vocabulary and sentence complexity to the grade level while preserving the story structure
       - Insert double line breaks (\\n\\n) between distinct paragraphs and sections to preserve readable formatting
 
-      CRITICAL DIALOGUE FORMATTING RULES - FOLLOW EXACTLY:
+      CRITICAL PARAGRAPH AND DIALOGUE FORMATTING RULES - FOLLOW EXACTLY:
+      
+      1. PARAGRAPH BREAKS:
+      - Insert double line breaks (\\n\\n) between every paragraph
+      - Each new idea, scene change, or speaker change gets a new paragraph
+      - Never run paragraphs together without breaks
+      
+      2. DIALOGUE FORMATTING:
       - ALWAYS preserve dialogue with quotation marks: "Hello," she said.
-      - MANDATORY: Each speaker gets their own paragraph with a line break before and after
+      - MANDATORY: Each speaker gets their own paragraph with a double line break before and after
       - MANDATORY: When dialogue switches between different characters, you MUST insert a blank line between speakers
       - EXACT FORMAT REQUIRED:
 
-        Mrs. Bennet said, "We have a new neighbor!"
+        Mrs. Bennet came to her husband with exciting news.
 
-        Mr. Bennet replied, "That is interesting news."
+        "My dear Mr. Bennet," she said, "have you heard? Someone has rented Netherfield Park!"
 
-        "He is very rich," she continued.
+        Mr. Bennet looked up from his book. "I have not heard this news."
+
+        "But it is true!" she replied excitedly. "Mrs. Long just told me all about it."
 
       - NEVER put two different speakers' dialogue in the same paragraph
-      - ALWAYS add line breaks (\\n\\n) before each new speaker
+      - ALWAYS add double line breaks (\\n\\n) before each new speaker
       - Each line of dialogue should be separated by double line breaks for readability
+      - Include narrative description between dialogue when needed for clarity
 
       FINAL REMINDER: Before responding, verify that EVERY SINGLE WORD is complete and properly spelled. No truncated words like "wif", "sai", "hea", "wan", "aske" are allowed.
       
@@ -577,6 +587,19 @@ export async function generateSingleGradeLevelText(
         }
         return match;
       });
+
+    // Ensure proper paragraph breaks and formatting
+    cleanedContent = cleanedContent
+      // Normalize multiple line breaks to consistent double breaks
+      .replace(/\n{3,}/g, '\n\n')
+      // Ensure dialogue gets proper paragraph breaks
+      .replace(/([.!?])\s*"/g, '$1\n\n"')
+      // Ensure line breaks before dialogue tags
+      .replace(/"\s*([A-Z][^"]*(?:said|asked|replied|answered|continued|exclaimed)[^"]*)\./g, '"\n\n$1.')
+      // Clean up any extra spaces
+      .replace(/\s+/g, ' ')
+      .replace(/\n\s+\n/g, '\n\n')
+      .trim();
 
     return cleanedContent;
 

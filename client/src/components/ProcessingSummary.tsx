@@ -22,68 +22,80 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick }: DisplayTextWithFixesProps) {
   const processedText = text;
 
-  // Simple word-based tokenization that preserves all characters
-  const tokenize = (text: string): string[] => {
-    return text.split(/\s+/).filter(token => token.trim() !== '');
-  };
-
-  const tokens = tokenize(processedText);
+  // Split text into paragraphs and then tokenize each paragraph
+  const paragraphs = processedText.split('\n');
 
   return (
     <div className="word-interaction-container">
-      {tokens.map((token, index) => {
-        // Check if this is a quoted phrase (starts and ends with ")
-        const isQuotedPhrase = token.startsWith('"') && token.endsWith('"') && token.length > 2;
-
-        if (isQuotedPhrase) {
-          // Remove quotes for clicking, but preserve in display
-          const cleanToken = token.substring(1, token.length - 1);
-
-          return (
-            <span key={index}>
-              <span
-                className="clickable-word cursor-pointer hover:bg-yellow-200 rounded px-1"
-                onClick={() => onWordClick(cleanToken)}
-              >
-                {token}
-              </span>
-              {index < tokens.length - 1 && ' '}
-            </span>
-          );
-        } else {
-          // Regular token - separate word from punctuation
-          const match = token.match(/^([a-zA-Z]+)([^a-zA-Z]*)$/);
-          if (match) {
-            const word = match[1];
-            const punctuation = match[2];
-
-            return (
-              <span key={index}>
-                <span
-                  className="clickable-word cursor-pointer hover:bg-yellow-200 rounded px-1"
-                  onClick={() => onWordClick(word)}
-                >
-                  {word}
-                </span>
-                {punctuation && <span>{punctuation}</span>}
-                {index < tokens.length - 1 && ' '}
-              </span>
-            );
-          } else {
-            // Fallback for tokens that don't match expected pattern
-            return (
-              <span key={index}>
-                <span
-                  className="clickable-word cursor-pointer hover:bg-yellow-200 rounded px-1"
-                  onClick={() => onWordClick(token)}
-                >
-                  {token}
-                </span>
-                {index < tokens.length - 1 && ' '}
-              </span>
-            );
-          }
+      {paragraphs.map((paragraph, paragraphIndex) => {
+        if (paragraph.trim() === '') {
+          // Empty paragraph creates a line break
+          return <div key={`para-${paragraphIndex}`} className="h-4"></div>;
         }
+
+        // Tokenize each paragraph
+        const tokens = paragraph.split(/(\s+)/).filter(token => token !== '');
+
+        return (
+          <div key={`para-${paragraphIndex}`} className="mb-4">
+            {tokens.map((token, tokenIndex) => {
+              // If token is just whitespace, render as space
+              if (/^\s+$/.test(token)) {
+                return <span key={`${paragraphIndex}-${tokenIndex}`}> </span>;
+              }
+
+              // Check if this is a quoted phrase (starts and ends with ")
+              const isQuotedPhrase = token.startsWith('"') && token.endsWith('"') && token.length > 2;
+
+              if (isQuotedPhrase) {
+                // Remove quotes for clicking, but preserve in display
+                const cleanToken = token.substring(1, token.length - 1);
+
+                return (
+                  <span key={`${paragraphIndex}-${tokenIndex}`}>
+                    <span
+                      className="clickable-word cursor-pointer hover:bg-yellow-200 rounded px-1"
+                      onClick={() => onWordClick(cleanToken)}
+                    >
+                      {token}
+                    </span>
+                  </span>
+                );
+              } else {
+                // Regular token - separate word from punctuation
+                const match = token.match(/^([a-zA-Z]+)([^a-zA-Z]*)$/);
+                if (match) {
+                  const word = match[1];
+                  const punctuation = match[2];
+
+                  return (
+                    <span key={`${paragraphIndex}-${tokenIndex}`}>
+                      <span
+                        className="clickable-word cursor-pointer hover:bg-yellow-200 rounded px-1"
+                        onClick={() => onWordClick(word)}
+                      >
+                        {word}
+                      </span>
+                      {punctuation && <span>{punctuation}</span>}
+                    </span>
+                  );
+                } else {
+                  // Fallback for tokens that don't match expected pattern
+                  return (
+                    <span key={`${paragraphIndex}-${tokenIndex}`}>
+                      <span
+                        className="clickable-word cursor-pointer hover:bg-yellow-200 rounded px-1"
+                        onClick={() => onWordClick(token)}
+                      >
+                        {token}
+                      </span>
+                    </span>
+                  );
+                }
+              }
+            })}
+          </div>
+        );
       })}
     </div>
   );
@@ -322,7 +334,7 @@ export default function ProcessingSummary({
             </button>
           </div>
 
-          <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
+          <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed whitespace-pre-wrap">
             {summaries[selectedGradeLevel] ? (
               <DisplayTextWithFixes 
                 text={summaries[selectedGradeLevel]}
