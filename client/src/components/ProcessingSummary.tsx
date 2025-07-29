@@ -145,7 +145,13 @@ export default function ProcessingSummary({
   // Mutation for processing text to generate summaries
   const processTextMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('/api/process-single-grade', {
+      console.log('Starting text processing...', { 
+        textLength: inputText.length, 
+        gradeLevel: selectedGradeLevel, 
+        outputType 
+      });
+      
+      const response = await apiRequest('/api/process-text', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -157,12 +163,17 @@ export default function ProcessingSummary({
         }),
       });
 
+      console.log('API response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('API error:', errorData);
         throw new Error(errorData.message || 'Failed to process text');
       }
 
-      return response.json();
+      const result = await response.json();
+      console.log('API success:', result);
+      return result;
     },
     onSuccess: (data) => {
       onProcessingComplete(data.summaryId, data.summaries);
