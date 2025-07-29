@@ -118,19 +118,26 @@ export default function Home() {
           />
 
           <ProcessingSummary 
-            inputText={inputText}
-            isVisible={currentStep === AppStep.PROCESSING || currentStep === AppStep.SUMMARY}
-            summaryId={summaryId}
-            summaries={summaries}
-            currentGradeLevel={selectedGrade}
-            selectedGradeLevel={selectedGradeLevel}
-            outputType={outputType}
-            onGradeLevelChange={setSelectedGrade}
-            onWordClick={handleWordClick}
-            onContinueToReading={handleContinueToReading}
-            onNavigateBack={handleNavigateBack}
-            onProcessingComplete={handleProcessingComplete}
-          />
+          isVisible={currentStep === AppStep.PROCESSING}
+          summaryId={summaryId}
+          summaries={summaries}
+          currentGradeLevel={selectedGradeLevel}
+          inputText={inputText}
+          selectedGradeLevel={selectedGradeLevel}
+          outputType={outputType}
+          onGradeLevelChange={(level) => setSelectedGradeLevel(level)}
+          onWordClick={setClickedWord}
+          onContinueToReading={() => {
+            setSelectedSummary(summaries?.[selectedGradeLevel] || '');
+            setCurrentStep(AppStep.READING);
+          }}
+          onNavigateBack={() => setCurrentStep(AppStep.TEXT_INPUT)}
+          onProcessingComplete={(id, summaries) => {
+            setSummaryId(id);
+            setSummaries(summaries);
+            setCurrentStep(AppStep.PROCESSING);
+          }}
+        />
 
           <ReadingTools 
             isVisible={currentStep === AppStep.READING}

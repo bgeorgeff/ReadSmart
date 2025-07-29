@@ -142,31 +142,36 @@ export default function ProcessingSummary({
   // Get the selected summary based on current grade level
   const selectedSummary = summaries ? (currentGradeLevel === 0 ? inputText : summaries[currentGradeLevel]) : null;
 
-  // Process text mutation
-  const { mutate, isPending } = useMutation({
+  // Mutation for processing text to generate summaries
+  const processTextMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('POST', '/api/process-text', { 
-        text: inputText,
-        gradeLevel: selectedGradeLevel,
-        outputType: outputType
+      const response = await apiRequest('/api/process-single-grade', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          text: inputText,
+          gradeLevel: selectedGradeLevel,
+          outputType: outputType
+        }),
       });
-      return await response.json() as ProcessTextResponse;
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to process text');
+      }
+
+      return response.json();
     },
     onSuccess: (data) => {
-      if (data.success) {
-        onProcessingComplete(data.summaryId, data.summaries || {});
-      } else {
-        toast({
-          title: 'Error',
-          description: data.message || 'Failed to process text',
-          variant: 'destructive'
-        });
-      }
+      onProcessingComplete(data.summaryId, data.summaries);
     },
     onError: (error) => {
+      console.error('Processing error:', error);
       toast({
-        title: 'Error',
-        description: (error as Error).message || 'Failed to process text',
+        title: 'Processing Error',
+        description: error instanceof Error ? error.message : 'Failed to process text. Please try again.',
         variant: 'destructive'
       });
     }
@@ -175,13 +180,13 @@ export default function ProcessingSummary({
   // Trigger the API call when isProcessing becomes true
   useEffect(() => {
     if (isProcessing && !summaryId) {
-      mutate();
+      processTextMutation.mutate();
     }
-  }, [isProcessing, mutate, summaryId]);
+  }, [isProcessing, processTextMutation, summaryId]);
 
   // Animation for the progress bar with faster, more responsive pacing
   useEffect(() => {
-    if (isPending) {
+    if (processTextMutation.isPending) {
       // Reset progress when starting
       setProgressWidth(0);
 
@@ -247,11 +252,11 @@ export default function ProcessingSummary({
           if (i !== highId) window.clearInterval(i);
         }
       };
-    } else if (!isPending && isProcessing) {
+    } else if (!processTextMutation.isPending && isProcessing) {
       // Complete the progress bar when done
       setProgressWidth(100);
     }
-  }, [isPending, isProcessing]);
+  }, [processTextMutation.isPending, isProcessing]);
 
   // Function to handle grade level change
   const handleGradeLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -304,13 +309,17 @@ export default function ProcessingSummary({
       )}
 
       {/* Result State */}
-      {!isPending && summaries && (
+      {!processTextMutation.isPending && summaries && (
         <div>
+          {/* Grade Level Display */}
           <div className="mb-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-sm text-blue-700 font-medium">
-                Generated {outputType} for {selectedGradeLevel}{getGradeSuffix(selectedGradeLevel)} grade reading level
-              </p>
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-gray-700">
+                Reading Level:
+              </label>
+              <div className="px-3 py-2 bg-[#4285F4] text-white rounded-lg text-sm font-medium">
+                {selectedGradeLevel}{getGradeSuffix(selectedGradeLevel)} Grade
+              </div>
             </div>
           </div>
 
