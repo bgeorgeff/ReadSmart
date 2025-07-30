@@ -380,43 +380,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let exampleSentence = "";
 
       try {
-        // Use OpenRouter for cost-optimized word definitions
-        const openai = new OpenAI({
-          apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
-          baseURL: process.env.OPENROUTER_API_KEY ? "https://openrouter.ai/api/v1" : undefined,
-          defaultHeaders: process.env.OPENROUTER_API_KEY 
-            ? {
-                "HTTP-Referer": "https://replit.com/",
-                "X-Title": "ReadSmart App"
-              } 
-            : {}
-        });
+        // Debug: Log which API we're using
+        console.log(`[Word Detail] Using ${process.env.OPENROUTER_API_KEY ? 'OpenRouter' : 'OpenAI'} API for word: ${word}`);
+        
+        // Use the same OpenAI client from utils/openai.ts to ensure consistency
+        const { openai } = await import('./utils/openai.js');
 
         const prompt = `Please provide a short definition and example sentence for the word "${word}". 
                         Format the response as a JSON object with two fields: 
                         "definition" (a brief, clear definition appropriate for students) and 
                         "exampleSentence" (a simple, clear sentence using the word correctly).`;
 
-        // Cost-optimized model selection for word definitions
-        const model = process.env.OPENROUTER_API_KEY ? "mistralai/mistral-7b-instruct" : "gpt-4o";
+        // Use consistent model selection with simplified config
+        const model = process.env.OPENROUTER_API_KEY 
+          ? "mistralai/mistral-7b-instruct" 
+          : "gpt-4o";
         
-        const requestConfig = process.env.OPENROUTER_API_KEY ? {
+        console.log(`[Word Detail] Using model: ${model}`);
+
+        const response = await openai.chat.completions.create({
           model,
-          route: "fallback",
           messages: [{ role: "user" as const, content: prompt }],
           response_format: { type: "json_object" as const },
-          models: [
-            "mistralai/mistral-7b-instruct", // Primary: cost-effective
-            "openai/gpt-4o-mini", // Fallback 1: quality backup
-            "anthropic/claude-3-haiku" // Fallback 2: premium option
-          ]
-        } as any : {
-          model,
-          messages: [{ role: "user" as const, content: prompt }],
-          response_format: { type: "json_object" as const }
-        };
-
-        const response = await openai.chat.completions.create(requestConfig);
+          temperature: 0.3,
+          max_tokens: 500
+        });
         
         const messageContent = response.choices[0].message.content;
         if (!messageContent) {

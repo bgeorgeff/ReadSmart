@@ -1,16 +1,21 @@
 import OpenAI from "openai";
 
-// Initialize OpenAI client
+// Initialize OpenAI client with debug logging
+console.log(`[OpenAI Client] Initializing with ${process.env.OPENROUTER_API_KEY ? 'OpenRouter' : 'OpenAI'} configuration`);
+
 const openai = new OpenAI({
   apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
   baseURL: process.env.OPENROUTER_API_KEY ? "https://openrouter.ai/api/v1" : undefined,
   defaultHeaders: process.env.OPENROUTER_API_KEY 
     ? {
         "HTTP-Referer": "https://replit.com/", // Required by OpenRouter
-        "X-Title": "TextSimplifier App"
+        "X-Title": "ReadSmart App"
       } 
     : {}
 });
+
+// Export the client for use in other modules
+export { openai };
 
 // Function to generate summaries for different grade levels
 export async function generateGradeLevelSummaries(text: string): Promise<Record<number, string>> {
