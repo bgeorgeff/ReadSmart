@@ -38,20 +38,41 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       Respond with a valid JSON object where the keys are grade level numbers (1-12) and the values are the corresponding complete summaries.
     `;
 
-    // Define the model to use based on available API keys
-    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-4";
-
-    // Make the API request
-    const response = await openai.chat.completions.create({
+    // Define cost-optimized model selection with fallback
+    const model = process.env.OPENROUTER_API_KEY ? "mistralai/mistral-7b-instruct" : "gpt-4";
+    
+    // OpenRouter request configuration with cost priority and fallback
+    const requestConfig = process.env.OPENROUTER_API_KEY ? {
       model,
+      route: "fallback", // Enable automatic fallback if primary model is down
       messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: text }
+        { role: "system" as const, content: systemPrompt },
+        { role: "user" as const, content: text }
       ],
       temperature: 0.7,
-      max_tokens: 4000, // Increased to accommodate all 12 summaries
-      response_format: { type: "json_object" } // Explicitly request JSON formatting
-    });
+      max_tokens: 4000,
+      response_format: { type: "json_object" as const },
+      // OpenRouter-specific parameters for cost optimization
+      transforms: ["middle-out"], // Cost-optimized routing
+      models: [
+        "mistralai/mistral-7b-instruct", // Primary: cheapest capable model
+        "meta-llama/llama-3.1-8b-instruct", // Fallback 1: fast and cheap
+        "anthropic/claude-3-haiku", // Fallback 2: quality when needed
+        "openai/gpt-4o-mini" // Fallback 3: backup premium option
+      ]
+    } as any : {
+      model,
+      messages: [
+        { role: "system" as const, content: systemPrompt },
+        { role: "user" as const, content: text }
+      ],
+      temperature: 0.7,
+      max_tokens: 4000,
+      response_format: { type: "json_object" as const }
+    };
+
+    // Make the API request
+    const response = await openai.chat.completions.create(requestConfig);
 
     // Get the generated content
     const content = response.choices[0].message.content;
@@ -173,17 +194,36 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       Return only the shortened text without any explanation or commentary.
     `;
 
-    const model = process.env.OPENROUTER_API_KEY ? "openai/gpt-4-turbo" : "gpt-4o"; // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-
-    const response = await openai.chat.completions.create({
+    // Cost-optimized model for text shortening with fallback
+    const model = process.env.OPENROUTER_API_KEY ? "mistralai/mistral-7b-instruct" : "gpt-4o";
+    
+    const requestConfig = process.env.OPENROUTER_API_KEY ? {
+      model,
+      route: "fallback", // Enable automatic fallback
+      messages: [
+        { role: "system" as const, content: systemPrompt },
+        { role: "user" as const, content: text }
+      ],
+      temperature: 0.3,
+      max_tokens: Math.min(2000, maxWords * 2),
+      // Cost-first model hierarchy for text editing
+      models: [
+        "mistralai/mistral-7b-instruct", // Primary: cost-effective
+        "meta-llama/llama-3.1-8b-instruct", // Fallback 1: fast + cheap
+        "openai/gpt-4o-mini", // Fallback 2: quality when needed
+        "anthropic/claude-3-haiku" // Fallback 3: premium backup
+      ]
+    } as any : {
       model,
       messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: text }
+        { role: "system" as const, content: systemPrompt },
+        { role: "user" as const, content: text }
       ],
-      temperature: 0.3, // Lower temperature for more consistent editing
-      max_tokens: Math.min(2000, maxWords * 2) // Ensure we don't exceed reasonable token limits
-    });
+      temperature: 0.3,
+      max_tokens: Math.min(2000, maxWords * 2)
+    };
+
+    const response = await openai.chat.completions.create(requestConfig);
 
     let shortenedText = response.choices[0].message.content?.trim();
     if (!shortenedText) {
