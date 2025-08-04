@@ -62,8 +62,7 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       models: [
         "mistralai/mistral-7b-instruct", // Primary: cheapest capable model
         "meta-llama/llama-3.1-8b-instruct", // Fallback 1: fast and cheap
-        "anthropic/claude-3-haiku", // Fallback 2: quality when needed
-        "openai/gpt-4o-mini" // Fallback 3: backup premium option
+        "anthropic/claude-3-haiku" // Fallback 2: quality when needed
       ]
     } as any : {
       model,
