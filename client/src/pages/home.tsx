@@ -18,7 +18,7 @@ export default function Home() {
   const [clickedWord, setClickedWord] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
   const [selectedGradeLevel, setSelectedGradeLevel] = useState<number>(5);
-  const [outputTypes, setOutputTypes] = useState<('summary' | 'retelling')[]>(['summary']);
+  const [outputTypes, setOutputTypes] = useState<('summary' | 'retelling')[]>([]);
 
   const handleStepClick = (step: AppStep) => {
     if (step === AppStep.TEXT_INPUT) {
