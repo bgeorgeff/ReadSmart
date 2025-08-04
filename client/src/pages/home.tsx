@@ -18,7 +18,7 @@ export default function Home() {
   const [clickedWord, setClickedWord] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
   const [selectedGradeLevel, setSelectedGradeLevel] = useState<number>(5);
-  const [outputTypes, setOutputTypes] = useState<('summary' | 'retelling')[]>([]);
+
 
   const handleStepClick = (step: AppStep) => {
     if (step === AppStep.TEXT_INPUT) {
@@ -113,8 +113,7 @@ export default function Home() {
             isVisible={currentStep === AppStep.TEXT_INPUT}
             selectedGradeLevel={selectedGradeLevel}
             setSelectedGradeLevel={setSelectedGradeLevel}
-            outputTypes={outputTypes}
-            setOutputTypes={setOutputTypes}
+
           />
 
           <ProcessingSummary 
@@ -124,7 +123,7 @@ export default function Home() {
           currentGradeLevel={selectedGradeLevel as GradeLevel}
           inputText={inputText}
           selectedGradeLevel={selectedGradeLevel}
-          outputTypes={outputTypes}
+
           onGradeLevelChange={(level) => setSelectedGradeLevel(level)}
           onWordClick={setClickedWord}
           onContinueToReading={() => {

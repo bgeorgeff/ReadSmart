@@ -249,10 +249,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
-  // Process text and generate single grade level summary or retelling
+  // Process text and generate summaries for all 12 grade levels
   app.post("/api/process-text", async (req, res) => {
     try {
-      const { text, gradeLevel, outputType } = req.body;
+      const { text, gradeLevel } = req.body;
 
       if (!text || typeof text !== 'string' || text.trim().length === 0) {
         return res.status(400).json({ 
@@ -268,32 +268,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      if (!outputType || (outputType !== 'summary' && outputType !== 'retelling')) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Output type must be either 'summary' or 'retelling'" 
-        });
-      }
+      // Generate summaries for all 12 grade levels
+      console.log('Generating summaries for all 12 grade levels...');
+      const summaries = await generateGradeLevelSummaries(text);
 
-      // Generate single grade level text using the original text (no automatic shortening)
-      const processedOutput = await generateSingleGradeLevelText(text, gradeLevel, outputType);
-
-      // Create a summaries object with just the requested grade level
-      const summaries: Record<number, string> = {};
-      summaries[gradeLevel] = processedOutput;
-
-      // Save the single summary with the original text
+      // Save all summaries with the original text
       const textSummary = await storage.saveTextSummary({
         originalText: text,
         summaries: summaries,
         createdAt: new Date().toISOString()
       });
 
+      // Return the selected grade level as the primary processed text
+      const processedText = summaries[gradeLevel] || text;
+
       res.json({
         success: true,
         summaryId: textSummary.id,
         summaries: summaries,
-        processedText: processedOutput
+        processedText: processedText
       });
     } catch (error) {
       console.error("Error processing text:", error);
