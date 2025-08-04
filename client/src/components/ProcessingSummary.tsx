@@ -306,16 +306,29 @@ export default function ProcessingSummary({
       {/* Result State */}
       {!processTextMutation.isPending && summaries && (
         <div>
-          {/* Grade Level Display */}
+          {/* Grade Level Selector */}
           <div className="mb-4">
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-gray-700">
-                Reading Level:
-              </label>
-              <div className="px-3 py-2 bg-[#4285F4] text-white rounded-lg text-sm font-medium">
-                {selectedGradeLevel}{getGradeSuffix(selectedGradeLevel)} Grade
-              </div>
-            </div>
+            <label className="block text-sm font-medium text-[#4285F4] mb-2">
+              Select a grade level:
+            </label>
+            <select 
+              value={selectedGradeLevel}
+              onChange={(e) => onGradeLevelChange(parseInt(e.target.value) as GradeLevel)}
+              className="w-full px-3 py-2 border border-[#4285F4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4285F4] font-['Roboto'] text-[#4285F4]"
+            >
+              <option value={1}>1st Grade (Age 6-7)</option>
+              <option value={2}>2nd Grade (Age 7-8)</option>
+              <option value={3}>3rd Grade (Age 8-9)</option>
+              <option value={4}>4th Grade (Age 9-10)</option>
+              <option value={5}>5th Grade (Age 10-11)</option>
+              <option value={6}>6th Grade (Age 11-12)</option>
+              <option value={7}>7th Grade (Age 12-13)</option>
+              <option value={8}>8th Grade (Age 13-14)</option>
+              <option value={9}>9th Grade (Age 14-15)</option>
+              <option value={10}>10th Grade (Age 15-16)</option>
+              <option value={11}>11th Grade (Age 16-17)</option>
+              <option value={12}>12th Grade (Age 17-18)</option>
+            </select>
           </div>
 
           <div className="flex items-center justify-between mb-3">
