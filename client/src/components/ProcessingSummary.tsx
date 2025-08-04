@@ -146,13 +146,11 @@ export default function ProcessingSummary({
   const processTextMutation = useMutation({
     mutationFn: async () => {
       console.log('Starting text processing...', { 
-        textLength: inputText.length, 
-        gradeLevel: selectedGradeLevel
+        textLength: inputText.length
       });
       
       const response = await apiRequest('POST', '/api/process-text', { 
-        text: inputText,
-        gradeLevel: selectedGradeLevel
+        text: inputText
       });
 
       console.log('API response status:', response.status);

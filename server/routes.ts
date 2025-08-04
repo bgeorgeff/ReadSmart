@@ -252,19 +252,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Process text and generate summaries for all 12 grade levels
   app.post("/api/process-text", async (req, res) => {
     try {
-      const { text, gradeLevel } = req.body;
+      const { text } = req.body;
 
       if (!text || typeof text !== 'string' || text.trim().length === 0) {
         return res.status(400).json({ 
           success: false, 
           message: "Text is required and cannot be empty" 
-        });
-      }
-
-      if (typeof gradeLevel !== 'number' || gradeLevel < 1 || gradeLevel > 12) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Grade level must be a number between 1 and 12" 
         });
       }
 
@@ -279,8 +272,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: new Date().toISOString()
       });
 
-      // Return the selected grade level as the primary processed text
-      const processedText = summaries[gradeLevel] || text;
+      // Return grade 5 as the default processed text for display
+      const processedText = summaries[5] || text;
 
       res.json({
         success: true,

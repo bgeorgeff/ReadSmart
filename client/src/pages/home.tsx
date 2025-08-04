@@ -111,8 +111,7 @@ export default function Home() {
             setInputText={setInputText}
             setAppStep={setCurrentStep}
             isVisible={currentStep === AppStep.TEXT_INPUT}
-            selectedGradeLevel={selectedGradeLevel}
-            setSelectedGradeLevel={setSelectedGradeLevel}
+
 
           />
 
