@@ -31,9 +31,11 @@ export default function Home() {
         setCurrentStep(AppStep.PROCESSING);
       }
     } else if (step === AppStep.READING && summaries) {
-      // Set the selected summary based on the grade level used for processing
-      const summary = summaries[selectedGradeLevel];
-      setSelectedSummary(summary || '');
+      // Ensure we have the correct summary when navigating to reading
+      if (!selectedSummary) {
+        const summary = selectedGradeLevel === 0 ? inputText : summaries[selectedGradeLevel];
+        setSelectedSummary(summary || '');
+      }
       setCurrentStep(AppStep.READING);
     }
   };
@@ -66,8 +68,8 @@ export default function Home() {
 
   const handleContinueToReading = () => {
     if (summaries) {
-      // In the new single-grade system, use the selectedGradeLevel that was used for processing
-      const summary = summaries[selectedGradeLevel];
+      // Use the selectedGradeLevel to get the appropriate summary
+      const summary = selectedGradeLevel === 0 ? inputText : summaries[selectedGradeLevel];
       setSelectedSummary(summary || '');
       setCurrentStep(AppStep.READING);
     }
@@ -125,10 +127,7 @@ export default function Home() {
 
           onGradeLevelChange={(level) => setSelectedGradeLevel(level)}
           onWordClick={setClickedWord}
-          onContinueToReading={() => {
-            setSelectedSummary(summaries?.[selectedGradeLevel] || '');
-            setCurrentStep(AppStep.READING);
-          }}
+          onContinueToReading={handleContinueToReading}
           onNavigateBack={() => setCurrentStep(AppStep.TEXT_INPUT)}
           onProcessingComplete={(id, summaries) => {
             setSummaryId(id);
