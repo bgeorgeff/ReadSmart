@@ -43,8 +43,8 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       Respond with a valid JSON object where the keys are grade level numbers (1-12) and the values are the corresponding complete summaries.
     `;
 
-    // Define cost-optimized model selection with fallback
-    const model = process.env.OPENROUTER_API_KEY ? "mistralai/mistral-7b-instruct" : "gpt-4";
+    // Define model selection with Claude 3.5 Sonnet
+    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-4";
     
     // OpenRouter request configuration with cost priority and fallback
     const requestConfig = process.env.OPENROUTER_API_KEY ? {
@@ -60,9 +60,9 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       // OpenRouter-specific parameters for cost optimization
       transforms: ["middle-out"], // Cost-optimized routing
       models: [
-        "mistralai/mistral-7b-instruct", // Primary: cheapest capable model
-        "meta-llama/llama-3.1-8b-instruct", // Fallback 1: fast and cheap
-        "anthropic/claude-3-haiku" // Fallback 2: quality when needed
+        "anthropic/claude-3.5-sonnet", // Primary: high quality model
+        "anthropic/claude-3-haiku", // Fallback 1: faster Claude model
+        "openai/gpt-4o-mini" // Fallback 2: backup option
       ]
     } as any : {
       model,
@@ -198,8 +198,8 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       Return only the shortened text without any explanation or commentary.
     `;
 
-    // Cost-optimized model for text shortening with fallback
-    const model = process.env.OPENROUTER_API_KEY ? "mistralai/mistral-7b-instruct" : "gpt-4o";
+    // Use Claude 3.5 Sonnet for text shortening with fallback
+    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-4o";
     
     const requestConfig = process.env.OPENROUTER_API_KEY ? {
       model,
@@ -210,12 +210,11 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       ],
       temperature: 0.3,
       max_tokens: Math.min(2000, maxWords * 2),
-      // Cost-first model hierarchy for text editing
+      // Claude-first model hierarchy for text editing
       models: [
-        "mistralai/mistral-7b-instruct", // Primary: cost-effective
-        "meta-llama/llama-3.1-8b-instruct", // Fallback 1: fast + cheap
-        "openai/gpt-4o-mini", // Fallback 2: quality when needed
-        "anthropic/claude-3-haiku" // Fallback 3: premium backup
+        "anthropic/claude-3.5-sonnet", // Primary: high quality
+        "anthropic/claude-3-haiku", // Fallback 1: faster Claude
+        "openai/gpt-4o-mini" // Fallback 2: backup option
       ]
     } as any : {
       model,
@@ -659,7 +658,7 @@ function getGradeLevelGuidelines(grade: number): string {
 export async function testApiConnection() {
   try {
     const response = await openai.chat.completions.create({
-      model: process.env.OPENROUTER_API_KEY ? "openai/gpt-3.5-turbo" : "gpt-3.5-turbo",
+      model: process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-3.5-turbo",
       messages: [
         { role: "user", content: "Hello, please reply with the word 'Connected' to confirm connectivity." }
       ],

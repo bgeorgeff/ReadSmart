@@ -377,9 +377,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
                         "definition" (a brief, clear definition appropriate for students) and 
                         "exampleSentence" (a simple, clear sentence using the word correctly).`;
 
-        // Use consistent model selection with simplified config
+        // Use consistent model selection with Claude 3.5 Sonnet
         const model = process.env.OPENROUTER_API_KEY 
-          ? "mistralai/mistral-7b-instruct" 
+          ? "anthropic/claude-3.5-sonnet" 
           : "gpt-4o";
         
         console.log(`[Word Detail] Using model: ${model}`);
