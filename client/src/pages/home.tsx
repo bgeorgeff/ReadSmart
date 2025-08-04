@@ -118,7 +118,7 @@ export default function Home() {
           />
 
           <ProcessingSummary 
-          isVisible={currentStep === AppStep.PROCESSING}
+          isVisible={currentStep === AppStep.PROCESSING || currentStep === AppStep.SUMMARY}
           summaryId={summaryId}
           summaries={summaries}
           currentGradeLevel={selectedGradeLevel as GradeLevel}
@@ -132,7 +132,7 @@ export default function Home() {
           onProcessingComplete={(id, summaries) => {
             setSummaryId(id);
             setSummaries(summaries);
-            setCurrentStep(AppStep.PROCESSING);
+            setCurrentStep(AppStep.SUMMARY);
           }}
         />
 
