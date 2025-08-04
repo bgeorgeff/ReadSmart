@@ -9,8 +9,8 @@ interface TextInputProps {
   isVisible: boolean;
   selectedGradeLevel: number;
   setSelectedGradeLevel: (level: number) => void;
-  outputType: 'summary' | 'retelling';
-  setOutputType: (type: 'summary' | 'retelling') => void;
+  outputTypes: ('summary' | 'retelling')[];
+  setOutputTypes: (types: ('summary' | 'retelling')[]) => void;
 }
 
 export default function TextInput({ 
@@ -20,8 +20,8 @@ export default function TextInput({
   isVisible, 
   selectedGradeLevel, 
   setSelectedGradeLevel,
-  outputType,
-  setOutputType 
+  outputTypes,
+  setOutputTypes 
 }: TextInputProps) {
   const [characterCount, setCharacterCount] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -65,6 +65,15 @@ export default function TextInput({
       toast({
         title: 'Input Required',
         description: 'Please enter or paste some text to process.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (outputTypes.length === 0) {
+      toast({
+        title: 'Output Type Required',
+        description: 'Please select at least one output type (Summary or Retelling).',
         variant: 'destructive'
       });
       return;
@@ -146,22 +155,32 @@ export default function TextInput({
         <div className="flex space-x-4">
           <label className="flex items-center">
             <input
-              type="radio"
-              name="outputType"
+              type="checkbox"
               value="summary"
-              checked={outputType === 'summary'}
-              onChange={(e) => setOutputType(e.target.value as 'summary' | 'retelling')}
+              checked={outputTypes.includes('summary')}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setOutputTypes([...outputTypes, 'summary']);
+                } else {
+                  setOutputTypes(outputTypes.filter(type => type !== 'summary'));
+                }
+              }}
               className="mr-2 text-[#4285F4] focus:ring-[#4285F4]"
             />
             <span className="text-sm text-gray-700">Summary</span>
           </label>
           <label className="flex items-center">
             <input
-              type="radio"
-              name="outputType"
+              type="checkbox"
               value="retelling"
-              checked={outputType === 'retelling'}
-              onChange={(e) => setOutputType(e.target.value as 'summary' | 'retelling')}
+              checked={outputTypes.includes('retelling')}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setOutputTypes([...outputTypes, 'retelling']);
+                } else {
+                  setOutputTypes(outputTypes.filter(type => type !== 'retelling'));
+                }
+              }}
               className="mr-2 text-[#4285F4] focus:ring-[#4285F4]"
             />
             <span className="text-sm text-gray-700">Retelling</span>

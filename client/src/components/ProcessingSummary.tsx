@@ -108,7 +108,7 @@ interface ProcessingSummaryProps {
   currentGradeLevel: GradeLevel;
   inputText: string;
   selectedGradeLevel: number;
-  outputType: 'summary' | 'retelling';
+  outputTypes: ('summary' | 'retelling')[];
   onGradeLevelChange: (level: GradeLevel) => void;
   onWordClick: (word: string) => void;
   onContinueToReading: () => void;
@@ -124,7 +124,7 @@ export default function ProcessingSummary({
   currentGradeLevel, 
   inputText,
   selectedGradeLevel,
-  outputType,
+  outputTypes,
   onGradeLevelChange, 
   onWordClick, 
   onContinueToReading,
@@ -148,13 +148,17 @@ export default function ProcessingSummary({
       console.log('Starting text processing...', { 
         textLength: inputText.length, 
         gradeLevel: selectedGradeLevel, 
-        outputType 
+        outputTypes 
       });
+      
+      // For now, use the first selected output type for API call
+      // In the future, we could modify the API to handle multiple types
+      const primaryOutputType = outputTypes[0] || 'summary';
       
       const response = await apiRequest('POST', '/api/process-text', { 
         text: inputText,
         gradeLevel: selectedGradeLevel,
-        outputType: outputType
+        outputType: primaryOutputType
       });
 
       console.log('API response status:', response.status);
@@ -349,7 +353,7 @@ export default function ProcessingSummary({
                 onWordClick={onWordClick}
               />
             ) : (
-              <p>No {outputType} available.</p>
+              <p>No content available.</p>
             )}
           </div>
 
