@@ -314,7 +314,7 @@ export default function ProcessingSummary({
             <select 
               value={selectedGradeLevel}
               onChange={(e) => onGradeLevelChange(parseInt(e.target.value) as GradeLevel)}
-              className="w-full px-3 py-2 border border-[#4285F4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4285F4] font-['Roboto'] text-[#4285F4]"
+              className="w-full px-3 py-2 border-2 border-[#4285F4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4285F4] font-['Roboto'] text-[#4285F4]"
             >
               <option value={0}>Original Paste</option>
               <option value={1}>1st Grade (Age 6-7)</option>
