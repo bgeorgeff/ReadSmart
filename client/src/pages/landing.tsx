@@ -76,7 +76,7 @@ export default function Landing() {
           </h1>
           
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Turn complex texts from any website or PDF into readable chunks. Perfect for dyslexic adults and teens who want to practice their reading skills. Teachers and tutors also love it for helping older students. Grab text from any web site you're interested in and paste it into ReadSmart. It doesn't matter if it's motorcycle racing or classic literature.
+            Turn complex texts from any website or PDF into readable chunks. Perfect for dyslexic adults or teens who want to practice their reading skills privately. Teachers and tutors love it for generating text for older students. Grab text from any website and paste it in - doesn't matter if it's motorcycle racing or classic literature.
           </p>
           
           <div className="mt-8 mb-12">
