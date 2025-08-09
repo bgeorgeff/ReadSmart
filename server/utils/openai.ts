@@ -73,7 +73,7 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       transforms: ["middle-out"], // Cost-optimized routing
       models: [
         "anthropic/claude-sonnet-4", // Primary: Claude 4.0 via OpenRouter
-        "anthropic/claude-3.5-sonnet", // Fallback 1: Claude 3.5
+        "anthropic/claude-3.7-sonnet", // Fallback 1: Claude 3.7
         "anthropic/claude-3-haiku" // Fallback 2: faster Claude model
       ]
     } as any : process.env.ANTHROPIC_API_KEY ? {
@@ -238,7 +238,7 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       // Claude 4.0-first model hierarchy for text editing
       models: [
         "anthropic/claude-sonnet-4", // Primary: Claude 4.0
-        "anthropic/claude-3.5-sonnet", // Fallback 1: Claude 3.5
+        "anthropic/claude-3.7-sonnet", // Fallback 1: Claude 3.7
         "anthropic/claude-3-haiku" // Fallback 2: faster Claude
       ]
     } as any : process.env.ANTHROPIC_API_KEY ? {
