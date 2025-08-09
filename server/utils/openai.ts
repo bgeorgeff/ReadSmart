@@ -1,24 +1,24 @@
 import OpenAI from "openai";
 
-// Initialize OpenAI client with debug logging
-console.log(`[AI Client] Initializing with ${process.env.ANTHROPIC_API_KEY ? 'Anthropic' : process.env.OPENROUTER_API_KEY ? 'OpenRouter' : 'OpenAI'} configuration`);
+// Initialize OpenAI client with debug logging - prioritize OpenRouter over direct Anthropic
+console.log(`[AI Client] Initializing with ${process.env.OPENROUTER_API_KEY ? 'OpenRouter' : process.env.ANTHROPIC_API_KEY ? 'Anthropic' : 'OpenAI'} configuration`);
 
 const openai = new OpenAI({
-  apiKey: process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
-  baseURL: process.env.ANTHROPIC_API_KEY 
-    ? "https://api.anthropic.com/v1" 
-    : process.env.OPENROUTER_API_KEY 
-      ? "https://openrouter.ai/api/v1" 
+  apiKey: process.env.OPENROUTER_API_KEY || process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENROUTER_API_KEY 
+    ? "https://openrouter.ai/api/v1" 
+    : process.env.ANTHROPIC_API_KEY 
+      ? "https://api.anthropic.com/v1" 
       : undefined,
-  defaultHeaders: process.env.ANTHROPIC_API_KEY
+  defaultHeaders: process.env.OPENROUTER_API_KEY 
     ? {
-        "anthropic-version": "2023-06-01"
+        "HTTP-Referer": "https://replit.com/", // Required by OpenRouter
+        "X-Title": "ReadSmart App"
       }
-    : process.env.OPENROUTER_API_KEY 
+    : process.env.ANTHROPIC_API_KEY
       ? {
-          "HTTP-Referer": "https://replit.com/", // Required by OpenRouter
-          "X-Title": "ReadSmart App"
-        } 
+          "anthropic-version": "2023-06-01"
+        }
       : {}
 });
 
