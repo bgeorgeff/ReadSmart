@@ -377,10 +377,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
                         "definition" (a brief, clear definition appropriate for students) and 
                         "exampleSentence" (a simple, clear sentence using the word correctly).`;
 
-        // Use consistent model selection with Claude 3.5 Sonnet
-        const model = process.env.OPENROUTER_API_KEY 
-          ? "anthropic/claude-3.5-sonnet" 
-          : "gpt-4o";
+        // Use consistent model selection with Claude 4.0 Sonnet
+        const model = process.env.ANTHROPIC_API_KEY 
+          ? "claude-sonnet-4-20250514"
+          : process.env.OPENROUTER_API_KEY 
+            ? "anthropic/claude-3.5-sonnet" 
+            : "gpt-4o";
         
         console.log(`[Word Detail] Using model: ${model}`);
 

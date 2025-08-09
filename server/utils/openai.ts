@@ -1,17 +1,25 @@
 import OpenAI from "openai";
 
 // Initialize OpenAI client with debug logging
-console.log(`[OpenAI Client] Initializing with ${process.env.OPENROUTER_API_KEY ? 'OpenRouter' : 'OpenAI'} configuration`);
+console.log(`[AI Client] Initializing with ${process.env.ANTHROPIC_API_KEY ? 'Anthropic' : process.env.OPENROUTER_API_KEY ? 'OpenRouter' : 'OpenAI'} configuration`);
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENROUTER_API_KEY ? "https://openrouter.ai/api/v1" : undefined,
-  defaultHeaders: process.env.OPENROUTER_API_KEY 
+  apiKey: process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
+  baseURL: process.env.ANTHROPIC_API_KEY 
+    ? "https://api.anthropic.com/v1" 
+    : process.env.OPENROUTER_API_KEY 
+      ? "https://openrouter.ai/api/v1" 
+      : undefined,
+  defaultHeaders: process.env.ANTHROPIC_API_KEY
     ? {
-        "HTTP-Referer": "https://replit.com/", // Required by OpenRouter
-        "X-Title": "ReadSmart App"
-      } 
-    : {}
+        "anthropic-version": "2023-06-01"
+      }
+    : process.env.OPENROUTER_API_KEY 
+      ? {
+          "HTTP-Referer": "https://replit.com/", // Required by OpenRouter
+          "X-Title": "ReadSmart App"
+        } 
+      : {}
 });
 
 // Export the client for use in other modules
@@ -43,11 +51,24 @@ export async function generateGradeLevelSummaries(text: string): Promise<Record<
       Respond with a valid JSON object where the keys are grade level numbers (1-12) and the values are the corresponding complete summaries.
     `;
 
-    // Define model selection with Claude 3.5 Sonnet
-    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-4";
+    // Define model selection with Claude 4.0 Sonnet as priority
+    const model = process.env.ANTHROPIC_API_KEY 
+      ? "claude-sonnet-4-20250514"
+      : process.env.OPENROUTER_API_KEY 
+        ? "anthropic/claude-3.5-sonnet" 
+        : "gpt-4";
     
-    // OpenRouter request configuration with cost priority and fallback
-    const requestConfig = process.env.OPENROUTER_API_KEY ? {
+    // Configure request based on API provider
+    const requestConfig = process.env.ANTHROPIC_API_KEY ? {
+      model,
+      messages: [
+        { role: "system" as const, content: systemPrompt },
+        { role: "user" as const, content: text }
+      ],
+      temperature: 0.7,
+      max_tokens: 4000,
+      response_format: { type: "json_object" as const }
+    } : process.env.OPENROUTER_API_KEY ? {
       model,
       route: "fallback", // Enable automatic fallback if primary model is down
       messages: [
@@ -198,10 +219,22 @@ export async function shortenText(text: string, maxWords: number = 650, maxChars
       Return only the shortened text without any explanation or commentary.
     `;
 
-    // Use Claude 3.5 Sonnet for text shortening with fallback
-    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-4o";
+    // Use Claude 4.0 Sonnet for text shortening with fallback
+    const model = process.env.ANTHROPIC_API_KEY 
+      ? "claude-sonnet-4-20250514"
+      : process.env.OPENROUTER_API_KEY 
+        ? "anthropic/claude-3.5-sonnet" 
+        : "gpt-4o";
     
-    const requestConfig = process.env.OPENROUTER_API_KEY ? {
+    const requestConfig = process.env.ANTHROPIC_API_KEY ? {
+      model,
+      messages: [
+        { role: "system" as const, content: systemPrompt },
+        { role: "user" as const, content: text }
+      ],
+      temperature: 0.3,
+      max_tokens: Math.min(2000, maxWords * 2)
+    } : process.env.OPENROUTER_API_KEY ? {
       model,
       route: "fallback", // Enable automatic fallback
       messages: [
@@ -557,7 +590,11 @@ export async function generateSingleGradeLevelText(
     `;
 
     // Define the model to use based on available API keys
-    const model = process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-4";
+    const model = process.env.ANTHROPIC_API_KEY 
+      ? "claude-sonnet-4-20250514"
+      : process.env.OPENROUTER_API_KEY 
+        ? "anthropic/claude-3.5-sonnet" 
+        : "gpt-4";
 
     // Make the API request
     const response = await openai.chat.completions.create({
@@ -658,7 +695,11 @@ function getGradeLevelGuidelines(grade: number): string {
 export async function testApiConnection() {
   try {
     const response = await openai.chat.completions.create({
-      model: process.env.OPENROUTER_API_KEY ? "anthropic/claude-3.5-sonnet" : "gpt-3.5-turbo",
+      model: process.env.ANTHROPIC_API_KEY 
+        ? "claude-sonnet-4-20250514"
+        : process.env.OPENROUTER_API_KEY 
+          ? "anthropic/claude-3.5-sonnet" 
+          : "gpt-3.5-turbo",
       messages: [
         { role: "user", content: "Hello, please reply with the word 'Connected' to confirm connectivity." }
       ],
