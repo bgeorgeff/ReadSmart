@@ -399,7 +399,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           throw new Error("No response content received from OpenAI");
         }
 
-        const result = JSON.parse(messageContent);
+        console.log(`[Word Detail] Raw response: ${messageContent.substring(0, 200)}...`);
+        
+        // Clean the response to handle markdown-wrapped JSON from Claude
+        let cleanedContent = messageContent.trim();
+        if (cleanedContent.startsWith('```json')) {
+          cleanedContent = cleanedContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+        } else if (cleanedContent.startsWith('```')) {
+          cleanedContent = cleanedContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+        }
+        
+        const result = JSON.parse(cleanedContent);
         definition = result.definition;
         exampleSentence = result.exampleSentence;
       } catch (apiError) {
