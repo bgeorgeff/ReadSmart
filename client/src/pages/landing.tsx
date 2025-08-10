@@ -39,11 +39,13 @@ export default function Landing() {
                 <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">ReadSmart</span>
               </div>
             </Link>
-            <Link href="/app">
-              <Button variant="outline" className="bg-white/80 backdrop-blur-sm border-blue-500 hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 hover:-translate-y-1">
-                Get Started
-              </Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              className="bg-white/80 backdrop-blur-sm border-blue-500 hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 hover:-translate-y-1"
+              onClick={() => window.dispatchEvent(new CustomEvent('show-beta-signup'))}
+            >
+              Get Started
+            </Button>
           </div>
         </div>
       </header>
@@ -80,12 +82,14 @@ export default function Landing() {
           </p>
           
           <div className="mt-8 mb-12">
-            <Link href="/app">
-              <Button size="lg" className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-lg px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                Start Reading Smarter
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-lg px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              onClick={() => window.dispatchEvent(new CustomEvent('show-beta-signup'))}
+            >
+              Start Reading Smarter
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+            </Button>
           </div>
         </div>
 
@@ -181,11 +185,12 @@ export default function Landing() {
           <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/30 shadow-lg max-w-2xl mx-auto">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Ready to transform your reading experience?</h2>
             <p className="text-gray-600 mb-6">Say goodbye to "The Man in the Tan Van" and read about whatever you want from the web or docs from school or work.</p>
-            <Link href="/app">
-              <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-                Get Started!
-              </Button>
-            </Link>
+            <Button 
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              onClick={() => window.dispatchEvent(new CustomEvent('show-beta-signup'))}
+            >
+              Get Started!
+            </Button>
           </div>
         </div>
       </main>

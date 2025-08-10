@@ -5,23 +5,20 @@ export function BetaSignupManager() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // Check if user has already seen the modal
-    const hasSeenModal = localStorage.getItem('betaSignupModalSeen');
-    
-    if (!hasSeenModal) {
-      // Show modal after 1 second delay
-      const timer = setTimeout(() => {
-        setShowModal(true);
-      }, 1000);
+    // Listen for custom event to show beta signup modal
+    const handleShowBetaSignup = () => {
+      setShowModal(true);
+    };
 
-      return () => clearTimeout(timer);
-    }
+    window.addEventListener('show-beta-signup', handleShowBetaSignup);
+    
+    return () => {
+      window.removeEventListener('show-beta-signup', handleShowBetaSignup);
+    };
   }, []);
 
   const handleCloseModal = () => {
     setShowModal(false);
-    // Mark as seen so it doesn't show again
-    localStorage.setItem('betaSignupModalSeen', 'true');
   };
 
   return (
