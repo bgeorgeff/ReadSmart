@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import { useTextToSpeech } from '@/hooks/use-text-to-speech';
 import { RecordingState } from '@/types';
@@ -9,9 +9,39 @@ interface DisplayTextWithFixesProps {
   text: string;
   onWordClick: (word: string) => void;
   highlightedWordIndex?: number;
+  scrollContainerRef?: React.RefObject<HTMLDivElement>;
 }
 
-function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: DisplayTextWithFixesProps) {
+function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1, scrollContainerRef }: DisplayTextWithFixesProps) {
+  const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
+  // Auto-scroll to highlighted word
+  useEffect(() => {
+    if (highlightedWordIndex >= 0 && wordRefs.current[highlightedWordIndex] && scrollContainerRef?.current) {
+      const highlightedElement = wordRefs.current[highlightedWordIndex];
+      const container = scrollContainerRef.current;
+      
+      if (highlightedElement) {
+        const elementTop = highlightedElement.offsetTop;
+        const elementHeight = highlightedElement.offsetHeight;
+        const containerTop = container.scrollTop;
+        const containerHeight = container.clientHeight;
+        
+        // Calculate if element is out of view
+        const isAboveView = elementTop < containerTop;
+        const isBelowView = elementTop + elementHeight > containerTop + containerHeight;
+        
+        if (isAboveView || isBelowView) {
+          // Smooth scroll to center the highlighted word in the container
+          const targetScroll = elementTop - (containerHeight / 2) + (elementHeight / 2);
+          container.scrollTo({
+            top: Math.max(0, targetScroll),
+            behavior: 'smooth'
+          });
+        }
+      }
+    }
+  }, [highlightedWordIndex, scrollContainerRef]);
   const processedText = text;
 
   // Create a simple token array that matches the text-to-speech tokenization
@@ -52,6 +82,7 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
                   <span key={`${paragraphIndex}-${tokenIndex}`}>
                     <span className="quote-highlight">"</span>
                     <span 
+                      ref={(el) => wordRefs.current[totalTokenIndex - 1] = el}
                       className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
                         isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
                       }`}
@@ -73,6 +104,7 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
                   return (
                     <span key={`${paragraphIndex}-${tokenIndex}`}>
                       <span
+                        ref={(el) => wordRefs.current[totalTokenIndex - 1] = el}
                         className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
                           isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
                         }`}
@@ -89,6 +121,7 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1 }: 
                   return (
                     <span key={`${paragraphIndex}-${tokenIndex}`}>
                       <span
+                        ref={(el) => wordRefs.current[totalTokenIndex - 1] = el}
                         className={`word-highlight hover:bg-[#FBBC05]/20 hover:rounded cursor-pointer transition-colors duration-200 px-1 ${
                           isHighlighted ? 'bg-[#4285F4]/30 rounded' : ''
                         }`}
@@ -130,6 +163,7 @@ export default function ReadingTools({
 }: ReadingToolsProps) {
   const [recordingState, setRecordingState] = useState<RecordingState>(RecordingState.INACTIVE);
   const [highlightedWordIndex, setHighlightedWordIndex] = useState<number>(-1);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const [speechRate, setSpeechRate] = useState<number>(0.65); // Default to 135 WPM
 
@@ -251,12 +285,16 @@ export default function ReadingTools({
       <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">3. Reading Practice</h3>
 
       <div>
-          <div className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed">
+          <div 
+            ref={scrollContainerRef}
+            className="p-4 bg-gray-100 rounded-lg max-h-64 overflow-y-auto font-['Merriweather'] text-gray-800 leading-relaxed"
+          >
             {selectedSummary ? (
               <DisplayTextWithFixes 
                 text={selectedSummary}
                 onWordClick={onWordClick}
                 highlightedWordIndex={highlightedWordIndex}
+                scrollContainerRef={scrollContainerRef}
               />
             ) : (
               <p>No text available for reading practice.</p>
