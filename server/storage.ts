@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, type TextSummary, type InsertTextSummary, type Recording, type InsertRecording } from "@shared/schema";
+import { users, type User, type InsertUser, type TextSummary, type InsertTextSummary, type Recording, type InsertRecording, type BetaUser, type InsertBetaUser, type Feedback, type InsertFeedback } from "@shared/schema";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -16,6 +16,17 @@ export interface IStorage {
   saveRecording(recording: InsertRecording): Promise<Recording>;
   getRecording(id: number): Promise<Recording | undefined>;
   getRecordingsBySummaryId(summaryId: number): Promise<Recording[]>;
+  
+  // Beta user methods
+  createBetaUser(betaUser: InsertBetaUser): Promise<BetaUser>;
+  getBetaUser(id: number): Promise<BetaUser | undefined>;
+  getBetaUserByEmail(email: string): Promise<BetaUser | undefined>;
+  getAllBetaUsers(): Promise<BetaUser[]>;
+  
+  // Feedback methods
+  createFeedback(feedback: InsertFeedback): Promise<Feedback>;
+  getFeedback(id: number): Promise<Feedback | undefined>;
+  getAllFeedback(): Promise<Feedback[]>;
 }
 
 export class MemStorage implements IStorage {
