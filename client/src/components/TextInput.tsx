@@ -81,14 +81,16 @@ export default function TextInput({
     <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg p-6">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-['Google_Sans'] text-lg font-medium text-gray-800">1. Copy & Paste Any Text</h3>
-        {inputText.trim().length > 0 && (
-          <button 
-            className="bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg font-['Google_Sans'] text-sm font-medium transition-all duration-200 hover:bg-gray-50"
-            onClick={handleClear}
-          >
-            Clear Text
-          </button>
-        )}
+        <div className="h-[40px] flex items-center">
+          {inputText.trim().length > 0 && (
+            <button 
+              className="bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg font-['Google_Sans'] text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+              onClick={handleClear}
+            >
+              Clear Text
+            </button>
+          )}
+        </div>
       </div>
       <div className="mb-4">
         <div className="relative">
