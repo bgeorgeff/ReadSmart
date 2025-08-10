@@ -6,29 +6,28 @@ export function FloatingFeedbackButton() {
 
   const feedbackWidgetStyle: React.CSSProperties = {
     position: 'fixed',
-    right: '20px',
-    top: '50%',
-    transform: 'translateY(-50%)',
+    right: '0px',
+    bottom: '120px',
     background: 'linear-gradient(135deg, #ef4444, #dc2626)',
     color: 'white',
-    padding: '20px 16px',
-    borderRadius: '12px 0 0 12px',
-    writingMode: 'vertical-rl' as any,
-    textOrientation: 'mixed' as any,
+    padding: '8px 12px',
+    borderRadius: '8px 0 0 8px',
     cursor: 'pointer',
-    fontSize: '16px',
+    fontSize: '12px',
     fontWeight: 600,
-    zIndex: 999,
+    zIndex: 50,
     transition: 'all 0.3s ease',
-    boxShadow: '-4px 0 20px rgba(239, 68, 68, 0.3)',
-    letterSpacing: '1px',
+    boxShadow: '-2px 0 10px rgba(239, 68, 68, 0.2)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
   };
 
   const feedbackWidgetHoverStyle: React.CSSProperties = {
     ...feedbackWidgetStyle,
     background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-    transform: 'translateY(-50%) translateX(-8px)',
-    boxShadow: '-8px 0 25px rgba(239, 68, 68, 0.4)',
+    transform: 'translateX(-4px)',
+    boxShadow: '-4px 0 15px rgba(239, 68, 68, 0.3)',
   };
 
   return (
@@ -39,19 +38,20 @@ export function FloatingFeedbackButton() {
         onMouseEnter={(e) => {
           Object.assign(e.currentTarget.style, {
             background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-            transform: 'translateY(-50%) translateX(-8px)',
-            boxShadow: '-8px 0 25px rgba(239, 68, 68, 0.4)',
+            transform: 'translateX(-4px)',
+            boxShadow: '-4px 0 15px rgba(239, 68, 68, 0.3)',
           });
         }}
         onMouseLeave={(e) => {
           Object.assign(e.currentTarget.style, {
             background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-            transform: 'translateY(-50%)',
-            boxShadow: '-4px 0 20px rgba(239, 68, 68, 0.3)',
+            transform: 'translateX(0px)',
+            boxShadow: '-2px 0 10px rgba(239, 68, 68, 0.2)',
           });
         }}
       >
-        💬 Feedback
+        💬
+        <span style={{fontSize: '11px'}}>Feedback</span>
       </div>
 
       <FeedbackModal 
