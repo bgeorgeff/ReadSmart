@@ -15,7 +15,7 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1, scrollContainerRef }: DisplayTextWithFixesProps) {
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  // Auto-scroll to highlighted word with responsive positioning and predictive scrolling
+  // Auto-scroll to highlighted word with responsive positioning
   useEffect(() => {
     if (highlightedWordIndex >= 0 && wordRefs.current[highlightedWordIndex] && scrollContainerRef?.current) {
       const highlightedElement = wordRefs.current[highlightedWordIndex];
@@ -27,45 +27,23 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1, sc
         const containerTop = container.scrollTop;
         const containerHeight = container.clientHeight;
         
-        // Get padding to account for container padding
-        const containerPadding = 16; // 4 * 4px from p-4 class
-        
-        // Calculate scroll buffer based on screen size for responsiveness
+        // Calculate responsive positioning
         const isMobile = window.innerWidth < 768;
-        const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+        const targetFromTop = isMobile ? containerHeight * 0.2 : containerHeight * 0.3;
         
-        // Adjust buffer zones based on device type
-        let scrollBuffer: number;
-        let targetPosition: number;
-        
-        if (isMobile) {
-          scrollBuffer = containerHeight * 0.15; // Smaller buffer on mobile
-          targetPosition = 0.15; // Keep words closer to top on mobile
-        } else if (isTablet) {
-          scrollBuffer = containerHeight * 0.2;
-          targetPosition = 0.2;
-        } else {
-          scrollBuffer = containerHeight * 0.25; // Larger buffer on desktop
-          targetPosition = 0.25;
-        }
-        
-        // Calculate if element needs scrolling (with buffer zones)
+        // Check if word is out of comfortable viewing area
         const elementBottom = elementTop + elementHeight;
-        const viewTop = containerTop + scrollBuffer;
-        const viewBottom = containerTop + containerHeight - scrollBuffer;
+        const visibleTop = containerTop + 20; // Small buffer at top
+        const visibleBottom = containerTop + containerHeight - 40; // Buffer at bottom
         
-        const needsScrollUp = elementTop < viewTop;
-        const needsScrollDown = elementBottom > viewBottom;
+        const isOutOfView = elementTop < visibleTop || elementBottom > visibleBottom;
         
-        if (needsScrollUp || needsScrollDown) {
-          const targetScroll = elementTop - (containerHeight * targetPosition) + containerPadding;
+        if (isOutOfView) {
+          const targetScroll = Math.max(0, elementTop - targetFromTop);
           
-          // Use requestAnimationFrame for smoother timing with speech synthesis
-          requestAnimationFrame(() => {
-            container.scrollTo({
-              top: Math.max(0, targetScroll),
-              behavior: 'smooth'
-            });
+          container.scrollTo({
+            top: targetScroll,
+            behavior: 'smooth'
           });
         }
       }
