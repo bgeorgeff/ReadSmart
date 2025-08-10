@@ -17,13 +17,9 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1, sc
 
   // Auto-scroll to highlighted word
   useEffect(() => {
-    console.log('Auto-scroll effect triggered:', { highlightedWordIndex, hasContainer: !!scrollContainerRef?.current });
-    
     if (highlightedWordIndex >= 0 && wordRefs.current[highlightedWordIndex] && scrollContainerRef?.current) {
       const highlightedElement = wordRefs.current[highlightedWordIndex];
       const container = scrollContainerRef.current;
-      
-      console.log('Element found:', { elementExists: !!highlightedElement, containerExists: !!container });
       
       if (highlightedElement) {
         const elementTop = highlightedElement.offsetTop;
@@ -31,22 +27,13 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1, sc
         const containerTop = container.scrollTop;
         const containerHeight = container.clientHeight;
         
-        console.log('Scroll metrics:', { elementTop, containerTop, containerHeight });
-        
-        // Check if element is out of view
+        // Calculate if element is out of view
         const isAboveView = elementTop < containerTop;
         const isBelowView = elementTop + elementHeight > containerTop + containerHeight;
         
-        console.log('View checks:', { isAboveView, isBelowView });
-        
         if (isAboveView || isBelowView) {
-          // Scroll to keep the highlighted word in upper portion of container
-          const isMobile = window.innerWidth < 768;
-          const targetPosition = isMobile ? 0.25 : 0.3;
-          const targetScroll = elementTop - (containerHeight * targetPosition);
-          
-          console.log('Scrolling to:', targetScroll);
-          
+          // Smooth scroll to center the highlighted word in the container
+          const targetScroll = elementTop - (containerHeight / 2) + (elementHeight / 2);
           container.scrollTo({
             top: Math.max(0, targetScroll),
             behavior: 'smooth'
