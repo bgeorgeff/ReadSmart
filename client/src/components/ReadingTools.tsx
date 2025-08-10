@@ -15,7 +15,7 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1, scrollContainerRef }: DisplayTextWithFixesProps) {
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  // Auto-scroll to highlighted word with responsive positioning
+  // Auto-scroll to highlighted word
   useEffect(() => {
     if (highlightedWordIndex >= 0 && wordRefs.current[highlightedWordIndex] && scrollContainerRef?.current) {
       const highlightedElement = wordRefs.current[highlightedWordIndex];
@@ -27,22 +27,18 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1, sc
         const containerTop = container.scrollTop;
         const containerHeight = container.clientHeight;
         
-        // Calculate responsive positioning
-        const isMobile = window.innerWidth < 768;
-        const targetFromTop = isMobile ? containerHeight * 0.2 : containerHeight * 0.3;
+        // Check if element is out of view
+        const isAboveView = elementTop < containerTop;
+        const isBelowView = elementTop + elementHeight > containerTop + containerHeight;
         
-        // Check if word is out of comfortable viewing area
-        const elementBottom = elementTop + elementHeight;
-        const visibleTop = containerTop + 20; // Small buffer at top
-        const visibleBottom = containerTop + containerHeight - 40; // Buffer at bottom
-        
-        const isOutOfView = elementTop < visibleTop || elementBottom > visibleBottom;
-        
-        if (isOutOfView) {
-          const targetScroll = Math.max(0, elementTop - targetFromTop);
+        if (isAboveView || isBelowView) {
+          // Scroll to keep the highlighted word in upper portion of container
+          const isMobile = window.innerWidth < 768;
+          const targetPosition = isMobile ? 0.25 : 0.3;
+          const targetScroll = elementTop - (containerHeight * targetPosition);
           
           container.scrollTo({
-            top: targetScroll,
+            top: Math.max(0, targetScroll),
             behavior: 'smooth'
           });
         }
