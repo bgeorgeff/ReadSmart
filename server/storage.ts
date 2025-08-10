@@ -1,4 +1,6 @@
-import { users, type User, type InsertUser, type TextSummary, type InsertTextSummary, type Recording, type InsertRecording, type BetaUser, type InsertBetaUser, type Feedback, type InsertFeedback } from "@shared/schema";
+import { users, textSummaries, recordings, betaUsers, feedback, type User, type InsertUser, type TextSummary, type InsertTextSummary, type Recording, type InsertRecording, type BetaUser, type InsertBetaUser, type Feedback, type InsertFeedback } from "@shared/schema";
+import { db } from "./database";
+import { eq } from "drizzle-orm";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -29,67 +31,84 @@ export interface IStorage {
   getAllFeedback(): Promise<Feedback[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private textSummaries: Map<number, TextSummary>;
-  private recordings: Map<number, Recording>;
-  private userCurrentId: number;
-  private textSummaryCurrentId: number;
-  private recordingCurrentId: number;
 
-  constructor() {
-    this.users = new Map();
-    this.textSummaries = new Map();
-    this.recordings = new Map();
-    this.userCurrentId = 1;
-    this.textSummaryCurrentId = 1;
-    this.recordingCurrentId = 1;
-  }
 
+// PostgreSQL Storage Implementation
+
+export class PostgreSQLStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+    return result[0];
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userCurrentId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async createUser(user: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(user).returning();
+    return result[0];
   }
-  
-  async saveTextSummary(insertTextSummary: InsertTextSummary): Promise<TextSummary> {
-    const id = this.textSummaryCurrentId++;
-    const textSummary: TextSummary = { ...insertTextSummary, id };
-    this.textSummaries.set(id, textSummary);
-    return textSummary;
+
+  async saveTextSummary(textSummary: InsertTextSummary): Promise<TextSummary> {
+    const result = await db.insert(textSummaries).values(textSummary).returning();
+    return result[0];
   }
-  
+
   async getTextSummary(id: number): Promise<TextSummary | undefined> {
-    return this.textSummaries.get(id);
+    const result = await db.select().from(textSummaries).where(eq(textSummaries.id, id)).limit(1);
+    return result[0];
   }
-  
-  async saveRecording(insertRecording: InsertRecording): Promise<Recording> {
-    const id = this.recordingCurrentId++;
-    const recording: Recording = { ...insertRecording, id };
-    this.recordings.set(id, recording);
-    return recording;
+
+  async saveRecording(recording: InsertRecording): Promise<Recording> {
+    const result = await db.insert(recordings).values(recording).returning();
+    return result[0];
   }
-  
+
   async getRecording(id: number): Promise<Recording | undefined> {
-    return this.recordings.get(id);
+    const result = await db.select().from(recordings).where(eq(recordings.id, id)).limit(1);
+    return result[0];
   }
-  
+
   async getRecordingsBySummaryId(summaryId: number): Promise<Recording[]> {
-    return Array.from(this.recordings.values()).filter(
-      (recording) => recording.summaryId === summaryId
-    );
+    return await db.select().from(recordings).where(eq(recordings.summaryId, summaryId));
+  }
+
+  // Beta user methods
+  async createBetaUser(betaUser: InsertBetaUser): Promise<BetaUser> {
+    const result = await db.insert(betaUsers).values(betaUser).returning();
+    return result[0];
+  }
+
+  async getBetaUser(id: number): Promise<BetaUser | undefined> {
+    const result = await db.select().from(betaUsers).where(eq(betaUsers.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getBetaUserByEmail(email: string): Promise<BetaUser | undefined> {
+    const result = await db.select().from(betaUsers).where(eq(betaUsers.email, email)).limit(1);
+    return result[0];
+  }
+
+  async getAllBetaUsers(): Promise<BetaUser[]> {
+    return await db.select().from(betaUsers);
+  }
+
+  // Feedback methods
+  async createFeedback(feedbackData: InsertFeedback): Promise<Feedback> {
+    const result = await db.insert(feedback).values(feedbackData).returning();
+    return result[0];
+  }
+
+  async getFeedback(id: number): Promise<Feedback | undefined> {
+    const result = await db.select().from(feedback).where(eq(feedback.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getAllFeedback(): Promise<Feedback[]> {
+    return await db.select().from(feedback);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new PostgreSQLStorage();

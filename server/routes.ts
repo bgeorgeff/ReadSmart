@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { generateGradeLevelSummaries, testApiConnection, shortenText, generateSingleGradeLevelText } from "./utils/openai";
 import { breakWordIntoSyllables } from "./utils/syllable";
 import { breakWordIntoSyllablesV2 } from "./utils/syllable-v2/core";
-import { processTextSchema, gradeLevelSummarySchema, wordDetailSchema, saveRecordingSchema } from "@shared/schema";
+import { processTextSchema, gradeLevelSummarySchema, wordDetailSchema, saveRecordingSchema, betaSignupSchema, feedbackFormSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import OpenAI from "openai";
 import fs from "fs";
@@ -510,6 +510,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Error saving recording: " + (error instanceof Error ? error.message : String(error))
         });
       }
+    }
+  });
+
+  // Beta signup endpoint
+  app.post("/api/beta-signup", async (req, res) => {
+    try {
+      // Validate the request body using your exact table structure
+      const { email } = req.body;
+      
+      if (!email || typeof email !== 'string' || !email.includes('@')) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Valid email is required" 
+        });
+      }
+
+      // Check if email already exists
+      const existingUser = await storage.getBetaUserByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          message: "Email already registered for beta"
+        });
+      }
+
+      // Create beta user with your exact table structure
+      const betaUser = await storage.createBetaUser({
+        email,
+        signupDate: new Date().toISOString(),
+        status: 'active'
+      });
+
+      res.json({
+        success: true,
+        message: "Successfully signed up for beta!",
+        userId: betaUser.id
+      });
+    } catch (error) {
+      console.error("Error in beta signup:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error signing up for beta: " + (error instanceof Error ? error.message : String(error))
+      });
+    }
+  });
+
+  // Feedback submission endpoint
+  app.post("/api/feedback", async (req, res) => {
+    try {
+      // Validate using your exact table structure
+      const { user_email, feedback_type = 'General Feedback', message, has_screenshot = false } = req.body;
+      
+      if (!user_email || !message) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Email and message are required" 
+        });
+      }
+
+      if (typeof message !== 'string' || message.trim().length < 10) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Message must be at least 10 characters" 
+        });
+      }
+
+      // Create feedback with your exact table structure
+      const feedbackRecord = await storage.createFeedback({
+        userEmail: user_email,
+        feedbackType: feedback_type,
+        message: message.trim(),
+        hasScreenshot: has_screenshot,
+        date: new Date().toISOString()
+      });
+
+      res.json({
+        success: true,
+        message: "Feedback submitted successfully!",
+        feedbackId: feedbackRecord.id
+      });
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error submitting feedback: " + (error instanceof Error ? error.message : String(error))
+      });
+    }
+  });
+
+  // Admin routes to view collected data
+  app.get("/admin/beta-users", async (req, res) => {
+    try {
+      const betaUsers = await storage.getAllBetaUsers();
+      res.json({
+        success: true,
+        count: betaUsers.length,
+        users: betaUsers
+      });
+    } catch (error) {
+      console.error("Error fetching beta users:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error fetching beta users: " + (error instanceof Error ? error.message : String(error))
+      });
+    }
+  });
+
+  app.get("/admin/feedback", async (req, res) => {
+    try {
+      const feedbackList = await storage.getAllFeedback();
+      res.json({
+        success: true,
+        count: feedbackList.length,
+        feedback: feedbackList
+      });
+    } catch (error) {
+      console.error("Error fetching feedback:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error fetching feedback: " + (error instanceof Error ? error.message : String(error))
+      });
     }
   });
 

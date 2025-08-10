@@ -75,49 +75,39 @@ export const saveRecordingSchema = z.object({
   audioData: z.string(), // Base64 encoded audio data
 });
 
-// Beta Users Schema
+// Beta Users Schema - matching your exact PostgreSQL table structure
 export const betaUsers = pgTable("beta_users", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  userType: text("user_type").notNull(), // teacher, student, parent, other
-  organization: text("organization"), // school, company, etc. (optional)
-  interests: text("interests").array(), // array of interest topics
-  createdAt: text("created_at").notNull(),
+  signupDate: text("signup_date").notNull(), // timestamp as text
+  status: text("status").default('active'),
 });
 
 export const insertBetaUserSchema = createInsertSchema(betaUsers).pick({
-  name: true,
   email: true,
-  userType: true,
-  organization: true,
-  interests: true,
-  createdAt: true,
+  signupDate: true,
+  status: true,
 });
 
 export type InsertBetaUser = z.infer<typeof insertBetaUserSchema>;
 export type BetaUser = typeof betaUsers.$inferSelect;
 
-// Feedback Schema
+// Feedback Schema - matching your exact PostgreSQL table structure
 export const feedback = pgTable("feedback", {
   id: serial("id").primaryKey(),
-  name: text("name"), // optional - user can provide feedback anonymously
-  email: text("email"), // optional
-  feedbackType: text("feedback_type").notNull(), // bug, feature, improvement, other
-  subject: text("subject").notNull(),
+  userEmail: text("user_email").notNull(),
+  feedbackType: text("feedback_type").default('General Feedback'),
   message: text("message").notNull(),
-  rating: integer("rating"), // 1-5 star rating (optional)
-  createdAt: text("created_at").notNull(),
+  hasScreenshot: boolean("has_screenshot").default(false),
+  date: text("date").notNull(), // timestamp as text
 });
 
 export const insertFeedbackSchema = createInsertSchema(feedback).pick({
-  name: true,
-  email: true,
+  userEmail: true,
   feedbackType: true,
-  subject: true,
   message: true,
-  rating: true,
-  createdAt: true,
+  hasScreenshot: true,
+  date: true,
 });
 
 export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
