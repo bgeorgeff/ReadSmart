@@ -555,6 +555,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Check beta status endpoint
+  app.post('/api/check-beta-status', async (req, res) => {
+    try {
+      const { pool } = await import("./db-pool");
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ success: false, message: 'Email is required' });
+      }
+
+      const result = await pool.query(
+        'SELECT * FROM beta_users WHERE email = $1',
+        [email]
+      );
+
+      const isSignedUp = result.rows.length > 0;
+      
+      res.json({ 
+        success: true, 
+        isSignedUp,
+        message: isSignedUp ? 'User is signed up for beta' : 'User not found'
+      });
+    } catch (error) {
+      console.error('Error checking beta status:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  });
+
   // Feedback submission endpoint using PostgreSQL pool.query()
   app.post("/api/feedback", async (req, res) => {
     try {

@@ -13,12 +13,16 @@ export default function Landing() {
   const [, navigate] = useLocation();
 
   const handleGetStartedClick = () => {
-    // Check if user has completed beta signup
+    // Check if user has their email stored (more reliable than just signup flag)
+    const userEmail = localStorage.getItem('userEmail');
     const hasSignedUp = localStorage.getItem('betaSignupCompleted');
     
-    if (hasSignedUp) {
-      // User has signed up, take them to the app
+    if (hasSignedUp && userEmail) {
+      // User has signed up and we have their email, take them to the app
       navigate('/app');
+    } else if (hasSignedUp && !userEmail) {
+      // User signed up but we don't have their email, ask for it to verify
+      window.dispatchEvent(new CustomEvent('show-email-auth'));
     } else {
       // User hasn't signed up, show beta signup modal
       window.dispatchEvent(new CustomEvent('show-beta-signup'));

@@ -36,6 +36,8 @@ export function BetaSignupModal({ isOpen, onClose, onSuccess }: BetaSignupModalP
 
       if (data.success) {
         setShowSuccess(true);
+        // Store the email for future authentication
+        localStorage.setItem('userEmail', email);
         setEmail('');
         onSuccess?.();
       } else {
