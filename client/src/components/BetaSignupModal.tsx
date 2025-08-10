@@ -54,7 +54,7 @@ export function BetaSignupModal({ isOpen, onClose }: BetaSignupModalProps) {
         <div className="popup-header">
           <div className="popup-icon">🚀</div>
           <h2 className="popup-title">Join Our Beta Program</h2>
-          <p className="popup-subtitle">Be the first to experience our revolutionary new platform and help shape its future</p>
+          <p className="popup-subtitle">Be the first to experience our new platform and help shape its future!</p>
         </div>
 
         <ul className="benefits-list">
