@@ -15,21 +15,33 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1, scrollContainerRef }: DisplayTextWithFixesProps) {
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  // Simple auto-scroll that worked originally  
+  // Auto-scroll to highlighted word
   useEffect(() => {
-    if (highlightedWordIndex >= 0 && scrollContainerRef?.current) {
-      const container = scrollContainerRef.current;
+    if (highlightedWordIndex >= 0 && wordRefs.current[highlightedWordIndex] && scrollContainerRef?.current) {
       const highlightedElement = wordRefs.current[highlightedWordIndex];
+      const container = scrollContainerRef.current;
       
       if (highlightedElement) {
-        highlightedElement.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center',
-          inline: 'nearest' 
-        });
+        const elementTop = highlightedElement.offsetTop;
+        const elementHeight = highlightedElement.offsetHeight;
+        const containerTop = container.scrollTop;
+        const containerHeight = container.clientHeight;
+        
+        // Calculate if element is out of view
+        const isAboveView = elementTop < containerTop;
+        const isBelowView = elementTop + elementHeight > containerTop + containerHeight;
+        
+        if (isAboveView || isBelowView) {
+          // Smooth scroll to center the highlighted word in the container
+          const targetScroll = elementTop - (containerHeight / 2) + (elementHeight / 2);
+          container.scrollTo({
+            top: Math.max(0, targetScroll),
+            behavior: 'smooth'
+          });
+        }
       }
     }
-  }, [highlightedWordIndex]);
+  }, [highlightedWordIndex, scrollContainerRef]);
   const processedText = text;
 
   // Create a simple token array that matches the text-to-speech tokenization
