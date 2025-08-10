@@ -31,7 +31,7 @@ export function BetaSignupModal({ isOpen, onClose }: BetaSignupModalProps) {
       const data = await response.json();
 
       if (data.success) {
-        alert(`Thank you! We've added ${email} to our beta list. Check your email for next steps!`);
+        alert("Thank you for joining our beta program! Check your email for next steps.");
         setEmail('');
         onClose();
       } else {
