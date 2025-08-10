@@ -7,13 +7,19 @@ interface TextInputProps {
   setInputText: (text: string) => void;
   setAppStep: (step: AppStep) => void;
   isVisible: boolean;
+  setSummaries?: (summaries: any) => void;
+  setSummaryId?: (id: number | null) => void;
+  setSelectedGradeLevel?: (level: number) => void;
 }
 
 export default function TextInput({ 
   inputText, 
   setInputText, 
   setAppStep, 
-  isVisible
+  isVisible,
+  setSummaries,
+  setSummaryId,
+  setSelectedGradeLevel
 }: TextInputProps) {
   const [characterCount, setCharacterCount] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -46,6 +52,10 @@ export default function TextInput({
   const handleClear = () => {
     setInputText('');
     setCharacterCount(0);
+    setAppStep(AppStep.TEXT_INPUT);
+    if (setSummaries) setSummaries(null);
+    if (setSummaryId) setSummaryId(null);
+    if (setSelectedGradeLevel) setSelectedGradeLevel(5);
     if (textareaRef.current) {
       textareaRef.current.value = '';
       textareaRef.current.focus();
@@ -69,7 +79,17 @@ export default function TextInput({
   
   return (
     <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg p-6">
-      <h3 className="font-['Google_Sans'] text-lg font-medium mb-4 text-gray-800">1. Copy & Paste Any Text</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="font-['Google_Sans'] text-lg font-medium text-gray-800">1. Copy & Paste Any Text</h3>
+        {inputText.trim().length > 0 && (
+          <button 
+            className="bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg font-['Google_Sans'] text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+            onClick={handleClear}
+          >
+            Clear Text
+          </button>
+        )}
+      </div>
       <div className="mb-4">
         <div className="relative">
           <textarea 

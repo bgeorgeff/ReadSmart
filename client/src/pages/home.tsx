@@ -113,8 +113,9 @@ export default function Home() {
             setInputText={setInputText}
             setAppStep={setCurrentStep}
             isVisible={currentStep === AppStep.TEXT_INPUT}
-
-
+            setSummaries={setSummaries}
+            setSummaryId={setSummaryId}
+            setSelectedGradeLevel={setSelectedGradeLevel}
           />
 
           <ProcessingSummary 
