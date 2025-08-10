@@ -15,7 +15,7 @@ interface DisplayTextWithFixesProps {
 function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1, scrollContainerRef }: DisplayTextWithFixesProps) {
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  // Auto-scroll to highlighted word
+  // Auto-scroll to highlighted word with responsive positioning and predictive scrolling
   useEffect(() => {
     if (highlightedWordIndex >= 0 && wordRefs.current[highlightedWordIndex] && scrollContainerRef?.current) {
       const highlightedElement = wordRefs.current[highlightedWordIndex];
@@ -27,16 +27,45 @@ function DisplayTextWithFixes({ text, onWordClick, highlightedWordIndex = -1, sc
         const containerTop = container.scrollTop;
         const containerHeight = container.clientHeight;
         
-        // Calculate if element is out of view
-        const isAboveView = elementTop < containerTop;
-        const isBelowView = elementTop + elementHeight > containerTop + containerHeight;
+        // Get padding to account for container padding
+        const containerPadding = 16; // 4 * 4px from p-4 class
         
-        if (isAboveView || isBelowView) {
-          // Smooth scroll to center the highlighted word in the container
-          const targetScroll = elementTop - (containerHeight / 2) + (elementHeight / 2);
-          container.scrollTo({
-            top: Math.max(0, targetScroll),
-            behavior: 'smooth'
+        // Calculate scroll buffer based on screen size for responsiveness
+        const isMobile = window.innerWidth < 768;
+        const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+        
+        // Adjust buffer zones based on device type
+        let scrollBuffer: number;
+        let targetPosition: number;
+        
+        if (isMobile) {
+          scrollBuffer = containerHeight * 0.15; // Smaller buffer on mobile
+          targetPosition = 0.15; // Keep words closer to top on mobile
+        } else if (isTablet) {
+          scrollBuffer = containerHeight * 0.2;
+          targetPosition = 0.2;
+        } else {
+          scrollBuffer = containerHeight * 0.25; // Larger buffer on desktop
+          targetPosition = 0.25;
+        }
+        
+        // Calculate if element needs scrolling (with buffer zones)
+        const elementBottom = elementTop + elementHeight;
+        const viewTop = containerTop + scrollBuffer;
+        const viewBottom = containerTop + containerHeight - scrollBuffer;
+        
+        const needsScrollUp = elementTop < viewTop;
+        const needsScrollDown = elementBottom > viewBottom;
+        
+        if (needsScrollUp || needsScrollDown) {
+          const targetScroll = elementTop - (containerHeight * targetPosition) + containerPadding;
+          
+          // Use requestAnimationFrame for smoother timing with speech synthesis
+          requestAnimationFrame(() => {
+            container.scrollTo({
+              top: Math.max(0, targetScroll),
+              behavior: 'smooth'
+            });
           });
         }
       }
