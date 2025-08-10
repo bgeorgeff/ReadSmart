@@ -513,10 +513,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Beta signup endpoint
+  // Beta signup endpoint using PostgreSQL pool.query()
   app.post("/api/beta-signup", async (req, res) => {
     try {
-      // Validate the request body using your exact table structure
+      const { pool } = await import("./db-pool");
       const { email } = req.body;
       
       if (!email || typeof email !== 'string' || !email.includes('@')) {
@@ -527,25 +527,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if email already exists
-      const existingUser = await storage.getBetaUserByEmail(email);
-      if (existingUser) {
+      const existingResult = await pool.query('SELECT id FROM beta_users WHERE email = $1', [email]);
+      if (existingResult.rows.length > 0) {
         return res.status(409).json({
           success: false,
           message: "Email already registered for beta"
         });
       }
 
-      // Create beta user with your exact table structure
-      const betaUser = await storage.createBetaUser({
-        email,
-        signupDate: new Date().toISOString(),
-        status: 'active'
-      });
+      // Insert new beta user
+      const insertResult = await pool.query(
+        'INSERT INTO beta_users (email, signup_date, status) VALUES ($1, $2, $3) RETURNING id',
+        [email, new Date(), 'active']
+      );
 
       res.json({
         success: true,
         message: "Successfully signed up for beta!",
-        userId: betaUser.id
+        userId: insertResult.rows[0].id
       });
     } catch (error) {
       console.error("Error in beta signup:", error);
@@ -556,10 +555,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Feedback submission endpoint
+  // Feedback submission endpoint using PostgreSQL pool.query()
   app.post("/api/feedback", async (req, res) => {
     try {
-      // Validate using your exact table structure
+      const { pool } = await import("./db-pool");
       const { user_email, feedback_type = 'General Feedback', message, has_screenshot = false } = req.body;
       
       if (!user_email || !message) {
@@ -576,19 +575,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Create feedback with your exact table structure
-      const feedbackRecord = await storage.createFeedback({
-        userEmail: user_email,
-        feedbackType: feedback_type,
-        message: message.trim(),
-        hasScreenshot: has_screenshot,
-        date: new Date().toISOString()
-      });
+      // Insert feedback
+      const insertResult = await pool.query(
+        'INSERT INTO feedback (user_email, feedback_type, message, has_screenshot, date) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+        [user_email, feedback_type, message.trim(), has_screenshot, new Date()]
+      );
 
       res.json({
         success: true,
         message: "Feedback submitted successfully!",
-        feedbackId: feedbackRecord.id
+        feedbackId: insertResult.rows[0].id
       });
     } catch (error) {
       console.error("Error submitting feedback:", error);
@@ -599,31 +595,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin routes to view collected data
-  app.get("/admin/beta-users", async (req, res) => {
+  // Admin route: Get all beta users with feedback count
+  app.get("/admin/users", async (req, res) => {
     try {
-      const betaUsers = await storage.getAllBetaUsers();
+      const { pool } = await import("./db-pool");
+      const result = await pool.query(`
+        SELECT 
+          bu.id,
+          bu.email,
+          bu.signup_date,
+          bu.status,
+          COUNT(f.id) as feedback_count
+        FROM beta_users bu
+        LEFT JOIN feedback f ON bu.email = f.user_email
+        GROUP BY bu.id, bu.email, bu.signup_date, bu.status
+        ORDER BY bu.signup_date DESC
+      `);
+
       res.json({
         success: true,
-        count: betaUsers.length,
-        users: betaUsers
+        count: result.rows.length,
+        users: result.rows
       });
     } catch (error) {
-      console.error("Error fetching beta users:", error);
+      console.error("Error fetching users:", error);
       res.status(500).json({ 
         success: false, 
-        message: "Error fetching beta users: " + (error instanceof Error ? error.message : String(error))
+        message: "Error fetching users: " + (error instanceof Error ? error.message : String(error))
       });
     }
   });
 
+  // Admin route: Get all feedback (general endpoint)
   app.get("/admin/feedback", async (req, res) => {
     try {
-      const feedbackList = await storage.getAllFeedback();
+      const { pool } = await import("./db-pool");
+      const result = await pool.query('SELECT * FROM feedback ORDER BY date DESC');
+
       res.json({
         success: true,
-        count: feedbackList.length,
-        feedback: feedbackList
+        count: result.rows.length,
+        feedback: result.rows
       });
     } catch (error) {
       console.error("Error fetching feedback:", error);
@@ -632,6 +644,266 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Error fetching feedback: " + (error instanceof Error ? error.message : String(error))
       });
     }
+  });
+
+  // Admin route: Get all feedback from a specific user
+  app.get("/admin/feedback/:email", async (req, res) => {
+    try {
+      const { pool } = await import("./db-pool");
+      const { email } = req.params;
+      
+      const result = await pool.query(
+        'SELECT * FROM feedback WHERE user_email = $1 ORDER BY date DESC',
+        [email]
+      );
+
+      res.json({
+        success: true,
+        email: email,
+        count: result.rows.length,
+        feedback: result.rows
+      });
+    } catch (error) {
+      console.error("Error fetching user feedback:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error fetching user feedback: " + (error instanceof Error ? error.message : String(error))
+      });
+    }
+  });
+
+  // Admin dashboard HTML page
+  app.get("/admin", async (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - ReadSmart Beta</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 10px;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 1.1em;
+        }
+        .data-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .refresh-btn {
+            float: right;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ReadSmart Beta - Admin Dashboard</h1>
+        <p>Monitor beta user signups and feedback submissions</p>
+        <button class="btn refresh-btn" onclick="location.reload()">Refresh Data</button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" id="total-users">-</div>
+            <div class="stat-label">Beta Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="total-feedback">-</div>
+            <div class="stat-label">Total Feedback</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="avg-feedback">-</div>
+            <div class="stat-label">Avg Feedback/User</div>
+        </div>
+    </div>
+
+    <div class="data-section">
+        <h2 class="section-title">Beta Users</h2>
+        <table id="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Signup Date</th>
+                    <th>Status</th>
+                    <th>Feedback Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="users-tbody">
+                <tr><td colspan="6">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="data-section">
+        <h2 class="section-title">Recent Feedback</h2>
+        <table id="feedback-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User Email</th>
+                    <th>Type</th>
+                    <th>Message</th>
+                    <th>Screenshot</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="feedback-tbody">
+                <tr><td colspan="6">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadDashboardData() {
+            try {
+                // Load users with feedback count
+                const usersResponse = await fetch('/admin/users');
+                const usersData = await usersResponse.json();
+                
+                // Load all feedback
+                const feedbackResponse = await fetch('/admin/feedback');
+                const feedbackData = await feedbackResponse.json();
+                
+                // Update stats
+                document.getElementById('total-users').textContent = usersData.count || 0;
+                document.getElementById('total-feedback').textContent = feedbackData.count || 0;
+                
+                const avgFeedback = usersData.count > 0 ? 
+                    Math.round((feedbackData.count / usersData.count) * 10) / 10 : 0;
+                document.getElementById('avg-feedback').textContent = avgFeedback;
+                
+                // Populate users table
+                const usersTableBody = document.getElementById('users-tbody');
+                if (usersData.users && usersData.users.length > 0) {
+                    usersTableBody.innerHTML = usersData.users.map(user => \`
+                        <tr>
+                            <td>\${user.id}</td>
+                            <td>\${user.email}</td>
+                            <td>\${new Date(user.signup_date).toLocaleDateString()}</td>
+                            <td>\${user.status}</td>
+                            <td>\${user.feedback_count}</td>
+                            <td>
+                                <a href="/admin/feedback/\${encodeURIComponent(user.email)}" class="btn" target="_blank">
+                                    View Feedback
+                                </a>
+                            </td>
+                        </tr>
+                    \`).join('');
+                } else {
+                    usersTableBody.innerHTML = '<tr><td colspan="6">No beta users yet</td></tr>';
+                }
+                
+                // Populate feedback table (recent 20 items)
+                const feedbackTableBody = document.getElementById('feedback-tbody');
+                if (feedbackData.feedback && feedbackData.feedback.length > 0) {
+                    const recentFeedback = feedbackData.feedback.slice(0, 20);
+                    feedbackTableBody.innerHTML = recentFeedback.map(feedback => \`
+                        <tr>
+                            <td>\${feedback.id}</td>
+                            <td>\${feedback.user_email}</td>
+                            <td>\${feedback.feedback_type}</td>
+                            <td>\${feedback.message.length > 100 ? 
+                                feedback.message.substring(0, 100) + '...' : 
+                                feedback.message}</td>
+                            <td>\${feedback.has_screenshot ? 'Yes' : 'No'}</td>
+                            <td>\${new Date(feedback.date).toLocaleDateString()}</td>
+                        </tr>
+                    \`).join('');
+                } else {
+                    feedbackTableBody.innerHTML = '<tr><td colspan="6">No feedback submitted yet</td></tr>';
+                }
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                document.getElementById('users-tbody').innerHTML = 
+                    '<tr><td colspan="6">Error loading data</td></tr>';
+                document.getElementById('feedback-tbody').innerHTML = 
+                    '<tr><td colspan="6">Error loading data</td></tr>';
+            }
+        }
+        
+        // Load data when page loads
+        loadDashboardData();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadDashboardData, 30000);
+    </script>
+</body>
+</html>`);
   });
 
   const httpServer = createServer(app);
