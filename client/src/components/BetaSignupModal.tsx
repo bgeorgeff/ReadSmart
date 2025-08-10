@@ -3,9 +3,10 @@ import React, { useState } from 'react';
 interface BetaSignupModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-export function BetaSignupModal({ isOpen, onClose }: BetaSignupModalProps) {
+export function BetaSignupModal({ isOpen, onClose, onSuccess }: BetaSignupModalProps) {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -36,6 +37,7 @@ export function BetaSignupModal({ isOpen, onClose }: BetaSignupModalProps) {
       if (data.success) {
         setShowSuccess(true);
         setEmail('');
+        onSuccess?.();
       } else {
         setErrorMessage(data.message || 'Something went wrong. Please try again.');
       }
@@ -58,7 +60,7 @@ export function BetaSignupModal({ isOpen, onClose }: BetaSignupModalProps) {
           <h2 className="popup-title">{showSuccess ? 'Welcome to Beta!' : 'Join Our Beta Program'}</h2>
           <p className="popup-subtitle">
             {showSuccess 
-              ? 'Thank you for joining our beta program! Check your email for next steps.' 
+              ? 'Thank you for joining our beta program! Please share your feedback to back the app better.' 
               : 'Be the first to experience our new platform and help shape its future!'
             }
           </p>

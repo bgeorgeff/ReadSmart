@@ -21,10 +21,17 @@ export function BetaSignupManager() {
     setShowModal(false);
   };
 
+  const handleSuccessfulSignup = () => {
+    // Mark user as signed up in localStorage
+    localStorage.setItem('betaSignupCompleted', 'true');
+    setShowModal(false);
+  };
+
   return (
     <BetaSignupModal 
       isOpen={showModal} 
-      onClose={handleCloseModal} 
+      onClose={handleCloseModal}
+      onSuccess={handleSuccessfulSignup}
     />
   );
 }

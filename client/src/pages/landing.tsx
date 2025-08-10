@@ -1,5 +1,5 @@
 
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, Volume2, Zap, ArrowRight, Sparkles } from "lucide-react";
@@ -10,6 +10,21 @@ import use1Image from "@assets/image_1753725494609.png";
 import use2Image from "@assets/image_1753726759558.png";
 
 export default function Landing() {
+  const [, navigate] = useLocation();
+
+  const handleGetStartedClick = () => {
+    // Check if user has completed beta signup
+    const hasSignedUp = localStorage.getItem('betaSignupCompleted');
+    
+    if (hasSignedUp) {
+      // User has signed up, take them to the app
+      navigate('/app');
+    } else {
+      // User hasn't signed up, show beta signup modal
+      window.dispatchEvent(new CustomEvent('show-beta-signup'));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
       {/* Background Graphics */}
@@ -42,7 +57,7 @@ export default function Landing() {
             <Button 
               variant="outline" 
               className="bg-white/80 backdrop-blur-sm border-blue-500 hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 hover:-translate-y-1"
-              onClick={() => window.dispatchEvent(new CustomEvent('show-beta-signup'))}
+              onClick={handleGetStartedClick}
             >
               Get Started
             </Button>
@@ -85,7 +100,7 @@ export default function Landing() {
             <Button 
               size="lg" 
               className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-lg px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              onClick={() => window.dispatchEvent(new CustomEvent('show-beta-signup'))}
+              onClick={handleGetStartedClick}
             >
               Start Reading Smarter
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
@@ -187,7 +202,7 @@ export default function Landing() {
             <p className="text-gray-600 mb-6">Say goodbye to "The Man in the Tan Van" and read about whatever you want from the web or docs from school or work.</p>
             <Button 
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-              onClick={() => window.dispatchEvent(new CustomEvent('show-beta-signup'))}
+              onClick={handleGetStartedClick}
             >
               Get Started!
             </Button>
