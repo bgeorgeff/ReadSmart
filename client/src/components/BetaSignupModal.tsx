@@ -36,10 +36,6 @@ export function BetaSignupModal({ isOpen, onClose }: BetaSignupModalProps) {
       if (data.success) {
         setShowSuccess(true);
         setEmail('');
-        setTimeout(() => {
-          onClose();
-          setShowSuccess(false);
-        }, 3000);
       } else {
         setErrorMessage(data.message || 'Something went wrong. Please try again.');
       }
