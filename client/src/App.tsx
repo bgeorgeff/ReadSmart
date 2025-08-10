@@ -6,6 +6,8 @@ import Home from "./pages/home";
 import Landing from "./pages/landing";
 import NotFound from "./pages/not-found";
 import { ErrorBoundary } from "react-error-boundary";
+import { BetaSignupManager } from "./components/BetaSignupManager";
+import { FloatingFeedbackButton } from "./components/FloatingFeedbackButton";
 
 function ErrorFallback({error, resetErrorBoundary}: {error: Error, resetErrorBoundary: () => void}) {
   console.error("App Error:", error);
@@ -28,8 +30,8 @@ function ErrorFallback({error, resetErrorBoundary}: {error: Error, resetErrorBou
 function App() {
   const [location] = useLocation();
 
-  // Don't render React router for API routes
-  if (location.startsWith('/api/')) {
+  // Don't render React router for API routes or admin routes
+  if (location.startsWith('/api/') || location.startsWith('/admin')) {
     return null;
   }
 
@@ -47,6 +49,10 @@ function App() {
           <Route component={NotFound} />
         </Switch>
         <Toaster />
+        
+        {/* Global components that appear on all pages */}
+        <BetaSignupManager />
+        <FloatingFeedbackButton />
       </QueryClientProvider>
     </ErrorBoundary>
   );

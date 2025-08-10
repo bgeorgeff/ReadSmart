@@ -1,0 +1,556 @@
+I need to add frontend forms to my app. I have the complete HTML/CSS/JS code ready. Here's the full frontend code with both the beta signup popup and feedback forms:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beta Signup Popup Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .demo-container {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .demo-title {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .popup-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(1);
+            animation: popupAppear 0.3s ease-out;
+            position: relative;
+        }
+
+        @keyframes popupAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #666;
+        }
+
+        .popup-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .popup-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+        }
+
+        .popup-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .popup-subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .benefits-list {
+            list-style: none;
+            margin: 24px 0 32px;
+            text-align: left;
+        }
+
+        .benefits-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: #374151;
+        }
+
+        .checkmark {
+            width: 20px;
+            height: 20px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            color: white;
+            font-size: 12px;
+        }
+
+        .email-form {
+            margin-bottom: 24px;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .email-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .cta-button {
+            width: 100%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .cta-button:active {
+            transform: translateY(0);
+        }
+
+        .disclaimer {
+            font-size: 13px;
+            color: #9ca3af;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .feedback-widget {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 20px 16px;
+            border-radius: 12px 0 0 12px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 999;
+            transition: all 0.3s ease;
+            box-shadow: -4px 0 20px rgba(239, 68, 68, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .feedback-widget:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-50%) translateX(-8px);
+            box-shadow: -8px 0 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .feedback-widget::before {
+            content: '💬';
+            display: block;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .demo-controls {
+            margin-top: 20px;
+        }
+
+        .demo-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 0 10px;
+            transition: background 0.2s;
+        }
+
+        .demo-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1 class="demo-title">Beta Signup Popup Mockup</h1>
+        <div class="demo-controls">
+            <button class="demo-btn" onclick="showPopup()">Show Popup</button>
+            <button class="demo-btn" onclick="toggleFeedbackWidget()">Toggle Feedback Widget</button>
+        </div>
+    </div>
+
+    <!-- Popup Modal -->
+    <div id="popupOverlay" class="popup-overlay hidden">
+        <div class="popup-modal">
+            <button class="close-btn" onclick="hidePopup()">&times;</button>
+            
+            <div class="popup-header">
+                <div class="popup-icon">🚀</div>
+                <h2 class="popup-title">Join Our Beta Program</h2>
+                <p class="popup-subtitle">Be the first to experience our revolutionary new platform and help shape its future</p>
+            </div>
+
+            <ul class="benefits-list">
+                <li>
+                    <span class="checkmark">✓</span>
+                    Free access during entire beta period
+                </li>
+                <li>
+                    <span class="checkmark">✓</span>
+                    50% discount when we officially launch
+                </li>
+                <li>
+                    <span class="checkmark">✓</span>
+                    Direct input on features and improvements
+                </li>
+                <li>
+                    <span class="checkmark">✓</span>
+                    Priority customer support
+                </li>
+            </ul>
+
+            <form class="email-form" onsubmit="handleSubmit(event)">
+                <input 
+                    type="email" 
+                    class="email-input" 
+                    placeholder="Enter your email address"
+                    required
+                >
+                <button type="submit" class="cta-button">
+                    Get Free Beta Access
+                </button>
+            </form>
+
+            <p class="disclaimer">
+                We'll only email you about beta updates and your exclusive launch discount. No spam, unsubscribe anytime.
+            </p>
+        </div>
+    </div>
+
+    <!-- Feedback Widget -->
+    <div id="feedbackWidget" class="feedback-widget" onclick="showFeedbackForm()">
+        Feedback
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="popup-overlay hidden">
+        <div class="popup-modal" style="max-width: 520px;">
+            <button class="close-btn" onclick="hideFeedbackForm()">&times;</button>
+            
+            <div class="popup-header">
+                <div class="popup-icon">💬</div>
+                <h2 class="popup-title">Send Feedback</h2>
+                <p class="popup-subtitle">Help us improve by sharing your thoughts, reporting bugs, or suggesting features</p>
+            </div>
+
+            <form id="feedbackForm" onsubmit="handleFeedbackSubmit(event)">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                        Email Address
+                    </label>
+                    <input 
+                        type="email" 
+                        name="email"
+                        class="email-input" 
+                        placeholder="your@email.com"
+                        required
+                        style="margin-bottom: 0;"
+                    >
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                        Feedback Type
+                    </label>
+                    <select 
+                        name="feedback_type"
+                        class="email-input" 
+                        required
+                        style="margin-bottom: 0;"
+                    >
+                        <option value="">Select feedback type</option>
+                        <option value="Bug Report">🐛 Bug Report</option>
+                        <option value="Feature Request">✨ Feature Request</option>
+                        <option value="General Feedback">💭 General Feedback</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                        Details
+                    </label>
+                    <textarea 
+                        name="message"
+                        class="email-input" 
+                        placeholder="Please describe your feedback in detail..."
+                        rows="4"
+                        required
+                        style="margin-bottom: 0; resize: vertical; min-height: 100px;"
+                    ></textarea>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                        Screenshot (Optional)
+                    </label>
+                    <input 
+                        type="file" 
+                        id="screenshotInput"
+                        name="screenshot"
+                        accept="image/*"
+                        onchange="handleScreenshotUpload(event)"
+                        style="display: none;"
+                    >
+                    <button 
+                        type="button" 
+                        onclick="document.getElementById('screenshotInput').click()"
+                        style="background: #f3f4f6; border: 2px dashed #d1d5db; color: #6b7280; padding: 16px; border-radius: 12px; width: 100%; cursor: pointer; font-size: 14px; transition: all 0.2s;"
+                        onmouseover="this.style.borderColor='#9ca3af'; this.style.background='#f9fafb'"
+                        onmouseout="this.style.borderColor='#d1d5db'; this.style.background='#f3f4f6'"
+                    >
+                        📎 Click to attach screenshot
+                    </button>
+                    <div id="screenshotPreview"></div>
+                </div>
+
+                <button type="submit" class="cta-button">
+                    Send Feedback
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showPopup() {
+            document.getElementById('popupOverlay').classList.remove('hidden');
+        }
+
+        function hidePopup() {
+            document.getElementById('popupOverlay').classList.add('hidden');
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input').value;
+            const submitBtn = event.target.querySelector('button');
+            
+            // Show loading state
+            submitBtn.textContent = 'Joining...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/beta-signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(`Thank you! We've added ${email} to our beta list. Check your email for next steps!`);
+                    hidePopup();
+                } else {
+                    alert(result.error || 'Something went wrong. Please try again.');
+                }
+            } catch (error) {
+                alert('Network error. Please check your connection and try again.');
+            } finally {
+                submitBtn.textContent = 'Get Free Beta Access';
+                submitBtn.disabled = false;
+            }
+        }
+
+        async         function showFeedbackForm() {
+            document.getElementById('feedbackModal').classList.remove('hidden');
+        }
+
+        function hideFeedbackForm() {
+            document.getElementById('feedbackModal').classList.add('hidden');
+            // Reset form
+            document.getElementById('feedbackForm').reset();
+            document.getElementById('screenshotPreview').innerHTML = '';
+        }
+
+        async function handleFeedbackSubmit(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const email = formData.get('email');
+            const feedbackType = formData.get('feedback_type');
+            const message = formData.get('message');
+            const screenshot = formData.get('screenshot');
+            
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            try {
+                // For now, we'll send text data and handle screenshot separately
+                // In production, you'd upload the screenshot to a service like Cloudinary
+                const response = await fetch('/api/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        email, 
+                        feedback_type: feedbackType, 
+                        message,
+                        has_screenshot: screenshot.size > 0
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('Thank you for your feedback! We\'ve received your message.');
+                    hideFeedbackForm();
+                } else {
+                    alert(result.error || 'Something went wrong. Please try again.');
+                }
+            } catch (error) {
+                alert('Network error. Please check your connection and try again.');
+            } finally {
+                submitBtn.textContent = 'Send Feedback';
+                submitBtn.disabled = false;
+            }
+        }
+
+        function handleScreenshotUpload(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('screenshotPreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `
+                        <div style="margin-top: 10px; padding: 10px; background: #f9f9f9; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                            <img src="${e.target.result}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                            <span style="font-size: 14px; color: #666;">${file.name}</span>
+                            <button type="button" onclick="clearScreenshot()" style="margin-left: auto; background: none; border: none; color: #999; cursor: pointer; font-size: 18px;">&times;</button>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
+        function clearScreenshot() {
+            document.getElementById('screenshotInput').value = '';
+            document.getElementById('screenshotPreview').innerHTML = '';
+        }
+
+        function toggleFeedbackWidget() {
+            const widget = document.getElementById('feedbackWidget');
+            widget.style.display = widget.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('popupOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hidePopup();
+            }
+        });
+        
+        document.getElementById('feedbackModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideFeedbackForm();
+            }
+        });
+
+        // Show popup on page load for demo
+        setTimeout(showPopup, 1000);
+    </script>
+</body>
+</html>
+This includes: - Beta signup popup that appears on page load - Floating red feedback button (very noticeable) - Feedback form modal with dropdown, textarea, and file upload - All the JavaScript to handle form submissions to our API endpoints - Professional styling and animations Can you help me integrate this into my existing app? Should I: 1. Add this as a separate route/page, or 2. Extract the popup/modal parts and add them to my existing pages? The JavaScript assumes the API endpoints we built earlier (/api/beta-signup and /api/feedback).
