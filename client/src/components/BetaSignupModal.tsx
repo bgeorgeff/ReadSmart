@@ -31,12 +31,11 @@ export function BetaSignupModal({ isOpen, onClose }: BetaSignupModalProps) {
       const data = await response.json();
 
       if (data.success) {
-        // Use only our custom message, ignore server message completely
         alert("Thank you for joining our beta program! Check your email for next steps.");
         setEmail('');
         onClose();
       } else {
-        alert('Something went wrong. Please try again.');
+        alert(data.message || 'Something went wrong. Please try again.');
       }
     } catch (error) {
       alert('Network error. Please check your connection and try again.');
