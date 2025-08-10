@@ -543,7 +543,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({
         success: true,
-        message: "Welcome to the beta! Check your email for next steps.",
+        message: "Beta signup successful",
         userId: insertResult.rows[0].id
       });
     } catch (error) {
