@@ -251,7 +251,8 @@ export default function AdminDashboard() {
                                   size="sm"
                                   className="text-red-600 border-red-200 hover:bg-red-50"
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Delete
                                 </Button>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
@@ -339,7 +340,8 @@ export default function AdminDashboard() {
                                   size="sm"
                                   className="text-red-600 border-red-200 hover:bg-red-50"
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Delete
                                 </Button>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
