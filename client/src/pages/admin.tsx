@@ -1,10 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, MessageSquare, Calendar, Mail } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Users, MessageSquare, Calendar, Mail, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface BetaUser {
   id: number;
@@ -24,6 +28,9 @@ interface Feedback {
 }
 
 export default function AdminDashboard() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   const { data: usersData, isLoading: usersLoading } = useQuery<{
     success: boolean;
     count: number;
@@ -38,6 +45,58 @@ export default function AdminDashboard() {
     feedback: Feedback[];
   }>({
     queryKey: ['/admin/feedback'],
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      const response = await apiRequest(`/admin/users/${userId}`, {
+        method: 'DELETE',
+      });
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to delete user');
+      }
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/admin/users'] });
+      toast({
+        title: "User deleted",
+        description: "The beta user has been successfully removed.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  const deleteFeedbackMutation = useMutation({
+    mutationFn: async (feedbackId: number) => {
+      const response = await apiRequest(`/admin/feedback/${feedbackId}`, {
+        method: 'DELETE',
+      });
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to delete feedback');
+      }
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/admin/feedback'] });
+      toast({
+        title: "Feedback deleted",
+        description: "The feedback has been successfully removed.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   });
 
   const formatDate = (dateString: string) => {
@@ -166,6 +225,7 @@ export default function AdminDashboard() {
                         <TableHead>Signup Date</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Feedback Count</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -181,6 +241,36 @@ export default function AdminDashboard() {
                           <TableCell>{getStatusBadge(user.status)}</TableCell>
                           <TableCell>
                             <Badge variant="outline">{user.feedback_count} feedback</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-red-600 border-red-200 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Beta User</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete the user "{user.email}"? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => deleteUserMutation.mutate(user.id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -214,6 +304,7 @@ export default function AdminDashboard() {
                         <TableHead>Message</TableHead>
                         <TableHead>Date</TableHead>
                         <TableHead>Screenshot</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -238,6 +329,36 @@ export default function AdminDashboard() {
                             ) : (
                               <Badge variant="outline">No</Badge>
                             )}
+                          </TableCell>
+                          <TableCell>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-red-600 border-red-200 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Feedback</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete this feedback from "{feedback.user_email}"? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => deleteFeedbackMutation.mutate(feedback.id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </TableCell>
                         </TableRow>
                       ))}

@@ -674,6 +674,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin route: Delete a beta user
+  app.delete("/admin/users/:id", async (req, res) => {
+    try {
+      const { pool } = await import("./db-pool");
+      const userId = parseInt(req.params.id);
+      
+      if (!userId || isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid user ID is required"
+        });
+      }
+
+      const result = await pool.query('DELETE FROM beta_users WHERE id = $1 RETURNING *', [userId]);
+      
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found"
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "User deleted successfully",
+        deletedUser: result.rows[0]
+      });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error deleting user: " + (error instanceof Error ? error.message : String(error))
+      });
+    }
+  });
+
+  // Admin route: Delete feedback
+  app.delete("/admin/feedback/:id", async (req, res) => {
+    try {
+      const { pool } = await import("./db-pool");
+      const feedbackId = parseInt(req.params.id);
+      
+      if (!feedbackId || isNaN(feedbackId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid feedback ID is required"
+        });
+      }
+
+      const result = await pool.query('DELETE FROM feedback WHERE id = $1 RETURNING *', [feedbackId]);
+      
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Feedback not found"
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Feedback deleted successfully",
+        deletedFeedback: result.rows[0]
+      });
+    } catch (error) {
+      console.error("Error deleting feedback:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error deleting feedback: " + (error instanceof Error ? error.message : String(error))
+      });
+    }
+  });
+
   // Admin route: Get all feedback from a specific user
   app.get("/admin/feedback/:email", async (req, res) => {
     try {
