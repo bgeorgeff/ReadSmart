@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import Home from "./pages/home";
 import Landing from "./pages/landing";
+import AdminDashboard from "./pages/admin";
 import NotFound from "./pages/not-found";
 import { ErrorBoundary } from "react-error-boundary";
 import { BetaSignupManager } from "./components/BetaSignupManager";
@@ -30,8 +31,8 @@ function ErrorFallback({error, resetErrorBoundary}: {error: Error, resetErrorBou
 function App() {
   const [location] = useLocation();
 
-  // Don't render React router for API routes or admin routes
-  if (location.startsWith('/api/') || location.startsWith('/admin')) {
+  // Don't render React router for API routes
+  if (location.startsWith('/api/')) {
     return null;
   }
 
@@ -46,13 +47,18 @@ function App() {
         <Switch>
           <Route path="/" component={Landing} />
           <Route path="/app" component={Home} />
+          <Route path="/admin" component={AdminDashboard} />
           <Route component={NotFound} />
         </Switch>
         <Toaster />
         
-        {/* Global components that appear on all pages */}
-        <BetaSignupManager />
-        <FloatingFeedbackButton />
+        {/* Global components that appear on all pages - but not on admin */}
+        {!location.startsWith('/admin') && (
+          <>
+            <BetaSignupManager />
+            <FloatingFeedbackButton />
+          </>
+        )}
       </QueryClientProvider>
     </ErrorBoundary>
   );
