@@ -8,7 +8,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Users, MessageSquare, Calendar, Mail, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 
 interface BetaUser {
   id: number;
@@ -49,13 +48,14 @@ export default function AdminDashboard() {
 
   const deleteUserMutation = useMutation({
     mutationFn: async (userId: number) => {
-      const response = await apiRequest(`/admin/users/${userId}`, {
+      const response = await fetch(`/admin/users/${userId}`, {
         method: 'DELETE',
       });
-      if (!response.success) {
-        throw new Error(response.message || 'Failed to delete user');
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to delete user');
       }
-      return response;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/admin/users'] });
@@ -75,13 +75,14 @@ export default function AdminDashboard() {
 
   const deleteFeedbackMutation = useMutation({
     mutationFn: async (feedbackId: number) => {
-      const response = await apiRequest(`/admin/feedback/${feedbackId}`, {
+      const response = await fetch(`/admin/feedback/${feedbackId}`, {
         method: 'DELETE',
       });
-      if (!response.success) {
-        throw new Error(response.message || 'Failed to delete feedback');
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to delete feedback');
       }
-      return response;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/admin/feedback'] });
