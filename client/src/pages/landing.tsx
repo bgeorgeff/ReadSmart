@@ -58,13 +58,13 @@ export default function Landing() {
                 <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">ReadSmart</span>
               </div>
             </Link>
-            <Button 
-              variant="outline" 
-              className="bg-white/80 backdrop-blur-sm border-blue-500 hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 hover:-translate-y-1"
+            <div 
+              className="flex items-center justify-center space-x-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 hover:-translate-y-1 cursor-pointer"
               onClick={handleGetStartedClick}
             >
-              Get Started
-            </Button>
+              <Sparkles className="h-4 w-4 text-blue-500" />
+              <span className="text-sm font-medium text-gray-700">Get Started</span>
+            </div>
           </div>
         </div>
       </header>
