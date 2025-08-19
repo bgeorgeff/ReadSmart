@@ -62,8 +62,8 @@ export function BetaSignupModal({ isOpen, onClose, onSuccess }: BetaSignupModalP
           <h2 className="popup-title">{showSuccess ? 'Welcome to Beta!' : 'Join Our Beta Program'}</h2>
           <p className="popup-subtitle">
             {showSuccess 
-              ? 'Thank you for joining our beta program! Please share your feedback to back the app better.' 
-              : 'Be the first to experience our new platform and help shape its future!'
+              ? 'Thank you for joining our beta program! Please share your feedback to make the app better.' 
+              : 'Be the first to experience this new platform and help shape its future!'
             }
           </p>
         </div>
