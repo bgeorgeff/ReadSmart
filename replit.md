@@ -1,7 +1,7 @@
 # ReadSmart - Text Simplification & Reading Aid Application
 
 ## Overview
-ReadSmart is a comprehensive reading comprehension tool designed to simplify complex texts for various grade levels (1-12) and offer interactive reading aids. The application enables users to input text, which is then processed by AI to generate grade-appropriate summaries. Key capabilities include word definitions, text-to-speech functionality, and audio recording for reading practice. The project aims to provide an accessible and engaging platform for improving reading comprehension.
+ReadSmart is a comprehensive reading comprehension tool designed to simplify complex texts for various grade levels (1-12) and offer interactive reading aids. The application enables users to input text, which is then processed by AI to generate grade-appropriate summaries. Key capabilities include word definitions, text-to-speech functionality, and audio recording for reading practice. The project includes a full admin dashboard for managing beta users and feedback. The project aims to provide an accessible and engaging platform for improving reading comprehension.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -19,6 +19,7 @@ Preferred communication style: Simple, everyday language.
 - **Text Processing Engine**: Leverages OpenAI/OpenRouter APIs for AI-powered text simplification, generating 12 grade-level summaries, preserving technical terms, and handling quote formatting. Includes regex-based text cleaning.
 - **Interactive Reading Tools**: Features click-to-define word highlighting, browser-based text-to-speech with synchronized highlighting, microphone access for audio recording, and dynamic grade level selection.
 - **Data Management**: Uses Drizzle ORM with PostgreSQL (via Neon.tech) for schema definition and persistence, with an abstracted storage layer. Session management uses Express sessions with PostgreSQL store.
+- **Admin Dashboard**: Complete admin interface at `/admin` with user management, feedback monitoring, statistics overview, and secure delete functionality with confirmation dialogs.
 
 ### System Design Choices
 - **Development Workflow**: Hot module replacement, full TypeScript type checking, and configured path aliases.
