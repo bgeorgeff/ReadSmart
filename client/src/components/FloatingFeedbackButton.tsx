@@ -8,7 +8,7 @@ export function FloatingFeedbackButton() {
     position: 'fixed',
     right: '0px',
     bottom: '120px',
-    background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+    background: 'linear-gradient(135deg, #fbbf24, #f97316, #ef4444)',
     color: 'white',
     padding: '8px 12px',
     borderRadius: '8px 0 0 8px',
@@ -25,7 +25,7 @@ export function FloatingFeedbackButton() {
 
   const feedbackWidgetHoverStyle: React.CSSProperties = {
     ...feedbackWidgetStyle,
-    background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+    background: 'linear-gradient(135deg, #f59e0b, #ea580c, #dc2626)',
     transform: 'translateX(-4px)',
     boxShadow: '-4px 0 15px rgba(239, 68, 68, 0.3)',
   };
@@ -37,14 +37,14 @@ export function FloatingFeedbackButton() {
         onClick={() => setIsModalOpen(true)}
         onMouseEnter={(e) => {
           Object.assign(e.currentTarget.style, {
-            background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+            background: 'linear-gradient(135deg, #f59e0b, #ea580c, #dc2626)',
             transform: 'translateX(-4px)',
             boxShadow: '-4px 0 15px rgba(239, 68, 68, 0.3)',
           });
         }}
         onMouseLeave={(e) => {
           Object.assign(e.currentTarget.style, {
-            background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+            background: 'linear-gradient(135deg, #fbbf24, #f97316, #ef4444)',
             transform: 'translateX(0px)',
             boxShadow: '-2px 0 10px rgba(239, 68, 68, 0.2)',
           });
