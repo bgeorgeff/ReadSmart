@@ -774,6 +774,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
 
+  // Catch-all handler: send back React's index.html file for client-side routing
+  app.get('*', (req, res) => {
+    // Don't intercept API routes
+    if (req.path.startsWith('/api/') || req.path.startsWith('/admin/')) {
+      return res.status(404).json({ success: false, message: 'Not found' });
+    }
+    
+    // For all other routes, serve the React app and let client-side routing handle it
+    res.sendFile(path.join(__dirname, '../client/index.html'));
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
