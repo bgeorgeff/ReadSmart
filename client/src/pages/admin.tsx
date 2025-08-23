@@ -36,6 +36,13 @@ export default function AdminDashboard() {
     users: BetaUser[];
   }>({
     queryKey: ['/admin/users'],
+    queryFn: async () => {
+      const response = await fetch('/admin/users');
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+      return response.json();
+    },
   });
 
   const { data: feedbackData, isLoading: feedbackLoading } = useQuery<{
@@ -44,6 +51,13 @@ export default function AdminDashboard() {
     feedback: Feedback[];
   }>({
     queryKey: ['/admin/feedback'],
+    queryFn: async () => {
+      const response = await fetch('/admin/feedback');
+      if (!response.ok) {
+        throw new Error('Failed to fetch feedback');
+      }
+      return response.json();
+    },
   });
 
   const deleteUserMutation = useMutation({
