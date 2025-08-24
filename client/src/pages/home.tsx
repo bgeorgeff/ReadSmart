@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import AppHeader from "@/components/AppHeader";
 import ProcessSteps from "@/components/ProcessSteps";
 import TextInput from "@/components/TextInput";
@@ -9,6 +10,20 @@ import SimpleWordModal from "@/components/SimpleWordModal";
 import { AppStep, GradeLevel, Summaries } from "@/types";
 
 export default function Home() {
+  const [, navigate] = useLocation();
+  
+  // Authentication check - redirect to landing if not signed up
+  useEffect(() => {
+    const hasSignedUp = localStorage.getItem('betaSignupCompleted') === 'true';
+    const userEmail = localStorage.getItem('userEmail');
+    
+    if (!hasSignedUp || !userEmail) {
+      // User hasn't completed beta signup, redirect to landing
+      navigate('/');
+      return;
+    }
+  }, [navigate]);
+
   const [currentStep, setCurrentStep] = useState<AppStep>(AppStep.TEXT_INPUT);
   const [inputText, setInputText] = useState<string>('');
   const [summaryId, setSummaryId] = useState<number | null>(null);
