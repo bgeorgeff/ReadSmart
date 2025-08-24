@@ -774,8 +774,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
 
-  // Note: Catch-all route moved to server/index.ts to be set up after Vite middleware
-
   const httpServer = createServer(app);
   return httpServer;
 }
