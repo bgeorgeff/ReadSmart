@@ -58,10 +58,29 @@ app.use((req, res, next) => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  
+  // Force development mode if NODE_ENV is not explicitly set to production
+  const isProduction = process.env.NODE_ENV === "production";
+  console.log(`Environment: ${process.env.NODE_ENV || 'undefined'}, Production mode: ${isProduction}`);
+  
+  if (!isProduction) {
     await setupVite(app, server);
   } else {
     serveStatic(app);
+  }
+
+  // Set up catch-all route AFTER Vite middleware in development
+  if (!isProduction) {
+    const path = await import("path");
+    app.get('*', (req, res) => {
+      // Don't intercept API routes
+      if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ success: false, message: 'Not found' });
+      }
+      
+      // For all other routes, serve the React app and let client-side routing handle it
+      res.sendFile(path.join(__dirname, 'client/index.html'));
+    });
   }
 
   // ALWAYS serve the app on port 5000
