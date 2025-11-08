@@ -13,7 +13,8 @@ interface TextInputProps {
   setSelectedGradeLevel?: (level: number) => void;
 }
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// Use jsdelivr CDN for the worker - more reliable than cdnjs
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
 
 export default function TextInput({ 
   inputText, 
@@ -29,13 +30,13 @@ export default function TextInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  
+
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = event.target.value;
     setInputText(text);
     setCharacterCount(text.length);
   };
-  
+
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
@@ -53,7 +54,7 @@ export default function TextInput({
       });
     }
   };
-  
+
   const handleClear = () => {
     setInputText('');
     setCharacterCount(0);
@@ -66,7 +67,7 @@ export default function TextInput({
       textareaRef.current.focus();
     }
   };
-  
+
   const handleProcessText = () => {
     if (inputText.trim().length === 0) {
       toast({
@@ -76,7 +77,7 @@ export default function TextInput({
       });
       return;
     }
-    
+
     setAppStep(AppStep.PROCESSING);
   };
 
@@ -138,7 +139,7 @@ export default function TextInput({
       }
 
       const data = await response.json();
-      
+
       if (data.success && setSummaries && setSummaryId) {
         setSummaries(data.summaries);
         setSummaryId(data.summaryId);
@@ -163,9 +164,9 @@ export default function TextInput({
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
-  
+
   if (!isVisible) return null;
-  
+
   return (
     <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg p-6">
       <div className="flex justify-between items-center mb-4">
@@ -203,7 +204,7 @@ export default function TextInput({
           )}
         </div>
       </div>
-      
+
       <input
         type="file"
         ref={fileInputRef}
