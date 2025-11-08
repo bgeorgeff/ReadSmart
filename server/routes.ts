@@ -302,9 +302,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Clean up the extracted text:
+      // 1. Replace multiple consecutive newlines with just two (paragraph break)
+      // 2. Remove lines that are just whitespace
+      // 3. Trim leading/trailing whitespace from each line
+      const cleanedText = article.textContent
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .join('\n\n');
+
       res.json({
         success: true,
-        text: article.textContent.trim(),
+        text: cleanedText,
         title: article.title
       });
 
