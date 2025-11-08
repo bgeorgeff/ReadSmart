@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { AppStep } from '@/types';
+import * as pdfjsLib from 'pdfjs-dist';
 
 interface TextInputProps {
   inputText: string;
@@ -12,6 +13,8 @@ interface TextInputProps {
   setSelectedGradeLevel?: (level: number) => void;
 }
 
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
 export default function TextInput({ 
   inputText, 
   setInputText, 
@@ -22,7 +25,9 @@ export default function TextInput({
   setSelectedGradeLevel
 }: TextInputProps) {
   const [characterCount, setCharacterCount] = useState(0);
+  const [isProcessingPDF, setIsProcessingPDF] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -73,6 +78,90 @@ export default function TextInput({
     }
     
     setAppStep(AppStep.PROCESSING);
+  };
+
+  const handlePDFUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast({
+        title: 'Invalid File',
+        description: 'Please upload a PDF file.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setIsProcessingPDF(true);
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let extractedText = '';
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(' ');
+        extractedText += pageText + '\n\n';
+      }
+
+      if (extractedText.trim().length === 0) {
+        toast({
+          title: 'Empty PDF',
+          description: 'No text could be extracted from this PDF.',
+          variant: 'destructive'
+        });
+        setIsProcessingPDF(false);
+        return;
+      }
+
+      setInputText(extractedText);
+      setCharacterCount(extractedText.length);
+
+      setAppStep(AppStep.PROCESSING);
+
+      const response = await fetch('/api/process-text', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: extractedText }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to process text');
+      }
+
+      const data = await response.json();
+      
+      if (data.success && setSummaries && setSummaryId) {
+        setSummaries(data.summaries);
+        setSummaryId(data.summaryId);
+        setAppStep(AppStep.SUMMARY);
+      }
+
+    } catch (error) {
+      console.error('PDF processing error:', error);
+      toast({
+        title: 'Error Processing PDF',
+        description: 'Failed to extract or process text from PDF. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsProcessingPDF(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
   
   if (!isVisible) return null;
@@ -126,9 +215,36 @@ export default function TextInput({
         </div>
       </div>
       
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="application/pdf"
+        onChange={handlePDFUpload}
+        className="hidden"
+        data-testid="input-pdf-file"
+      />
 
-
-
+      <div className="mb-4">
+        <button
+          type="button"
+          onClick={handleUploadClick}
+          disabled={isProcessingPDF}
+          className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white py-3 px-6 rounded-lg font-['Google_Sans'] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
+          data-testid="button-upload-pdf"
+        >
+          {isProcessingPDF ? (
+            <>
+              <span className="material-icons animate-spin">refresh</span>
+              Processing PDF...
+            </>
+          ) : (
+            <>
+              <span className="material-icons">picture_as_pdf</span>
+              Upload PDF
+            </>
+          )}
+        </button>
+      </div>
 
       <div className="flex justify-between items-center">
         <span className="text-sm text-gray-400 font-['Roboto']">
