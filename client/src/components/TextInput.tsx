@@ -169,7 +169,29 @@ export default function TextInput({
   return (
     <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg p-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="font-['Google_Sans'] text-lg font-medium text-gray-800">1. Copy & Paste Any Text</h3>
+        <div className="flex items-center gap-3">
+          <h3 className="font-['Google_Sans'] text-lg font-medium text-gray-800">1. Copy & Paste Any Text</h3>
+          <span className="font-['Google_Sans'] text-lg font-medium text-gray-800">or</span>
+          <button
+            type="button"
+            onClick={handleUploadClick}
+            disabled={isProcessingPDF}
+            className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white py-2 px-4 rounded-lg font-['Google_Sans'] text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
+            data-testid="button-upload-pdf"
+          >
+            {isProcessingPDF ? (
+              <>
+                <span className="material-icons text-sm animate-spin">refresh</span>
+                Processing PDF...
+              </>
+            ) : (
+              <>
+                <span className="material-icons text-sm">picture_as_pdf</span>
+                Upload PDF
+              </>
+            )}
+          </button>
+        </div>
         <div className="h-[40px] flex items-center">
           {inputText.trim().length > 0 && (
             <button 
@@ -190,29 +212,6 @@ export default function TextInput({
         className="hidden"
         data-testid="input-pdf-file"
       />
-
-      <div className="flex items-center justify-center gap-3 mb-4">
-        <span className="text-gray-500 font-['Google_Sans'] text-lg">or</span>
-        <button
-          type="button"
-          onClick={handleUploadClick}
-          disabled={isProcessingPDF}
-          className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white py-3 px-6 rounded-lg font-['Google_Sans'] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
-          data-testid="button-upload-pdf"
-        >
-          {isProcessingPDF ? (
-            <>
-              <span className="material-icons animate-spin">refresh</span>
-              Processing PDF...
-            </>
-          ) : (
-            <>
-              <span className="material-icons">picture_as_pdf</span>
-              Upload PDF
-            </>
-          )}
-        </button>
-      </div>
 
       <div className="mb-4">
         <div className="relative">
