@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { AppStep } from '@/types';
 import * as pdfjsLib from 'pdfjs-dist';
+import { useMutation } from '@tanstack/react-query';
 
 interface TextInputProps {
   inputText: string;
@@ -27,9 +28,54 @@ export default function TextInput({
 }: TextInputProps) {
   const [characterCount, setCharacterCount] = useState(0);
   const [isProcessingPDF, setIsProcessingPDF] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // URL extraction mutation
+  const extractUrlMutation = useMutation({
+    mutationFn: async (url: string) => {
+      const response = await fetch('/api/extract-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to extract text from URL');
+      }
+      
+      return data;
+    },
+    onSuccess: (data) => {
+      setInputText(data.text);
+      setCharacterCount(data.text.length);
+      if (textareaRef.current) {
+        textareaRef.current.value = data.text;
+      }
+      setShowUrlInput(false);
+      setUrlInput('');
+      
+      toast({
+        title: 'Success',
+        description: `Extracted text from: ${data.title || 'webpage'}`,
+      });
+
+      // Auto-process after successful extraction
+      setAppStep(AppStep.PROCESSING);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'URL Extraction Failed',
+        description: error.message,
+        variant: 'destructive'
+      });
+    }
+  });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = event.target.value;
@@ -165,12 +211,25 @@ export default function TextInput({
     fileInputRef.current?.click();
   };
 
+  const handleUrlSubmit = () => {
+    if (!urlInput.trim()) {
+      toast({
+        title: 'URL Required',
+        description: 'Please enter a URL to extract text from.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    extractUrlMutation.mutate(urlInput.trim());
+  };
+
   if (!isVisible) return null;
 
   return (
     <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg p-6">
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <h3 className="font-['Google_Sans'] text-lg font-medium text-gray-800">1. Copy & Paste Any Text</h3>
           <span className="font-['Google_Sans'] text-lg font-medium text-gray-800">or</span>
           <button
@@ -191,6 +250,16 @@ export default function TextInput({
                 Upload PDF
               </>
             )}
+          </button>
+          <span className="font-['Google_Sans'] text-lg font-medium text-gray-800">or</span>
+          <button
+            type="button"
+            onClick={() => setShowUrlInput(!showUrlInput)}
+            disabled={extractUrlMutation.isPending}
+            className="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white py-2 px-4 rounded-lg font-['Google_Sans'] text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
+          >
+            <span className="material-icons text-sm">link</span>
+            {showUrlInput ? 'Cancel' : 'Extract from URL'}
           </button>
         </div>
         <div className="h-[40px] flex items-center">
@@ -213,6 +282,48 @@ export default function TextInput({
         className="hidden"
         data-testid="input-pdf-file"
       />
+
+      {showUrlInput && (
+        <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Enter URL to extract article text:
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              placeholder="https://example.com/article"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleUrlSubmit();
+                }
+              }}
+            />
+            <button
+              onClick={handleUrlSubmit}
+              disabled={extractUrlMutation.isPending}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-['Google_Sans'] text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {extractUrlMutation.isPending ? (
+                <>
+                  <span className="material-icons text-sm animate-spin">refresh</span>
+                  Extracting...
+                </>
+              ) : (
+                <>
+                  <span className="material-icons text-sm">download</span>
+                  Extract
+                </>
+              )}
+            </button>
+          </div>
+          <p className="text-xs text-gray-600 mt-2">
+            We'll extract the main article text and filter out ads and sidebars.
+          </p>
+        </div>
+      )}
 
       <div className="mb-4">
         <div className="relative">

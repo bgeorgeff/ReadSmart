@@ -36,6 +36,13 @@ export interface SaveRecordingResponse {
   message?: string;
 }
 
+export interface ExtractUrlResponse {
+  success: boolean;
+  text: string;
+  title?: string;
+  message?: string;
+}
+
 // Audio recording states
 export enum RecordingState {
   INACTIVE = 'inactive',
