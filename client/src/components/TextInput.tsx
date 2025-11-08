@@ -13,8 +13,8 @@ interface TextInputProps {
   setSelectedGradeLevel?: (level: number) => void;
 }
 
-// Use jsdelivr CDN for the worker - more reliable than cdnjs
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+// Configure PDF.js worker with unpkg CDN (more reliable for Vite)
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 export default function TextInput({ 
   inputText, 
