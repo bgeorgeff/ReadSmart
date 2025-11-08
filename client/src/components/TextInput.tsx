@@ -230,8 +230,7 @@ export default function TextInput({
     <div className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg p-6">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-3 flex-wrap">
-          <h3 className="font-['Google_Sans'] text-lg font-medium text-gray-800">1. Copy & Paste Any Text</h3>
-          <span className="font-['Google_Sans'] text-lg font-medium text-gray-800">or</span>
+          <h3 className="font-['Google_Sans'] text-lg font-medium text-gray-800">Copy/Paste</h3>
           <button
             type="button"
             onClick={handleUploadClick}
@@ -251,7 +250,6 @@ export default function TextInput({
               </>
             )}
           </button>
-          <span className="font-['Google_Sans'] text-lg font-medium text-gray-800">or</span>
           <button
             type="button"
             onClick={() => setShowUrlInput(!showUrlInput)}
@@ -259,7 +257,7 @@ export default function TextInput({
             className="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white py-2 px-4 rounded-lg font-['Google_Sans'] text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
           >
             <span className="material-icons text-sm">link</span>
-            {showUrlInput ? 'Cancel' : 'Extract from URL'}
+            {showUrlInput ? 'Cancel' : 'Add URL'}
           </button>
         </div>
         <div className="h-[40px] flex items-center">
