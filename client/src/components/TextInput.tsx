@@ -181,6 +181,39 @@ export default function TextInput({
           )}
         </div>
       </div>
+      
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="application/pdf"
+        onChange={handlePDFUpload}
+        className="hidden"
+        data-testid="input-pdf-file"
+      />
+
+      <div className="flex items-center justify-center gap-3 mb-4">
+        <span className="text-gray-500 font-['Google_Sans'] text-lg">or</span>
+        <button
+          type="button"
+          onClick={handleUploadClick}
+          disabled={isProcessingPDF}
+          className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white py-3 px-6 rounded-lg font-['Google_Sans'] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
+          data-testid="button-upload-pdf"
+        >
+          {isProcessingPDF ? (
+            <>
+              <span className="material-icons animate-spin">refresh</span>
+              Processing PDF...
+            </>
+          ) : (
+            <>
+              <span className="material-icons">picture_as_pdf</span>
+              Upload PDF
+            </>
+          )}
+        </button>
+      </div>
+
       <div className="mb-4">
         <div className="relative">
           <textarea 
@@ -213,37 +246,6 @@ export default function TextInput({
             )}
           </div>
         </div>
-      </div>
-      
-      <input
-        type="file"
-        ref={fileInputRef}
-        accept="application/pdf"
-        onChange={handlePDFUpload}
-        className="hidden"
-        data-testid="input-pdf-file"
-      />
-
-      <div className="mb-4">
-        <button
-          type="button"
-          onClick={handleUploadClick}
-          disabled={isProcessingPDF}
-          className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white py-3 px-6 rounded-lg font-['Google_Sans'] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
-          data-testid="button-upload-pdf"
-        >
-          {isProcessingPDF ? (
-            <>
-              <span className="material-icons animate-spin">refresh</span>
-              Processing PDF...
-            </>
-          ) : (
-            <>
-              <span className="material-icons">picture_as_pdf</span>
-              Upload PDF
-            </>
-          )}
-        </button>
       </div>
 
       <div className="flex justify-between items-center">
