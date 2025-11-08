@@ -1,4 +1,3 @@
-
 import { AppStep } from '@/types';
 
 interface ProcessStepsProps {
@@ -17,7 +16,7 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
   const isStep2Active = currentStep === AppStep.PROCESSING || currentStep === AppStep.SUMMARY;
   const isStep3Active = currentStep === AppStep.READING;
 
-  
+
 
   return (
     <div className="py-4">
@@ -35,7 +34,7 @@ export default function ProcessSteps({ currentStep, onStepClick }: ProcessStepsP
             isActiveStep(AppStep.TEXT_INPUT) || isPastStep(AppStep.TEXT_INPUT, currentStep) 
               ? 'text-gray-800' 
               : 'text-gray-400'
-          }`}>Paste</p>
+          }`}>Begin</p>
         </div>
         <div className="flex items-center">
           <button 
