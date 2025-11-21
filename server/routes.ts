@@ -14,241 +14,27 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Admin authentication middleware
+const adminAuth = (req: any, res: any, next: any) => {
+  const adminKey = process.env.ADMIN_KEY;
+  if (!adminKey) {
+    return res.status(403).json({ success: false, message: 'Admin access not configured' });
+  }
+  
+  const providedKey = req.headers['x-admin-key'] || req.query.adminKey;
+  if (providedKey !== adminKey) {
+    return res.status(403).json({ success: false, message: 'Unauthorized' });
+  }
+  
+  next();
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Debug endpoint to test API connectivity
+  // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
-  // Serve the syllable test page
-  app.get("/syllable-test.html", (req, res) => {
-    const filePath = path.join(__dirname, "..", "syllable-test.html");
-    res.sendFile(filePath);
-  });
-
-  // Serve the audio test page
-  app.get("/audio-test.html", (req, res) => {
-    res.setHeader('Content-Type', 'text/html');
-    res.send(`<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Audio Recorder Test</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        button {
-            padding: 12px 24px;
-            margin: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .record-btn {
-            background-color: #ff4444;
-            color: white;
-        }
-        .record-btn:hover {
-            background-color: #cc3333;
-        }
-        .play-btn {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .play-btn:hover {
-            background-color: #45a049;
-        }
-        .status {
-            margin: 20px 0;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #e7f3ff;
-        }
-        .time {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Simple Audio Recorder Test</h1>
-        <p>This is a standalone test to check if basic audio recording and playback works.</p>
-
-        <div class="status">
-            <div id="status">Ready to record</div>
-            <div class="time" id="timer">00:00</div>
-        </div>
-
-        <button id="recordBtn" class="record-btn">🎤 Start Recording</button>
-        <button id="playBtn" class="play-btn" disabled>▶️ Play Recording</button>
-
-        <audio id="audioPlayer" controls style="width: 100%; margin-top: 20px;" hidden></audio>
-    </div>
-
-    <script>
-        let mediaRecorder;
-        let audioChunks = [];
-        let isRecording = false;
-        let recordingTime = 0;
-        let timer;
-
-        const recordBtn = document.getElementById('recordBtn');
-        const playBtn = document.getElementById('playBtn');
-        const status = document.getElementById('status');
-        const timerDisplay = document.getElementById('timer');
-        const audioPlayer = document.getElementById('audioPlayer');
-
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return \`\${mins.toString().padStart(2, '0')}:\${secs.toString().padStart(2, '0')}\`;
-        }
-
-        async function startRecording() {
-            try {
-                console.log('Requesting microphone access...');
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                console.log('Got microphone access');
-
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                recordingTime = 0;
-
-                console.log('MediaRecorder created:', mediaRecorder.mimeType);
-
-                mediaRecorder.ondataavailable = event => {
-                    console.log('Data available:', event.data.size, 'bytes');
-                    audioChunks.push(event.data);
-                };
-
-                mediaRecorder.onstop = () => {
-                    console.log('Recording stopped, chunks:', audioChunks.length);
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    console.log('Created blob:', audioBlob.size, 'bytes');
-
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    console.log('Created URL:', audioUrl);
-
-                    audioPlayer.src = audioUrl;
-                    audioPlayer.hidden = false;
-                    playBtn.disabled = false;
-
-                    status.textContent = 'Recording ready for playback';
-
-                    stream.getTracks().forEach(track => track.stop());
-                };
-
-                mediaRecorder.start();
-                isRecording = true;
-
-                recordBtn.textContent = '⏹️ Stop Recording';
-                recordBtn.className = 'record-btn';
-                status.textContent = 'Recording...';
-                playBtn.disabled = true;
-
-                timer = setInterval(() => {
-                    recordingTime++;
-                    timerDisplay.textContent = formatTime(recordingTime);
-                }, 1000);
-
-            } catch (error) {
-                console.error('Error starting recording:', error);
-                status.textContent = 'Error: ' + error.message;
-            }
-        }
-
-        function stopRecording() {
-            if (mediaRecorder && isRecording) {
-                mediaRecorder.stop();
-                isRecording = false;
-
-                recordBtn.textContent = '🎤 Start Recording';
-                status.textContent = 'Processing recording...';
-
-                clearInterval(timer);
-            }
-        }
-
-        function playRecording() {
-            console.log('Playing audio...');
-            console.log('Audio player volume:', audioPlayer.volume);
-            console.log('Audio player muted:', audioPlayer.muted);
-            console.log('Audio player duration:', audioPlayer.duration);
-            console.log('Audio player src:', audioPlayer.src);
-            console.log('Audio player readyState:', audioPlayer.readyState);
-
-            audioPlayer.play()
-                .then(() => {
-                    console.log('Audio playing successfully');
-                    console.log('Current time:', audioPlayer.currentTime);
-                    status.textContent = 'Playing recording...';
-                })
-                .catch(error => {
-                    console.error('Error playing audio:', error);
-                    status.textContent = 'Error playing audio: ' + error.message;
-                });
-        }
-
-        recordBtn.addEventListener('click', () => {
-            if (isRecording) {
-                stopRecording();
-            } else {
-                startRecording();
-            }
-        });
-
-        playBtn.addEventListener('click', playRecording);
-
-        audioPlayer.addEventListener('ended', () => {
-            status.textContent = 'Playback finished';
-        });
-
-        audioPlayer.addEventListener('play', () => {
-            status.textContent = 'Playing recording...';
-        });
-
-        audioPlayer.addEventListener('pause', () => {
-            status.textContent = 'Playback paused';
-        });
-
-        console.log('Audio recorder test loaded');
-    </script>
-</body>
-</html>`);
-  });
-
-  // Debug route to test API connectivity
-  app.get("/api/debug/test-api", async (req, res) => {
-    try {
-      const result = await testApiConnection();
-      res.json({
-        success: true,
-        message: "API connection test successful",
-        result
-      });
-    } catch (error) {
-      console.error("API connection test failed:", error);
-      res.status(500).json({
-        success: false,
-        message: "API connection test failed: " + (error instanceof Error ? error.message : String(error))
-      });
-    }
-  });
   // Extract text from URL
   app.post("/api/extract-url", async (req, res) => {
     try {
@@ -517,47 +303,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const validationError = fromZodError(error as any);
         res.status(400).json({ success: false, message: validationError.message });
       } else {
-        console.error('[Word Detail] Error:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Word Detail] Error:', error);
+        }
         res.status(500).json({
           success: false,
-          message: 'Failed to fetch word details. Please try again.',
-          error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
+          message: 'Failed to fetch word details. Please try again.'
         });
       }
     }
   });
 
-  // Test endpoint for syllable V2
-  app.get("/api/test-syllable-v2", async (req, res) => {
-    try {
-      const testWords = [
-        'experience', 'revolutionary', 'international',
-        'patience', 'musician', 'precious', 'special',
-        'wanted', 'walked', 'approved', 'any', 'many'
-      ];
-
-      const results: any[] = [];
-
-      // Dynamic import to avoid initialization issues
-      const { breakWordIntoSyllablesV2 } = await import('./utils/syllable-v2/core.js');
-
-      for (const word of testWords) {
-        const syllables = await breakWordIntoSyllablesV2(word);
-        results.push({
-          word,
-          syllables: syllables.join('-')
-        });
-      }
-
-      res.json({ success: true, results });
-    } catch (error) {
-      console.error('Syllable V2 test error:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      });
-    }
-  });
 
   // Save a recording
   app.post("/api/recordings", async (req, res) => {
@@ -702,7 +458,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin route: Get all beta users with feedback count
-  app.get("/admin/users", async (req, res) => {
+  app.get("/admin/users", adminAuth, async (req, res) => {
     try {
       const { pool } = await import("./db-pool");
       const result = await pool.query(`

@@ -1,7 +1,9 @@
 import OpenAI from "openai";
 
-// Initialize OpenAI client with debug logging - prioritize OpenRouter over direct Anthropic
-console.log(`[AI Client] Initializing with ${process.env.OPENROUTER_API_KEY ? 'OpenRouter' : process.env.ANTHROPIC_API_KEY ? 'Anthropic' : 'OpenAI'} configuration`);
+// Initialize OpenAI client - prioritize OpenRouter over direct Anthropic
+if (process.env.NODE_ENV === 'development') {
+  console.log('[AI Client] Initializing with configured API provider');
+}
 
 const openai = new OpenAI({
   apiKey: process.env.OPENROUTER_API_KEY || process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY,

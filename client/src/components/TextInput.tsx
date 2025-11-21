@@ -140,6 +140,16 @@ export default function TextInput({
       return;
     }
 
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: 'File Too Large',
+        description: 'PDF file must be smaller than 5MB.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setIsProcessingPDF(true);
 
     try {
