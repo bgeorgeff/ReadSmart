@@ -91,7 +91,7 @@ export default function Landing() {
                 <span className="absolute inset-0 bg-gradient-to-r from-amber-400/20 via-orange-500/20 to-red-500/20 blur-lg animate-pulse"></span>
                 <span className="absolute -inset-2 bg-gradient-to-r from-amber-400/10 via-orange-500/10 to-red-500/10 blur-xl animate-bounce"></span>
               </span>
-              {' '}Want to Read!
+              {' '}Want to Read
             </span>
           </h1>
           
